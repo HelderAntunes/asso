@@ -1,0 +1,23 @@
+version: '3'
+services:
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+     - "8081:15672"
+     - "5672:5672"
+     - "5671:5671"
+    environment:
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_VHOST: vhost
+  web:
+    build: ./server
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./server/:/app
+      - /app/node_modules
+    links:
+      - rabbitmq
+    environment:
+      - AMPQ_ADDRESS=amqp://guest:guest@rabbitmq:5672/vhost

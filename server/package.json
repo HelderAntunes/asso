@@ -1,0 +1,19 @@
+{
+  "name": "mqtt-live-monitor",
+  "version": "1.0.0",
+  "description": "MQTT live monitor",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon --legacy-watch src/server.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.5.2",
+    "express": "^4.16.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HelderAntunes/asso.git"
+  },
+  "author": "helder.antunes96@gmail.com",
+  "license": "ISC"
+}

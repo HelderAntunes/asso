@@ -1,9 +1,14 @@
 #!/usr/bin/env node
 
 var amqp = require('amqplib/callback_api');
+var host = process.env.AMPQ_ADDRESS;
 
-amqp.connect('amqp://localhost', function(err, conn) {
+amqp.connect(host, function(err, conn) {
+  if (err) throw new Error(err);
+
   conn.createChannel(function(err, ch) {
+    if (err) throw new Error(err);
+
     var q = 'hello';
 
     ch.assertQueue(q, {durable: false});
