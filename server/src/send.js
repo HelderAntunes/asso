@@ -7,15 +7,13 @@ amqp.connect(host, function(err, conn) {
   if (err) throw new Error(err);
 
   conn.createChannel(function(err, ch) {
-    if (err) throw new Error(err);
+    var ex = 'logs';
+    var msg = process.argv.slice(2).join(' ') || 'Hello World!';
 
-    var q = 'hello';
-    var msg = 'Hello World!';
-
-    ch.assertQueue(q, {durable: false});
-    // Note: on Node 6 Buffer.from(msg) should be used
-    ch.sendToQueue(q, new Buffer(msg));
+    ch.assertExchange(ex, 'fanout', {durable: false});
+    ch.publish(ex, '', new Buffer(msg));
     console.log(" [x] Sent %s", msg);
   });
+  
   setTimeout(function() { conn.close(); process.exit(0) }, 500);
 });

@@ -7,14 +7,17 @@ amqp.connect(host, function(err, conn) {
   if (err) throw new Error(err);
 
   conn.createChannel(function(err, ch) {
-    if (err) throw new Error(err);
+    var ex = 'logs';
 
-    var q = 'hello';
+    ch.assertExchange(ex, 'fanout', {durable: false});
 
-    ch.assertQueue(q, {durable: false});
-    console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q);
-    ch.consume(q, function(msg) {
-      console.log(" [x] Received %s", msg.content.toString());
-    }, {noAck: true});
+    ch.assertQueue('', {exclusive: true}, function(err, q) {
+      console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q.queue);
+      ch.bindQueue(q.queue, ex, '');
+
+      ch.consume(q.queue, function(msg) {
+        console.log(" [x] %s", msg.content.toString());
+      }, {noAck: true});
+    });
   });
 });
