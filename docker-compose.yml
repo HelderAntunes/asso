@@ -15,8 +15,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./server/:/app
-      - /app/node_modules
+      - ./server/:/usr/src/app
+      - /usr/src/app/node_modules
     links:
       - rabbitmq
     environment:
@@ -26,8 +26,8 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - './web/:/usr/src/app'
-      - '/usr/src/app/node_modules'
+      - ./web/:/usr/src/app
+      - /usr/src/app/node_modules
     links:
       - server
     environment:

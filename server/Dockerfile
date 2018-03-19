@@ -1,12 +1,13 @@
 FROM node:carbon
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY package*.json ./
-COPY src /app
 
 RUN npm install -g nodemon
 RUN npm install
+
+COPY . .
 
 EXPOSE 8080
 CMD [ "npm", "start" ]
