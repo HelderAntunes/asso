@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+var cors = require('cors');
 
 const PORT = 8080;
 const HOST = '0.0.0.0';
@@ -14,6 +15,8 @@ const client = require('http-rabbitmq-manager').client({
                 });
 
 const app = express();
+app.use(cors());
+
 app.get('/', (req, res) => {
   res.send("Welcome to the API");
 });
@@ -21,8 +24,7 @@ app.get('/', (req, res) => {
 //Pretty JSON html
 function prettyJson(jsonStr) {
   var cpy = JSON.parse(jsonStr);
-
-  var str = '<pre>' + JSON.stringify(cpy,null, 4) + '</pre>';
+  var str = '<pre>' + JSON.stringify(cpy, null, 4) + '</pre>';
 
   return str;
 }

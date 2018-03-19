@@ -10,7 +10,7 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_VHOST: vhost
-  web:
+  server:
     build: ./server
     ports:
       - "8080:8080"
@@ -21,3 +21,16 @@ services:
       - rabbitmq
     environment:
       - AMPQ_ADDRESS=amqp://guest:guest@rabbitmq:5672/vhost
+  web:
+    build: ./web
+    ports:
+      - '3000:3000'
+    volumes:
+      - './web/:/usr/src/app'
+      - '/usr/src/app/node_modules'
+    links:
+      - server
+    environment:
+      - NODE_ENV=development
+      - SERVER_ADDRESS_ON_HOST=http://localhost:8080/
+      - SERVER_ADDRESS_ON_CONTAINER=http://server:8080/
