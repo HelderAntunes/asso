@@ -3,20 +3,30 @@
 var amqp = require('amqplib/callback_api');
 var host = process.env.AMPQ_ADDRESS;
 
+var args = process.argv.slice(2);
+
+if (args.length == 0) {
+  console.log("Usage: node receive.js <facility>.<room>");
+  process.exit(1);
+}
+
 amqp.connect(host, function(err, conn) {
   if (err) throw new Error(err);
 
   conn.createChannel(function(err, ch) {
-    var ex = 'logs';
+    var ex = 'topic_logs';
 
-    ch.assertExchange(ex, 'fanout', {durable: false});
+    ch.assertExchange(ex, 'topic', {durable: false});
 
     ch.assertQueue('', {exclusive: true}, function(err, q) {
-      console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q.queue);
-      ch.bindQueue(q.queue, ex, '');
+      console.log(' [*] Waiting for logs. To exit press CTRL+C');
+
+      args.forEach(function(key) {
+        ch.bindQueue(q.queue, ex, key);
+      });
 
       ch.consume(q.queue, function(msg) {
-        console.log(" [x] %s", msg.content.toString());
+        console.log(" [x] %s:'%s' from %s", msg.fields.routingKey, msg.content.toString(), msg.properties.appId);
       }, {noAck: true});
     });
   });
