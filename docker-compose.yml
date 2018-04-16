@@ -10,7 +10,7 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_VHOST: vhost
-    
+
   server:
     build: ./server
     ports:
@@ -20,6 +20,7 @@ services:
       - /usr/src/app/node_modules
     links:
       - rabbitmq
+      - database
     environment:
       - AMPQ_ADDRESS=amqp://guest:guest@rabbitmq:5672/vhost
 
@@ -30,3 +31,8 @@ services:
     command: bash -c "yarn && npm run dev"
     ports:
       - 3000:3000
+
+  database:
+    build: ./db
+    ports:
+      - 27017:27017
