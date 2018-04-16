@@ -6,24 +6,38 @@
  */
 
 export default [
-  // Home
   {
-    path: '/home',
-    name: 'home.index',
-    component: () => import('@/pages/Home/Index'),
-
-    // If the user needs to be authenticated to view this page
-    meta: {
-      auth: false,
-    },
+    path: '/network',
+    name: 'network',
+    component: () => import('@/views/Network/Index'),
+  },
+  {
+    path: '/subscribers',
+    name: 'subscribers',
+    component: () => import('@/views/Subscribers/Index'),
+  },
+  {
+    path: '/subscribers/{id}',
+    name: 'subscribers.show',
+    component: () => import('@/views/Subscribers/Show'),
+  },
+  {
+    path: '/topics',
+    name: 'topics',
+    component: () => import('@/views/Topics/Index'),
+  },
+  {
+    path: '/topics/{id}',
+    name: 'topics.show',
+    component: () => import('@/views/Topics/Show'),
   },
   {
     path: '/',
-    redirect: '/home',
+    redirect: '/network',
   },
 
   {
     path: '/*',
-    redirect: '/home',
+    redirect: '/network',
   },
 ];
