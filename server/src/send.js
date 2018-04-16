@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 function sendRandomTemperature(ex, ch)
 {
-    var key = 'home.kitchen';
+    const facilities = ['home', 'work', 'school']
+    const rooms = ['bedroom', 'kitchen', 'study', 'classrom']
+    var key = facilities[Math.floor(Math.random() * facilities.length)] + '.' + rooms[Math.floor(Math.random() * rooms.length)] ;
     var num = (Math.random() * 10) + 20;
     var msg = num.toFixed(2)+ 'ºC';
     ch.publish(ex, key, new Buffer(msg.toString()), {'appId':'thermometer'});
@@ -22,7 +24,7 @@ amqp.connect(host, function(err, conn) {
   if (err) throw new Error(err);
 
   conn.createChannel(function(err, ch) {
-    var ex = 'topic_logs';
+    var ex = 'proxy';
 
     ch.assertExchange(ex, 'topic', {durable: false});
 
