@@ -6,13 +6,19 @@ var cors = require('cors');
 const PORT = 8080;
 const HOST = '0.0.0.0';
 
+// Rabbit connection
 const client = require('http-rabbitmq-manager').client({
-                    host : 'rabbitmq',
-                    port : 15672,
-                    timeout : 25000,
-                    user : 'guest',
-                    password : 'guest'
-                });
+    host : 'rabbitmq',
+    port : 15672,
+    timeout : 25000,
+    user : 'guest',
+    password : 'guest'
+});
+
+// DB connection
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://database:27017/test');
+// run file 'test-db.js' inside container to test the db.
 
 const app = express();
 app.use(cors());

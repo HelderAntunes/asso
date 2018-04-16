@@ -10,7 +10,8 @@
     "amqplib": "^0.5.2",
     "cors": "^2.8.4",
     "express": "^4.16.1",
-    "http-rabbitmq-manager": "0.0.2"
+    "http-rabbitmq-manager": "0.0.2",
+    "mongoose": "^5.0.14"
   },
   "repository": {
     "type": "git",
