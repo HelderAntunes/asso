@@ -1,27 +1,54 @@
 <template>
-  <div>
+<el-container>
+  <el-aside width="200px">
+    <el-menu :default-openeds="['1']">
+      <el-submenu index="1">
+        <template slot="title"><i class="el-icon-message"></i>Network</template>
+        <el-menu-item index="1-1">Devices</el-menu-item>
+        <el-menu-item index="1-2">Statistics</el-menu-item>
+      </el-submenu>
+      <el-submenu index="2">
+        <template slot="title"><i class="el-icon-menu"></i>Topics</template>
+        <el-menu-item index="2-1">Option 1</el-menu-item>
+        <el-menu-item index="2-2">Option 2</el-menu-item>
+      </el-submenu>
+      <el-submenu index="3">
+        <template slot="title"><i class="el-icon-setting"></i>Publishers</template>
+        <el-menu-item index="3-1">Option 1</el-menu-item>
+        <el-menu-item index="3-2">Option 2</el-menu-item>
+      </el-submenu>
+      <el-submenu index="4">
+        <template slot="title"><i class="el-icon-setting"></i>Messages</template>
+        <el-menu-item index="4-1">Option 1</el-menu-item>
+        <el-menu-item index="4-2">Option 2</el-menu-item>
+      </el-submenu>
+    </el-menu>
+  </el-aside>
+  
+  <el-container>
+    <el-header style="text-align: right; font-size: 12px">
+      <el-dropdown>
+        <i class="el-icon-setting" style="margin-right: 15px"></i>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item>View</el-dropdown-item>
+          <el-dropdown-item>Add</el-dropdown-item>
+          <el-dropdown-item>Delete</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <span>Tom</span>
+    </el-header>
     
-    <div class="container pt-4">
-      <div class="row">
-        <div class="col col-12">
-          <!-- Content will be placed here -->
-          <slot></slot>
-        </div>
-      </div>
-    </div>
-
-  </div>
+    <el-main>
+        <slot></slot>
+    </el-main>
+  </el-container>
+</el-container>
 </template>
 
 <script>
   /* ============
    * Default Layout
    * ============
-   *
-   * Used for the home and account pages.
-   *
-   * Layouts are used to store a lot of shared code.
-   * This way the app stays clean.
    */
 
   export default {
@@ -29,35 +56,5 @@
      * The name of the layout.
      */
     name: 'default-layout',
-
-    /**
-     * The data that can be used by the page.
-     *
-     * @returns {Object} The view-model data.
-     */
-    data() {
-      return {
-        menuCollapsed: false,
-      };
-    },
-
-    /**
-     * The methods that the layout can use.
-     */
-    methods: {
-      /**
-       * Will log the user out.
-       */
-      logout() {
-        this.$store.dispatch('auth/logout');
-      },
-
-      /**
-       * Will toggle the menu.
-       */
-      toggleMenu() {
-        this.menuCollapsed = !this.menuCollapsed;
-      },
-    },
   };
 </script>
