@@ -1,5 +1,9 @@
 <template>
   <div id="app">
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.0.8/css/all.css"
+    >
     <router-view></router-view>
   </div>
 </template>
