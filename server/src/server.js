@@ -112,7 +112,7 @@ function sendToBroker(ex, key, content, publisher) {
 
 function prettyJson(jsonStr) {
   var cpy = JSON.parse(jsonStr);
-  var str = '<pre>' + JSON.stringify(cpy, null, 4) + '</pre>';
+  var str = JSON.stringify(cpy, null, 4);
   return str;
 }
 

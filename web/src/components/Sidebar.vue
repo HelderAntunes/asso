@@ -14,7 +14,9 @@
         <el-menu-item-group>
           <el-menu-item
             index="1-1">
-            Network View
+            <span><router-link
+              :to="{ name: 'network' }"
+              class="link" >Network View</router-link></span>
           </el-menu-item>
           <el-menu-item
             index="1-2">
@@ -22,55 +24,65 @@
           </el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-menu-item index="2">
-        <template slot="title">
+      <el-menu-item index="3">
+        <router-link
+          :to="{ name: 'subscribers' }"
+          class="link">
           <i class="fas fa-mobile"/>
           <span>Subscribers</span>
-        </template>
+        </router-link>
       </el-menu-item>
       <el-menu-item index="3">
-        <template slot="title">
+        <router-link
+          :to="{ name: 'topics' }"
+          class="link">
           <i class="fas fa-comment"/>
           <span>Topics</span>
-        </template>
+        </router-link>
       </el-menu-item>
     </el-menu>
   </div>
 </template>
 
 <script>
-
 export default {
   data() {
     return {};
   },
   methods: {},
 };
-
 </script>
 
 <style lang="scss" scoped>
-
-.el-menu, .el-sub-menu, .el-menu-item-group{
+.el-menu,
+.el-sub-menu,
+.el-menu-item-group {
   border: none !important;
 }
 
-i{
+i {
   font-size: 1.2em;
   padding-right: 10px;
 }
 
-.profile{
+.profile {
   padding: 40px 20px 20px 20px;
   text-align: center;
 
-  #profile-name{
+  #profile-name {
     padding-top: 20px;
   }
 
-  #profile-picture img{
-  width: 40%;
-  border-radius: 50%;
+  #profile-picture img {
+    width: 40%;
+    border-radius: 50%;
+  }
 }
+
+.link,
+.link:active,
+.link:visited {
+  text-decoration: none;
+  color: #666768;
 }
 </style>

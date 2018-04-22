@@ -17,7 +17,7 @@ export default [
     component: () => import('@/views/Subscribers/Index'),
   },
   {
-    path: '/subscribers/{id}',
+    path: '/subscribers/:id',
     name: 'subscribers.show',
     component: () => import('@/views/Subscribers/Show'),
   },
@@ -27,7 +27,7 @@ export default [
     component: () => import('@/views/Topics/Index'),
   },
   {
-    path: '/topics/{id}',
+    path: '/topics/:id',
     name: 'topics.show',
     component: () => import('@/views/Topics/Show'),
   },

@@ -14,40 +14,24 @@
           <el-breadcrumb-item>Subscribers</el-breadcrumb-item>
         </el-breadcrumb>
         <el-table
-          :data="institutions"
+          :data="subscribers"
           class="dashboard-table">
           <el-table-column
-            label="Contact info">
+            label="Row #1">
             <template slot-scope="scope">
-              <el-popover
-                trigger="hover"
-                placement="top">
-                <div
-                  slot="reference"
-                  class="name-wrapper">
-                  <el-tag size="medium"> {{ scope.row.name }}</el-tag>
-                </div>
-                <p><b>Telephone:</b> {{ scope.row.telephone }}</p>
-                <p><b>Foundation:</b> {{ scope.row.foundation_year }}</p>
-              </el-popover>
+              <span>{{ scope.row }}</span>
             </template>
           </el-table-column>
           <el-table-column
-            label="Description">
+            label="Row #2">
             <template slot-scope="scope">
-              <span>{{ scope.row.description }}</span>
+              <span>{{ scope.row }}</span>
             </template>
           </el-table-column>
           <el-table-column
-            label="Location">
+            label="Row #3">
             <template slot-scope="scope">
-              <el-popover
-                trigger="hover"
-                placement="top">
-                <p><b>Address:</b> {{ scope.row.location.address }}</p>
-                <p><b>City:</b> {{ scope.row.location.city }}</p>
-                <p><b>Country:</b> {{ scope.row.location.country }}</p>
-              </el-popover>
+              <span>{{ scope.row }}</span>
             </template>
           </el-table-column>
         </el-table>
