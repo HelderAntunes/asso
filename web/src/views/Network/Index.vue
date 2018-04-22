@@ -1,120 +1,228 @@
 <template>
-  <div id="app" class="container-fluid">
+  <div
+    id="app"
+    class="container-fluid">
     <div class="col-md-3">
 
       <div class="panel panel-default">
         <div class="panel-heading">Props</div>
 
         <div class="panel-body">
-            <div class="form-horizontal">
+          <div class="form-horizontal">
 
             <div class="form-group">
-              <label for="type" class="control-label col-sm-3">type</label>
-                <div  class="col-sm-9">
-                  <select id="type" class="form-control" v-model="type">
-                    <option>tree</option>
-                    <option>cluster</option>
-                  </select>
-                </div>
+              <label
+                for="type"
+                class="control-label col-sm-3">type</label>
+              <div class="col-sm-9">
+                <select
+                  id="type"
+                  v-model="type"
+                  class="form-control">
+                  <option>tree</option>
+                  <option>cluster</option>
+                </select>
+              </div>
             </div>
 
             <div class="form-group">
-              <label for="layout-type" class="control-label col-sm-3">layoutType</label>
-                <div  class="col-sm-9">
-                  <select id="layout-type" class="form-control" v-model="layoutType">
-                    <option>euclidean</option>
-                    <option>circular</option>
-                  </select>       
+              <label
+                for="layout-type"
+                class="control-label col-sm-3">layoutType</label>
+              <div class="col-sm-9">
+                <select
+                  id="layout-type"
+                  v-model="layoutType"
+                  class="form-control">
+                  <option>euclidean</option>
+                  <option>circular</option>
+                </select>
               </div>
-            </div> 
+            </div>
 
             <div class="form-group">
-              <label for="margin-x" class="control-label col-sm-3">marginx</label>
+              <label
+                for="margin-x"
+                class="control-label col-sm-3">marginx</label>
               <div class="col-sm-7">
-                <input id="margin-x" class="form-control" type="range" min="-200" max="200" v-model.number="Marginx">
-              </div> 
-                <div class="col-sm-2">
-                  <p>{{Marginx}}px</p>       
-              </div> 
-            </div>        
-
-            <div class="form-group">
-              <label for="margin-y" class="control-label col-sm-3">marginy</label>
-              <div class="col-sm-7">
-                <input id="margin-y" class="form-control" type="range" min="-200" max="200" v-model.number="Marginy">
+                <input
+                  id="margin-x"
+                  v-model.number="Marginx"
+                  class="form-control"
+                  type="range"
+                  min="-200"
+                  max="200">
               </div>
               <div class="col-sm-2">
-                <p>{{Marginy}}px</p>       
-              </div> 
-            </div>   
-
-             <div class="form-group">
-              <label for="margin-y" class="control-label col-sm-3">radius</label>
-              <div class="col-sm-7">
-                <input id="margin-y" class="form-control" type="range" min="1" max="10" v-model.number="radius">
+                <p>{{ Marginx }}px</p>
               </div>
-              <div class="col-sm-2">
-                <p>{{radius}}px</p>       
-              </div> 
-            </div>        
+            </div>
 
             <div class="form-group">
-              <label for="velocity" class="control-label col-sm-3">Duration</label>
+              <label
+                for="margin-y"
+                class="control-label col-sm-3">marginy</label>
               <div class="col-sm-7">
-                <input id="velocity" class="form-control" type="range" min="0" max="3000" v-model.number="duration">
+                <input
+                  id="margin-y"
+                  v-model.number="Marginy"
+                  class="form-control"
+                  type="range"
+                  min="-200"
+                  max="200">
               </div>
               <div class="col-sm-2">
-                <p>{{duration}}ms</p>       
+                <p>{{ Marginy }}px</p>
               </div>
-            </div>  
+            </div>
 
             <div class="form-group">
-              <span v-if="currentNode">Current Node: {{currentNode.data.text}}</span>
+              <label
+                for="margin-y"
+                class="control-label col-sm-3">radius</label>
+              <div class="col-sm-7">
+                <input
+                  id="margin-y"
+                  v-model.number="radius"
+                  class="form-control"
+                  type="range"
+                  min="1"
+                  max="10">
+              </div>
+              <div class="col-sm-2">
+                <p>{{ radius }}px</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label
+                for="velocity"
+                class="control-label col-sm-3">Duration</label>
+              <div class="col-sm-7">
+                <input
+                  id="velocity"
+                  v-model.number="duration"
+                  class="form-control"
+                  type="range"
+                  min="0"
+                  max="3000">
+              </div>
+              <div class="col-sm-2">
+                <p>{{ duration }}ms</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <span v-if="currentNode">Current Node: {{ currentNode.data.text }}</span>
               <span v-else>No Node selected.</span>
-               <i v-if="isLoading" class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
-            </div>  
+              <i
+                v-if="isLoading"
+                class="fa fa-spinner fa-spin fa-2x fa-fw"/>
+            </div>
 
-            <button type="button" :disabled="!currentNode" class="btn btn-primary" @click="expandAll" data-toggle="tooltip" data-placement="top" title="Expand All from current">
-            <i class="fa fa-expand" aria-hidden="true"></i>          
+            <button
+              :disabled="!currentNode"
+              type="button"
+              class="btn btn-primary"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Expand All from current"
+              @click="expandAll">
+              <i
+                class="fa fa-expand"
+                aria-hidden="true"/>
             </button>
 
-            <button type="button" :disabled="!currentNode" class="btn btn-secondary" @click="collapseAll" data-toggle="tooltip" data-placement="top" title="Collapse All from current">
-            <i class="fa fa-compress" aria-hidden="true"></i>            
+            <button
+              :disabled="!currentNode"
+              type="button"
+              class="btn btn-secondary"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Collapse All from current"
+              @click="collapseAll">
+              <i
+                class="fa fa-compress"
+                aria-hidden="true"/>
             </button>
 
-            <button type="button" :disabled="!currentNode" class="btn btn-success" @click="showOnly" data-toggle="tooltip" data-placement="top" title="Show Only from current">
-            <i class="fa fa-search-plus" aria-hidden="true"></i>       
+            <button
+              :disabled="!currentNode"
+              type="button"
+              class="btn btn-success"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Show Only from current"
+              @click="showOnly">
+              <i
+                class="fa fa-search-plus"
+                aria-hidden="true"/>
             </button>
 
-            <button type="button" :disabled="!currentNode" class="btn btn-warning" @click="show" data-toggle="tooltip" data-placement="top" title="Show current">
-            <i class="fa fa-binoculars" aria-hidden="true"></i>           
+            <button
+              :disabled="!currentNode"
+              type="button"
+              class="btn btn-warning"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Show current"
+              @click="show">
+              <i
+                class="fa fa-binoculars"
+                aria-hidden="true"/>
             </button>
 
-            <button v-if="zoomable" type="button" class="btn btn-warning" @click="resetZoom" data-toggle="tooltip" data-placement="top" title="Reset Zoom">
-            <i class="fa fa-arrows-alt" aria-hidden="true"></i>                             
+            <button
+              v-if="zoomable"
+              type="button"
+              class="btn btn-warning"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Reset Zoom"
+              @click="resetZoom">
+              <i
+                class="fa fa-arrows-alt"
+                aria-hidden="true"/>
             </button>
 
+          </div>
         </div>
       </div>
-    </div>
 
 
-    <div class="panel panel-default">
+      <div class="panel panel-default">
         <div class="panel-heading">Events</div>
 
         <div class="panel-body log">
-          <div v-for="(event,index) in events" :key="index">
-            <p><b>Name:</b> {{event.eventName}} <b>Data:</b>{{event.data.text}}</p>
+          <div
+            v-for="(event,index) in events"
+            :key="index">
+            <p><b>Name:</b> {{ event.eventName }} <b>Data:</b>{{ event.data.text }}</p>
           </div>
         </div>
+      </div>
+
     </div>
 
-  </div>
+    <div class="col-md-9 panel panel-default">
+      <tree
+        ref="tree"
+        :identifier="getId"
+        :zoomable="zoomable"
+        :data="Graph.tree"
+        :node-text="nodeText"
+        :margin-x="Marginx"
+        :margin-y="Marginy"
+        :radius="radius"
+        :type="type"
+        :layout-type="layoutType"
+        :duration="duration"
+        class="tree"
+        @clicked="onClick"
+        @expand="onExpand"
+        @retract="onRetract"/>
+    </div>
 
-  <div class="col-md-9 panel panel-default">
-    <tree ref="tree" :identifier="getId" :zoomable="zoomable" :data="Graph.tree" :node-text="nodeText"  :margin-x="Marginx" :margin-y="Marginy" :radius="radius" :type="type" :layout-type="layoutType" :duration="duration" class="tree" @clicked="onClick" @expand="onExpand" @retract="onRetract"/>
-  </div>
-  
   </div>
 </template>
 
@@ -136,12 +244,12 @@ Object.assign(treeData, {
   events: [],
 });
 export default {
-  name: 'app',
-  data() {
-    return treeData;
-  },
+  name: 'App',
   components: {
     tree,
+  },
+  data() {
+    return treeData;
   },
   methods: {
     do(action) {
@@ -187,7 +295,7 @@ export default {
 };
 </script>
 
-<style <style lang="scss" scoped>
+<style lang="scss" scoped>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

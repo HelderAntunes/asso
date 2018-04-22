@@ -72,6 +72,7 @@ export default {
   async created() {
     try {
       const response = await new Proxy('subscribers').all();
+      this.subscribers = response.data;
     } catch (e) {
       throw (e);
     }
