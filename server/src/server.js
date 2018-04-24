@@ -51,6 +51,16 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+app.get('/overview', (req, res) => {
+  client.overview(function  (err, response) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(prettyJson(response));
+        }
+    });
+});
+
 app.get('/messages', (req, res) => {
   Message.find({}, function(err, msgs) {
     if (err) return res.status(400).send(err);

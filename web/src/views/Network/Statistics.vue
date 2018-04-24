@@ -39,6 +39,7 @@ export default {
       try {
         const response = await new Proxy('overview').all();
         this.statistics = response.data;
+        console.log(this.statistics);
       } catch (e) {
         throw (e);
       }
