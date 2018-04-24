@@ -296,7 +296,10 @@ export default {
     resetZoom() {
       this.isLoading = true;
       this.$refs.tree.resetZoom().then(() => { this.isLoading = false; });
-    },
+    }, /*
+    async getData (){
+      // fazer chamadas a API aqui
+    } */
   },
 };
 </script>

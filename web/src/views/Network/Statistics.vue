@@ -7,40 +7,21 @@
         <Sidebar />
       </div>
       <div class="flex flex-column p3">
-        <h2>Manage Subscribers</h2>
-        <el-breadcrumb
-          class="breadcrumb pb3"
-          separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>Subscribers</el-breadcrumb-item>
-        </el-breadcrumb>
-        <el-table
-          :data="subscribers"
-          class="dashboard-table">
-          <el-table-column
-            label="Row #1">
-            <template slot-scope="scope">
-              <span>{{ scope.row }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="Row #2">
-            <template slot-scope="scope">
-              <span>{{ scope.row }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="Row #3">
-            <template slot-scope="scope">
-              <span>{{ scope.row }}</span>
-            </template>
-          </el-table-column>
-        </el-table>
+        <el-card class="box-card">
+          <div
+            v-for="o in 4"
+            :key="o"
+            class="text item">
+            {{ 'List item ' + o }}
+          </div>
+        </el-card>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+
 import Sidebar from '@/components/Sidebar';
 import Proxy from '@/proxies/Proxy';
 
@@ -50,18 +31,19 @@ export default {
   },
   data() {
     return {
-      subscribers: [],
+      statistics: [],
     };
   },
-  async created() {
-    try {
-      const response = await new Proxy('subscribers').all();
-      this.subscribers = response.data;
-    } catch (e) {
-      throw (e);
-    }
+  methods: {
+    async getStatistics() {
+      try {
+        const response = await new Proxy('overview').all();
+        this.statistics = response.data;
+      } catch (e) {
+        throw (e);
+      }
+    },
   },
-  methods: {},
 };
 </script>
 
@@ -77,19 +59,17 @@ export default {
   padding: 10px;
   min-height: 60%;
 }
-</style>
 
-<script>
-export default {
-  data() {
-    const item = {
-      date: '2016-05-02',
-      name: 'Tom',
-      address: 'No. 189, Grove St, Los Angeles',
-    };
-    return {
-      tableData: Array(20).fill(item),
-    };
-  },
-};
-</script>
+.text {
+  font-size: 14px;
+}
+
+.item {
+  padding: 18px 0;
+}
+
+.box-card {
+  width: 480px;
+}
+
+</style>
