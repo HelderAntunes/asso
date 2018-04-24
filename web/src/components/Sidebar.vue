@@ -15,12 +15,14 @@
           <el-menu-item
             index="1-1">
             <span><router-link
-              :to="{ name: 'network' }"
+              :to="{ name: 'network_tree' }"
               class="link" >Network View</router-link></span>
           </el-menu-item>
           <el-menu-item
             index="1-2">
-            Something
+            <span><router-link
+              :to="{ name: 'network_statistics' }"
+              class="link" >Statistics</router-link></span>
           </el-menu-item>
         </el-menu-item-group>
       </el-submenu>

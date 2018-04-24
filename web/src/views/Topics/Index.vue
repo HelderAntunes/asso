@@ -46,7 +46,9 @@
           </el-table-column>
         </el-table>
         <div class="pt2">
-          <el-button type="primary" @click="onClickCreate">Create Topic</el-button>
+          <el-button
+            type="primary"
+            @click="onClickCreate">Create Topic</el-button>
         </div>
         <el-dialog
           v-if="dialog.action === 'DELETE'"

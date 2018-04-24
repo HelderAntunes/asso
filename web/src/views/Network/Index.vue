@@ -2,9 +2,14 @@
   <div
     id="app"
     class="container-fluid">
-    <div class="col-md-3">
+    <div class="clearfix">
+      <div
+        id="side-bar"
+        class="col-md-3 col-sm-3 col-lg-2">
+        <Sidebar />
+      </div>
 
-      <div class="panel panel-default">
+      <!--div class="panel panel-default">
         <div class="panel-heading">Props</div>
 
         <div class="panel-body">
@@ -200,11 +205,11 @@
             <p><b>Name:</b> {{ event.eventName }} <b>Data:</b>{{ event.data.text }}</p>
           </div>
         </div>
-      </div>
+      </div-->
 
     </div>
 
-    <div class="col-md-9 panel panel-default">
+    <div class="flex flex-column p3">
       <tree
         ref="tree"
         :identifier="getId"
@@ -228,7 +233,9 @@
 
 <script>
 import { tree } from 'vued3tree';
+import Sidebar from '@/components/Sidebar';
 import treeData from './data.json';
+
 
 Object.assign(treeData, {
   type: 'tree',
@@ -244,9 +251,9 @@ Object.assign(treeData, {
   events: [],
 });
 export default {
-  name: 'App',
   components: {
     tree,
+    Sidebar,
   },
   data() {
     return treeData;

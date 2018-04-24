@@ -7,8 +7,13 @@
 
 export default [
   {
-    path: '/network',
-    name: 'network',
+    path: '/network/statistics',
+    name: 'network_statistics',
+    component: () => import('@/views/Network/Statistics'),
+  },
+  {
+    path: '/network/tree',
+    name: 'network_tree',
     component: () => import('@/views/Network/Index'),
   },
   {
@@ -33,11 +38,11 @@ export default [
   },
   {
     path: '/',
-    redirect: '/network',
+    redirect: '/network/tree',
   },
 
   {
     path: '/*',
-    redirect: '/network',
+    redirect: '/network/tree',
   },
 ];

@@ -21,11 +21,6 @@ export default {
      */
   name: 'ASSO',
 
-  /**
-     * Fires when the app has been mounted.
-     */
-  mounted() {
-    this.$store.dispatch('account/find');
-  },
+
 };
 </script>
