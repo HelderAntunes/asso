@@ -19,7 +19,7 @@ import './plugins/axios';
 import { router } from './plugins/vue-router';
 import './plugins/vuex-router-sync';
 import './plugins/element-ui';
-// import './plugins/font-awesome';
+import './plugins/basscss';
 
 /* ============
  * Main App

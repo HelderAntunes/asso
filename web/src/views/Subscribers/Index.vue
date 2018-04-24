@@ -1,68 +1,81 @@
 <template>
-<el-container>
-  <el-aside width="200px">
-    <el-menu :default-openeds="['1']">
-      <el-submenu index="1">
-        <template slot="title"><i class="el-icon-message"></i>Network</template>
-        <el-menu-item index="1-1">Devices</el-menu-item>
-        <el-menu-item index="1-2">Statistics</el-menu-item>
-      </el-submenu>
-      <el-submenu index="2">
-        <template slot="title"><i class="el-icon-menu"></i>Topics</template>
-        <el-menu-item index="2-1">Option 1</el-menu-item>
-        <el-menu-item index="2-2">Option 2</el-menu-item>
-      </el-submenu>
-      <el-submenu index="3">
-        <template slot="title"><i class="el-icon-setting"></i>Publishers</template>
-        <el-menu-item index="3-1">Option 1</el-menu-item>
-        <el-menu-item index="3-2">Option 2</el-menu-item>
-      </el-submenu>
-      <el-submenu index="4">
-        <template slot="title"><i class="el-icon-setting"></i>Messages</template>
-        <el-menu-item index="4-1">Option 1</el-menu-item>
-        <el-menu-item index="4-2">Option 2</el-menu-item>
-      </el-submenu>
-    </el-menu>
-  </el-aside>
-  
-  <el-container>
-    <el-header style="text-align: right; font-size: 12px">
-      <el-dropdown>
-        <i class="el-icon-setting" style="margin-right: 15px"></i>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>View</el-dropdown-item>
-          <el-dropdown-item>Add</el-dropdown-item>
-          <el-dropdown-item>Delete</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <span>Tom</span>
-    </el-header>
-    
-    <el-main>
-      <el-table :data="tableData">
-        <el-table-column prop="date" label="Date" width="140">
-        </el-table-column>
-        <el-table-column prop="name" label="Name" width="120">
-        </el-table-column>
-        <el-table-column prop="address" label="Address">
-        </el-table-column>
-      </el-table>
-    </el-main>
-  </el-container>
-</el-container>
-
-
+  <div>
+    <div class="clearfix">
+      <div
+        id="side-bar"
+        class="sm-col sm-col-3 lg-col-2">
+        <Sidebar />
+      </div>
+      <div class="flex flex-column p3">
+        <h2>Manage Subscribers</h2>
+        <el-breadcrumb
+          class="breadcrumb pb3"
+          separator-class="el-icon-arrow-right">
+          <el-breadcrumb-item>Subscribers</el-breadcrumb-item>
+        </el-breadcrumb>
+        <el-table
+          :data="subscribers"
+          class="dashboard-table">
+          <el-table-column
+            label="Row #1">
+            <template slot-scope="scope">
+              <span>{{ scope.row }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="Row #2">
+            <template slot-scope="scope">
+              <span>{{ scope.row }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="Row #3">
+            <template slot-scope="scope">
+              <span>{{ scope.row }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </div>
+  </div>
 </template>
 
-<style>
-.el-header {
-  background-color: #b3c0d1;
-  color: #333;
-  line-height: 60px;
+<script>
+import Sidebar from '@/components/Sidebar';
+import Proxy from '@/proxies/Proxy';
+
+export default {
+  components: {
+    Sidebar,
+  },
+  data() {
+    return {
+      subscribers: [],
+    };
+  },
+  async created() {
+    try {
+      const response = await new Proxy('subscribers').all();
+      this.subscribers = response.data;
+    } catch (e) {
+      throw (e);
+    }
+  },
+  methods: {},
+};
+</script>
+
+<style lang="scss" scoped>
+#side-bar {
+  border-right: solid 1px #e6e6e6;
+  height: 100vh;
 }
 
-.el-aside {
-  color: #333;
+.dashboard-table {
+  border: 1px solid #ebebeb;
+  border-radius: 5px;
+  padding: 10px;
+  min-height: 60%;
 }
 </style>
 
