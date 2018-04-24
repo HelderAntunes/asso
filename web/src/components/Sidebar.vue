@@ -26,7 +26,7 @@
           </el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-menu-item index="3">
+      <el-menu-item index="2">
         <router-link
           :to="{ name: 'subscribers' }"
           class="link">
@@ -87,4 +87,5 @@ i {
   text-decoration: none;
   color: #666768;
 }
+
 </style>

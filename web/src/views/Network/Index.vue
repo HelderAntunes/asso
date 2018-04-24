@@ -1,11 +1,10 @@
 <template>
   <div
-    id="app"
-    class="container-fluid">
-    <div class="clearfix">
+    class="container-fluid container">
+    <div class="">
       <div
         id="side-bar"
-        class="col-md-3 col-sm-3 col-lg-2">
+        class="sm-col sm-col-12 lg-col-2">
         <Sidebar />
       </div>
 
@@ -209,7 +208,7 @@
 
     </div>
 
-    <div class="flex flex-column p3">
+    <div class="flex flex-column p3 sm-col-12 lg-col-9">
       <tree
         ref="tree"
         :identifier="getId"
@@ -313,7 +312,7 @@ export default {
 }
 .tree {
   height: 600px;
-  width: 100%;
+  //width: 100%;
 }
 .graph-root {
   height: 800px;
