@@ -8,13 +8,15 @@
       </div>
       <div class="flex flex-column p3">
         <el-card class="box-card">
+          <h2>Channels</h2>
           <div
-            v-for="o in 4"
-            :key="o"
             class="text item">
-            {{ 'List item ' + o }}
+            <p
+              v-if= "statistics.object_totals"
+              class="item_value">
+              {{ statistics.object_totals.channels }}
+            </p>
           </div>
-          <div> {{ statistics }} </div>
         </el-card>
       </div>
     </div>
@@ -32,7 +34,7 @@ export default {
   },
   data() {
     return {
-      statistics: [],
+      statistics: {},
     };
   },
   created() {
@@ -40,9 +42,10 @@ export default {
   },
   methods: {
     async getStatistics() {
+      console.log('statistics');
       try {
         const response = await new Proxy('overview').all();
-        this.statistics = response.data;
+        this.statistics = response;
         console.log(this.statistics);
       } catch (error) {
         console.error(error);
@@ -78,4 +81,14 @@ export default {
   width: 480px;
 }
 
+.item_value {
+  font-size: 2em;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  text-align: right;
+}
+
+.box-card{
+  width: 200px;
+}
 </style>
