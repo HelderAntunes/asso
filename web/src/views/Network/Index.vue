@@ -249,16 +249,35 @@ Object.assign(treeData, {
   isLoading: false,
   events: [],
 });
+
 export default {
   components: {
     tree,
     Sidebar,
   },
   data() {
-    return treeData;
+/*   treeData = {
+              "Graph":{
+                "tree":{
+                  "children":
+                    [
+                      {"children":[], "id":1, "text":"Home1"},
+                      {"children":[], "id":2, "text":"Home2"},
+                      {"children":[], "id":3, "text":"Home3"}
+                    ]
+                  },
+                "links": [
+                  {"source":1, "target":2, "value":4},
+                  {"source":1, "target":3, "value":7},
+                  {"source":2, "target":2, "value":8},
+                  ],
+                  "text": "TREEDATA"
+                }
+              };
+  */  return treeData;
   },
   created() {
-
+    getTopics();
   },
   methods: {
     do(action) {
@@ -299,7 +318,7 @@ export default {
     resetZoom() {
       this.isLoading = true;
       this.$refs.tree.resetZoom().then(() => { this.isLoading = false; });
-    }, /*
+    },
     async getTopics (){
       try {
         const response = await new Proxy('topics').all();
@@ -307,7 +326,7 @@ export default {
       } catch (e) {
         throw (e);
       }
-    } */
+    }
   },
 };
 </script>
