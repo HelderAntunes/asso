@@ -14,6 +14,7 @@
             class="text item">
             {{ 'List item ' + o }}
           </div>
+          <div> {{ statistics }} </div>
         </el-card>
       </div>
     </div>
@@ -34,14 +35,18 @@ export default {
       statistics: [],
     };
   },
+  created() {
+    this.getStatistics();
+  },
   methods: {
     async getStatistics() {
       try {
         const response = await new Proxy('overview').all();
         this.statistics = response.data;
         console.log(this.statistics);
-      } catch (e) {
-        throw (e);
+      } catch (error) {
+        console.error(error);
+        throw (error);
       }
     },
   },

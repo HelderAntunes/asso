@@ -257,6 +257,9 @@ export default {
   data() {
     return treeData;
   },
+  created() {
+
+  },
   methods: {
     do(action) {
       if (this.currentNode) {
@@ -297,8 +300,13 @@ export default {
       this.isLoading = true;
       this.$refs.tree.resetZoom().then(() => { this.isLoading = false; });
     }, /*
-    async getData (){
-      // fazer chamadas a API aqui
+    async getTopics (){
+      try {
+        const response = await new Proxy('topics').all();
+        this.topics = response.data;
+      } catch (e) {
+        throw (e);
+      }
     } */
   },
 };
