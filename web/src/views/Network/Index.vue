@@ -256,7 +256,7 @@ export default {
     Sidebar,
   },
   data() {
-/*   treeData = {
+    /* treeData = {
               "Graph":{
                 "tree":{
                   "children":
@@ -274,10 +274,10 @@ export default {
                   "text": "TREEDATA"
                 }
               };
-  */  return treeData;
+  */ return treeData;
   },
   created() {
-    getTopics();
+    this.getTopics();
   },
   methods: {
     do(action) {
@@ -319,14 +319,14 @@ export default {
       this.isLoading = true;
       this.$refs.tree.resetZoom().then(() => { this.isLoading = false; });
     },
-    async getTopics (){
+    async getTopics() {
       try {
         const response = await new Proxy('topics').all();
         this.topics = response.data;
       } catch (e) {
         throw (e);
       }
-    }
+    },
   },
 };
 </script>
