@@ -80,6 +80,17 @@ app.get('/topics', (req, res) => {
     });
 });
 
+app.get('/topics/:destination', (req, res) => {
+  const destination = req.params.destination;
+  client.getQueue({
+     vhost : 'vhost',
+     queue : destination
+  }, function (err, response) {
+    if (err) return res.send(err);
+    res.send(response);
+  });
+});
+
 app.post('/topics', (req, res) => {
   let queue_name = req.body.name;
 
