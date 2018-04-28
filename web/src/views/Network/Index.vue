@@ -263,8 +263,8 @@ export default {
                       { children: [], id: 2, text: 'Home2' },
                       { children: [], id: 3, text: 'Home3' },
                     ],
-                    id: 0,
-                    text: 'Home',
+            id: 0,
+            text: 'Home',
           },
           links: [],
           text: 'TREEDATA',
@@ -320,7 +320,7 @@ export default {
     async getTopics() {
       try {
         const response = await new Proxy('topics').all();
-        this.treeData.data.Graph.tree
+        //this.treeData.data.Graph.tree
         console.log(response);
       } catch (e) {
         throw (e);
