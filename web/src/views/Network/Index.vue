@@ -233,6 +233,7 @@
 <script>
 import { tree } from 'vued3tree';
 import Sidebar from '@/components/Sidebar';
+import Proxy from '@/proxies/Proxy';
 import treeData from './data1.json';
 
 export default {
@@ -241,7 +242,6 @@ export default {
     Sidebar,
   },
   data() {
-    
     Object.assign(treeData, {
       type: 'tree',
       layoutType: 'euclidean',
@@ -255,25 +255,27 @@ export default {
       isLoading: false,
       events: [],
       data: {
-            Graph: {
-                tree:{
-                  children:
+        Graph: {
+          tree: {
+            children:
                     [
-                      {children:[], id:1, text:"Home1"},
-                      {children:[], id:2, text:"Home2"},
-                      {children:[], id:3, text:"Home3"}
-                    ]
-                  },
-                links: [],
-                text: "TREEDATA"
-                }
-              },
-           });
+                      { children: [], id: 1, text: 'Home1' },
+                      { children: [], id: 2, text: 'Home2' },
+                      { children: [], id: 3, text: 'Home3' },
+                    ],
+                    id: 0,
+                    text: 'Home',
+          },
+          links: [],
+          text: 'TREEDATA',
+        },
+      },
+    });
 
-   return treeData;
+    return treeData;
   },
   created() {
-    //this.getTopics();
+    this.getTopics();
   },
   methods: {
     do(action) {
@@ -316,12 +318,13 @@ export default {
       this.$refs.tree.resetZoom().then(() => { this.isLoading = false; });
     },
     async getTopics() {
-     /* try {
+      try {
         const response = await new Proxy('topics').all();
-            
+        this.treeData.data.Graph.tree
+        console.log(response);
       } catch (e) {
         throw (e);
-      }*/
+      }
     },
   },
 };
