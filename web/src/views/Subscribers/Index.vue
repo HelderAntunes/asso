@@ -55,8 +55,8 @@ export default {
       address: 'No. 189, Grove St, Los Angeles',
     };
     return {
-      subscribers: Array(20).fill(item),
-      // subscribers: [],
+      // subscribers: Array(20).fill(item),
+      subscribers: [],
     };
   },
   async created() {

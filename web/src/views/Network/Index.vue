@@ -213,7 +213,7 @@
         ref="tree"
         :identifier="getId"
         :zoomable="zoomable"
-        :data="Graph.tree"
+        :data="data.Graph.tree"
         :node-text="nodeText"
         :margin-x="Marginx"
         :margin-y="Marginy"
@@ -233,22 +233,7 @@
 <script>
 import { tree } from 'vued3tree';
 import Sidebar from '@/components/Sidebar';
-import treeData from './data.json';
-
-
-Object.assign(treeData, {
-  type: 'tree',
-  layoutType: 'euclidean',
-  duration: 750,
-  Marginx: 30,
-  Marginy: 30,
-  radius: 5,
-  nodeText: 'text',
-  currentNode: null,
-  zoomable: true,
-  isLoading: false,
-  events: [],
-});
+import treeData from './data1.json';
 
 export default {
   components: {
@@ -256,28 +241,39 @@ export default {
     Sidebar,
   },
   data() {
-    /* treeData = {
-              "Graph":{
-                "tree":{
-                  "children":
+    
+    Object.assign(treeData, {
+      type: 'tree',
+      layoutType: 'euclidean',
+      duration: 750,
+      Marginx: 30,
+      Marginy: 30,
+      radius: 5,
+      nodeText: 'text',
+      currentNode: null,
+      zoomable: true,
+      isLoading: false,
+      events: [],
+      data: {
+            Graph: {
+                tree:{
+                  children:
                     [
-                      {"children":[], "id":1, "text":"Home1"},
-                      {"children":[], "id":2, "text":"Home2"},
-                      {"children":[], "id":3, "text":"Home3"}
+                      {children:[], id:1, text:"Home1"},
+                      {children:[], id:2, text:"Home2"},
+                      {children:[], id:3, text:"Home3"}
                     ]
                   },
-                "links": [
-                  {"source":1, "target":2, "value":4},
-                  {"source":1, "target":3, "value":7},
-                  {"source":2, "target":2, "value":8},
-                  ],
-                  "text": "TREEDATA"
+                links: [],
+                text: "TREEDATA"
                 }
-              };
-  */ return treeData;
+              },
+           });
+
+   return treeData;
   },
   created() {
-    this.getTopics();
+    //this.getTopics();
   },
   methods: {
     do(action) {
@@ -320,12 +316,12 @@ export default {
       this.$refs.tree.resetZoom().then(() => { this.isLoading = false; });
     },
     async getTopics() {
-      try {
+     /* try {
         const response = await new Proxy('topics').all();
-        this.topics = response.data;
+            
       } catch (e) {
         throw (e);
-      }
+      }*/
     },
   },
 };
