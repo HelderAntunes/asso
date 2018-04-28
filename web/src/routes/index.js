@@ -7,8 +7,13 @@
 
 export default [
   {
-    path: '/network',
-    name: 'network',
+    path: '/network/statistics',
+    name: 'network_statistics',
+    component: () => import('@/views/Network/Statistics'),
+  },
+  {
+    path: '/network/tree',
+    name: 'network_tree',
     component: () => import('@/views/Network/Index'),
   },
   {
@@ -17,7 +22,7 @@ export default [
     component: () => import('@/views/Subscribers/Index'),
   },
   {
-    path: '/subscribers/{id}',
+    path: '/subscribers/:id',
     name: 'subscribers.show',
     component: () => import('@/views/Subscribers/Show'),
   },
@@ -27,17 +32,17 @@ export default [
     component: () => import('@/views/Topics/Index'),
   },
   {
-    path: '/topics/{id}',
+    path: '/topics/:id',
     name: 'topics.show',
     component: () => import('@/views/Topics/Show'),
   },
   {
     path: '/',
-    redirect: '/network',
+    redirect: '/network/tree',
   },
 
   {
     path: '/*',
-    redirect: '/network',
+    redirect: '/network/tree',
   },
 ];
