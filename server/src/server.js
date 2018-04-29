@@ -9,11 +9,11 @@ const HOST = '0.0.0.0';
 
 // Rabbit connection
 const client = require('http-rabbitmq-manager').client({
-    host : 'rabbitmq',
-    port : 15672,
-    timeout : 25000,
-    user : 'guest',
-    password : 'guest'
+  host : 'rabbitmq',
+  port : 15672,
+  timeout : 25000,
+  user : 'guest',
+  password : 'guest'
 });
 
 // DB connection
@@ -27,20 +27,17 @@ let conn;
 
 amqp.connect(process.env.AMPQ_ADDRESS, function(err, connection) {
   if (err) throw new Error(err);
+
   conn = connection;
   conn.createChannel(function(err, ch) {
     var ex = 'proxy';
 
     ch.assertExchange(ex, 'topic', {durable: false});
-
     ch.assertQueue('', {exclusive: true}, function(err, q) {
-
       ch.bindQueue(q.queue, ex, '#');
-
       ch.consume(q.queue, function(msg) {
         var message = new Message({topic: msg.fields.routingKey, content: msg.content.toString(), publisher: msg.properties.appId});
         message.save();
-
         sendToBroker('topic_logs', msg.fields.routingKey, msg.content.toString(), msg.properties.appId);
       }, {noAck: true});
     });
@@ -50,6 +47,16 @@ amqp.connect(process.env.AMPQ_ADDRESS, function(err, connection) {
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
+app.get('/overview', (req, res) => {
+  client.overview(function  (err, response) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(prettyJson(response));
+        }
+    });
+});
 
 app.get('/messages', (req, res) => {
   Message.find({}, function(err, msgs) {
@@ -71,43 +78,66 @@ app.post('/messages', (req, res) => {
 });
 
 app.get('/topics', (req, res) => {
-    client.getBindingsForSource({
-        vhost : 'vhost',
-        exchange : 'proxy'
-    }, function (err, response) {
-        if (err) return res.send(err);
-        res.send(prettyJson(response));
-    });
+  client.getBindingsForSource({
+    vhost : 'vhost',
+    exchange : 'proxy'
+  }, function (err, response) {
+    if (err) return res.send(err);
+    res.send(prettyJson(response));
+  });
+});
+
+app.get('/topics/:destination', (req, res) => {
+  const destination = req.params.destination;
+  client.getQueue({
+     vhost : 'vhost',
+     queue : destination
+  }, function (err, response) {
+    if (err) return res.send(err);
+    res.send(response);
+  });
 });
 
 app.post('/topics', (req, res) => {
   let queue_name = req.body.name;
 
   client.createQueue({
-      vhost : 'vhost',
-      queue : queue_name,
-      auto_delete : false,
-      durable : true,
-      arguments : {},
+    vhost : 'vhost',
+    queue : queue_name,
+    auto_delete : false,
+    durable : true,
+    arguments : {},
   }, function (err, response) {
-      if (err) return res.send(err);
+    if (err) return res.send(err);
 
-      request.post({
-          headers: {'content-type' : 'application/json'},
-          url: 'http://guest:guest@rabbitmq:15672/api/bindings/vhost/e/proxy/q/' + queue_name,
-          json: {"routing_key": queue_name + ".#", "arguments":{"x-arg": "value"}}
-        }, function (error, response, body) {
-          if (err) return res.send(err);
-          res.send(response);
-      });
+    request.post({
+        headers: {'content-type' : 'application/json'},
+        url: 'http://guest:guest@rabbitmq:15672/api/bindings/vhost/e/proxy/q/' + queue_name,
+        json: {"routing_key": queue_name + ".#", "arguments":{"x-arg": "value"}}
+      }, function (error, response, body) {
+        if (err) return res.send(err);
+        res.send(response);
+    });
   });
 });
 
+app.delete('/topics/:destination', (req, res) => {
+  let destination = req.params.destination;
+
+  client.deleteQueue({
+    vhost : 'vhost',
+    queue : destination
+  }, function (err, response) {
+    if (err) return res.send(err);
+    res.send(response);
+  });
+})
+
 function sendToBroker(ex, key, content, publisher) {
-    conn.createChannel(function(err, ch) {
-      ch.assertExchange(ex, 'topic', {durable: false});
-      ch.publish(ex, key, new Buffer(content), {'appId':publisher});
-    });
+  conn.createChannel(function(err, ch) {
+    ch.assertExchange(ex, 'topic', {durable: false});
+    ch.publish(ex, key, new Buffer(content), {'appId':publisher});
+  });
 };
 
 function prettyJson(jsonStr) {

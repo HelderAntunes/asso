@@ -49,7 +49,13 @@ export default {
     Sidebar,
   },
   data() {
+    /* const item = {
+      date: '2016-05-02',
+      name: 'Tom',
+      address: 'No. 189, Grove St, Los Angeles',
+    }; */
     return {
+      // subscribers: Array(20).fill(item),
       subscribers: [],
     };
   },
@@ -78,3 +84,4 @@ export default {
   min-height: 60%;
 }
 </style>
+

@@ -1,10 +1,14 @@
 <template>
   <div
-    id="app"
-    class="container-fluid">
-    <div class="col-md-3">
+    class="container-fluid container">
+    <div class="">
+      <div
+        id="side-bar"
+        class="sm-col sm-col-12 lg-col-2">
+        <Sidebar />
+      </div>
 
-      <div class="panel panel-default">
+      <!--div class="panel panel-default">
         <div class="panel-heading">Props</div>
 
         <div class="panel-body">
@@ -200,16 +204,16 @@
             <p><b>Name:</b> {{ event.eventName }} <b>Data:</b>{{ event.data.text }}</p>
           </div>
         </div>
-      </div>
+      </div-->
 
     </div>
 
-    <div class="col-md-9 panel panel-default">
+    <div class="flex flex-column p3 sm-col-12 lg-col-9">
       <tree
         ref="tree"
         :identifier="getId"
         :zoomable="zoomable"
-        :data="Graph.tree"
+        :data="data.Graph.tree"
         :node-text="nodeText"
         :margin-x="Marginx"
         :margin-y="Marginy"
@@ -228,28 +232,50 @@
 
 <script>
 import { tree } from 'vued3tree';
-import treeData from './data.json';
+import Sidebar from '@/components/Sidebar';
+import Proxy from '@/proxies/Proxy';
+import treeData from './data1.json';
 
-Object.assign(treeData, {
-  type: 'tree',
-  layoutType: 'euclidean',
-  duration: 750,
-  Marginx: 30,
-  Marginy: 30,
-  radius: 5,
-  nodeText: 'text',
-  currentNode: null,
-  zoomable: true,
-  isLoading: false,
-  events: [],
-});
 export default {
-  name: 'App',
   components: {
     tree,
+    Sidebar,
   },
   data() {
+    Object.assign(treeData, {
+      type: 'tree',
+      layoutType: 'euclidean',
+      duration: 750,
+      Marginx: 30,
+      Marginy: 30,
+      radius: 5,
+      nodeText: 'text',
+      currentNode: null,
+      zoomable: true,
+      isLoading: false,
+      events: [],
+      data: {
+        Graph: {
+          tree: {
+            children:
+                    [
+                      { children: [], id: 1, text: 'Home1' },
+                      { children: [], id: 2, text: 'Home2' },
+                      { children: [], id: 3, text: 'Home3' },
+                    ],
+            id: 0,
+            text: 'Home',
+          },
+          links: [],
+          text: 'TREEDATA',
+        },
+      },
+    });
+
     return treeData;
+  },
+  created() {
+    this.getTopics();
   },
   methods: {
     do(action) {
@@ -291,6 +317,15 @@ export default {
       this.isLoading = true;
       this.$refs.tree.resetZoom().then(() => { this.isLoading = false; });
     },
+    async getTopics() {
+      try {
+        const response = await new Proxy('topics').all();
+        //this.treeData.data.Graph.tree
+        console.log(response);
+      } catch (e) {
+        throw (e);
+      }
+    },
   },
 };
 </script>
@@ -306,7 +341,7 @@ export default {
 }
 .tree {
   height: 600px;
-  width: 100%;
+  //width: 100%;
 }
 .graph-root {
   height: 800px;

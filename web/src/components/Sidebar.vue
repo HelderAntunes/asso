@@ -14,17 +14,24 @@
         <el-menu-item-group>
           <el-menu-item
             index="1-1">
-            <span><router-link
-              :to="{ name: 'network' }"
-              class="link" >Network View</router-link></span>
+            <router-link
+              :to="{ name: 'network_tree' }"
+              class="link" >
+              <span>Network View</span>
+            </router-link>
           </el-menu-item>
           <el-menu-item
             index="1-2">
-            Something
+            <router-link
+              :to="{ name: 'network_statistics' }"
+              class="link" >
+              <span>Statistics</span>
+            </router-link>
           </el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-menu-item index="3">
+      <el-menu-item
+        index="2">
         <router-link
           :to="{ name: 'subscribers' }"
           class="link">
@@ -32,7 +39,8 @@
           <span>Subscribers</span>
         </router-link>
       </el-menu-item>
-      <el-menu-item index="3">
+      <el-menu-item
+        index="3">
         <router-link
           :to="{ name: 'topics' }"
           class="link">
@@ -84,5 +92,7 @@ i {
 .link:visited {
   text-decoration: none;
   color: #666768;
+  display: block;
 }
+
 </style>
