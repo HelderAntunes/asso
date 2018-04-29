@@ -166,6 +166,13 @@ app.get('/subscribers', (req, res) => {
   });
 });
 
+app.get('/topics/:name/messages', (req, res) => {
+  Message.find({topic: req.params.name}, function(err, msgs) {
+    if (err) return res.status(400).send(err);
+    res.send(msgs);
+  });
+});
+
 function sendToBroker(ex, key, content, publisher) {
   conn.createChannel(function(err, ch) {
     ch.assertExchange(ex, 'topic', {durable: false});
