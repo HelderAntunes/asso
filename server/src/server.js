@@ -173,6 +173,13 @@ app.get('/topics/:name/messages', (req, res) => {
   });
 });
 
+app.get('/publishers', (req, res) => {
+  Message.find().distinct('publisher', function(err, publishers) {
+    if (err) return res.status(400).send(err);
+    res.send(publishers);
+  });
+})
+
 function sendToBroker(ex, key, content, publisher) {
   conn.createChannel(function(err, ch) {
     ch.assertExchange(ex, 'topic', {durable: false});
