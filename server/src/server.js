@@ -111,21 +111,12 @@ app.post('/topics', (req, res) => {
     if (err) return res.send(err);
 
     request.post({
-<<<<<<< HEAD
-        headers: {'content-type' : 'application/json'},
-        url: 'http://guest:guest@rabbitmq:15672/api/bindings/vhost/e/proxy/q/' + queue_name,
-        json: {"routing_key": queue_name + ".#", "arguments":{"x-arg": "value"}}
-      }, function (error, response, body) {
-        if (err) return res.send(err);
-        res.send(response_);
-=======
       headers: {'content-type' : 'application/json'},
       url: 'http://guest:guest@rabbitmq:15672/api/bindings/vhost/e/proxy/q/' + queue_name,
       json: {"routing_key": queue_name + ".#", "arguments":{"x-arg": "value"}}
     }, function (error, response, body) {
       if (err) return res.send(err);
       res.send(response);
->>>>>>> e5866106a037f6c6e1f03a7888920037899b8f0e
     });
   });
 });
