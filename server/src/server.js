@@ -50,12 +50,12 @@ app.use(bodyParser.json());
 
 app.get('/overview', (req, res) => {
   client.overview(function  (err, response) {
-        if (err) {
-            res.send(err);
-        } else {
-            res.send(prettyJson(response));
-        }
-    });
+    if (err) {
+      res.send(err);
+    } else {
+      res.send(prettyJson(response));
+    }
+  });
 });
 
 app.get('/messages', (req, res) => {
@@ -90,8 +90,8 @@ app.get('/topics', (req, res) => {
 app.get('/topics/:destination', (req, res) => {
   const destination = req.params.destination;
   client.getQueue({
-     vhost : 'vhost',
-     queue : destination
+    vhost : 'vhost',
+    queue : destination
   }, function (err, response) {
     if (err) return res.send(err);
     res.send(response);
@@ -111,12 +111,21 @@ app.post('/topics', (req, res) => {
     if (err) return res.send(err);
 
     request.post({
+<<<<<<< HEAD
         headers: {'content-type' : 'application/json'},
         url: 'http://guest:guest@rabbitmq:15672/api/bindings/vhost/e/proxy/q/' + queue_name,
         json: {"routing_key": queue_name + ".#", "arguments":{"x-arg": "value"}}
       }, function (error, response, body) {
         if (err) return res.send(err);
         res.send(response_);
+=======
+      headers: {'content-type' : 'application/json'},
+      url: 'http://guest:guest@rabbitmq:15672/api/bindings/vhost/e/proxy/q/' + queue_name,
+      json: {"routing_key": queue_name + ".#", "arguments":{"x-arg": "value"}}
+    }, function (error, response, body) {
+      if (err) return res.send(err);
+      res.send(response);
+>>>>>>> e5866106a037f6c6e1f03a7888920037899b8f0e
     });
   });
 });
@@ -137,6 +146,53 @@ app.post('/initdb', (req, res) => {
   require('./init-db').initdb();
   res.send({ "msg" : "success" });
 });
+
+// Assuming each subscriber has it's own queue
+app.get('/subscribers', (req, res) => {
+  client.listQueues({
+    vhost : 'vhost'
+  }, function (err, response) {
+    if (err) {
+      res.send(err);
+    } else {
+      let queues = JSON.parse(response);
+      let data = []
+
+      queues.forEach(function(element) {
+        client.getQueueBindings({
+          vhost : 'vhost',
+          queue : element.name
+        }, function (err2, response2) {
+          if (err2) {
+            res.send(err2);
+          } else {
+            let bindings = JSON.parse(response2);
+            element.bindings = bindings;
+            data.push(element)
+
+            if(data.length == queues.length){
+              res.send(data);
+            }
+          }
+        });
+      });
+    }
+  });
+});
+
+app.get('/topics/:name/messages', (req, res) => {
+  Message.find({topic: req.params.name}, function(err, msgs) {
+    if (err) return res.status(400).send(err);
+    res.send(msgs);
+  });
+});
+
+app.get('/publishers', (req, res) => {
+  Message.find().distinct('publisher', function(err, publishers) {
+    if (err) return res.status(400).send(err);
+    res.send(publishers);
+  });
+})
 
 function sendToBroker(ex, key, content, publisher) {
   conn.createChannel(function(err, ch) {
