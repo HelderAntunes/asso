@@ -107,7 +107,7 @@ app.post('/topics', (req, res) => {
     auto_delete : false,
     durable : true,
     arguments : {},
-  }, function (err, response) {
+  }, function (err, response_) {
     if (err) return res.send(err);
 
     request.post({
@@ -116,7 +116,7 @@ app.post('/topics', (req, res) => {
         json: {"routing_key": queue_name + ".#", "arguments":{"x-arg": "value"}}
       }, function (error, response, body) {
         if (err) return res.send(err);
-        res.send(response);
+        res.send(response_);
     });
   });
 });
@@ -131,7 +131,12 @@ app.delete('/topics/:destination', (req, res) => {
     if (err) return res.send(err);
     res.send(response);
   });
-})
+});
+
+app.post('/initdb', (req, res) => {
+  require('./init-db').initdb();
+  res.send({ "msg" : "success" });
+});
 
 function sendToBroker(ex, key, content, publisher) {
   conn.createChannel(function(err, ch) {
