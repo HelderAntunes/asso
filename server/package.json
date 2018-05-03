@@ -11,9 +11,11 @@
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.1",
+    "http": "0.0.0",
     "http-rabbitmq-manager": "0.0.2",
     "mongoose": "^5.0.14",
-    "request": "^2.85.0"
+    "request": "^2.85.0",
+    "socket.io": "^2.1.0"
   },
   "repository": {
     "type": "git",

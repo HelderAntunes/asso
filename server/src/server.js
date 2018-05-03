@@ -61,11 +61,11 @@ app.use('/publishers', publishers);
 app.use('/subscribers', subscribers);
 
 app.get('/overview', (req, res) => {
-  client.overview(function  (err, response) {
+  rabbitAPI.overview(function  (err, response) {
     if (err) {
       res.send(err);
     } else {
-      res.send(prettyJson(response));
+      res.send(utils.prettyJson(response));
     }
   });
 });
@@ -122,5 +122,21 @@ app.get('/tree', (req, res) => {
   });
 });
 
-app.listen(PORT, HOST);
+let server = app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
+
+// socket.IO connection
+var io = require('socket.io')(server);
+
+io.on('connection', function(socket){
+  console.log('a user connected');
+
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+
+  socket.on('ping_server', function(msg){
+    console.log('message: ' + msg);
+    io.emit('ping_server', msg);
+  });
+});

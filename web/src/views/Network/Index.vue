@@ -1,6 +1,5 @@
 <template>
-  <div
-    class="container-fluid container">
+  <div class="container-fluid container">
     <div class="">
       <div
         id="side-bar"
@@ -8,6 +7,11 @@
         <Sidebar />
       </div>
 
+      <div>
+        <input v-model="message" placeholder="edit me">
+        <button @click="pingServer()">Ping Server</button>
+        <p>Message from server: "{{ socketMessage }}"</p>
+      </div>
       <!--div class="panel panel-default">
         <div class="panel-heading">Props</div>
 
@@ -207,13 +211,12 @@
       </div-->
 
     </div>
-
     <div class="flex flex-column p3 sm-col-12 lg-col-9">
       <tree
         ref="tree"
         :identifier="getId"
         :zoomable="zoomable"
-        :data="data.Graph.tree"
+        :data="treeData.data.Graph.tree"
         :node-text="nodeText"
         :margin-x="Marginx"
         :margin-y="Marginy"
@@ -271,13 +274,26 @@ export default {
         },
       },
     });
-
-    return treeData;
+    // return treeData;
+    return {
+      socketMessage: '',
+      treeData: treeData,
+    }
+  },
+  sockets: {
+    // Fired when the server sends something on the "ping_server" channel.
+    ping_server(data) {
+      this.socketMessage = data;
+    },
   },
   created() {
     this.getTopics();
   },
   methods: {
+    pingServer() {
+      // Send the "pingServer" event to the server.
+      this.$socket.emit('ping_server', this.message);
+    },
     do(action) {
       if (this.currentNode) {
         this.isLoading = true;
@@ -320,7 +336,7 @@ export default {
     async getTopics() {
       try {
         const response = await new Proxy('topics').all();
-        //this.treeData.data.Graph.tree
+        // this.treeData.data.Graph.tree
         console.log(response);
       } catch (e) {
         throw (e);
