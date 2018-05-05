@@ -8,7 +8,8 @@
       </div>
 
       <div>
-        <input v-model="message" placeholder="edit me">
+        <input v-model="message" 
+        placeholder="edit me">
         <button @click="pingServer()">Ping Server</button>
         <p>Message from server: "{{ socketMessage }}"</p>
       </div>
@@ -287,7 +288,7 @@ export default {
     },
   },
   created() {
-    this.getTopics();
+    
   },
   methods: {
     pingServer() {
@@ -317,6 +318,7 @@ export default {
     },
     onClick(evt) {
       this.currentNode = evt.element;
+      console.log(this.currentNode);
       this.onEvent('onClick', evt);
     },
     onExpand(evt) {
