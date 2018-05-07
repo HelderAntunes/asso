@@ -17,21 +17,31 @@
           :data="subscribers"
           class="dashboard-table">
           <el-table-column
-            label="Row #1">
+            label="Name">
             <template slot-scope="scope">
-              <span>{{ scope.row }}</span>
+              <span>{{ scope.row.name }}</span>
             </template>
           </el-table-column>
           <el-table-column
-            label="Row #2">
+            label="Bindings">
             <template slot-scope="scope">
-              <span>{{ scope.row }}</span>
+              <span>{{ scope.row.bindings }}</span>
             </template>
           </el-table-column>
           <el-table-column
-            label="Row #3">
+            label="Operations">
             <template slot-scope="scope">
-              <span>{{ scope.row }}</span>
+              <router-link
+                :to="{ name: 'subscribers.show', params: {id: scope.row.name} }">
+                <el-button
+                  icon="el-icon-search"
+                  circle/>
+              </router-link>
+              <el-button
+                type="danger"
+                icon="el-icon-delete"
+                circle
+                @click="onClickDelete(scope.row)"/>
             </template>
           </el-table-column>
         </el-table>
@@ -49,20 +59,14 @@ export default {
     Sidebar,
   },
   data() {
-    /* const item = {
-      date: '2016-05-02',
-      name: 'Tom',
-      address: 'No. 189, Grove St, Los Angeles',
-    }; */
     return {
-      // subscribers: Array(20).fill(item),
       subscribers: [],
     };
   },
   async created() {
     try {
       const response = await new Proxy('subscribers').all();
-      this.subscribers = response.data;
+      this.subscribers = response.map(x => ({ name: x.name, bindings: x.bindings }));
     } catch (e) {
       throw (e);
     }
