@@ -27,9 +27,13 @@ import './plugins/basscss';
  *
  * Last but not least, we import the main application.
  */
-
 import App from './App';
 import store from './store';
+
+import socketio from 'socket.io-client';
+import VueSocketIO from 'vue-socket.io';
+export const SocketInstance = socketio('http://localhost:8080');
+Vue.use(VueSocketIO, SocketInstance);
 
 Vue.config.productionTip = false;
 
