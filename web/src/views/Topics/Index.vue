@@ -138,7 +138,7 @@ export default {
         this.topics.push({ destination: name, arguments: {} });
         this.dialog.visible = false;
       } catch (e) {
-        throw (e);
+        throw e;
       }
     },
     onClickDelete(topic) {
@@ -150,7 +150,10 @@ export default {
     async deleteTopic() {
       try {
         await new Proxy('topics').destroy(this.topic.destination);
-        this.topics.splice(this.topics.findIndex(x => x.destination === this.topic.destination), 1);
+        this.topics.splice(
+          this.topics.findIndex(x => x.destination === this.topic.destination),
+          1,
+        );
         this.$message({
           message: `Topic ${this.topic.destination} deleted with success!`,
           type: 'success',
@@ -158,7 +161,7 @@ export default {
         this.topic = null;
         this.dialog.visible = false;
       } catch (e) {
-        throw (e);
+        throw e;
       }
     },
   },
