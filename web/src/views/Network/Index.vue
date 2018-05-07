@@ -8,10 +8,11 @@
       </div>
 
       <div>
-        <input v-model="message" 
-        placeholder="edit me">
+        <input
+          v-model="message.sent"
+          placeholder="Send a message">
         <button @click="pingServer()">Ping Server</button>
-        <p>Message from server: "{{ socketMessage }}"</p>
+        <p>Message from server: "{{ message.received }}"</p>
       </div>
       <!--div class="panel panel-default">
         <div class="panel-heading">Props</div>
@@ -216,15 +217,15 @@
       <tree
         ref="tree"
         :identifier="getId"
-        :zoomable="zoomable"
+        :zoomable="treeData.zoomable"
         :data="treeData.data.Graph.tree"
-        :node-text="nodeText"
-        :margin-x="Marginx"
-        :margin-y="Marginy"
-        :radius="radius"
-        :type="type"
-        :layout-type="layoutType"
-        :duration="duration"
+        :node-text="treeData.nodeText"
+        :margin-x="treeData.Marginx"
+        :margin-y="treeData.Marginy"
+        :radius="treeData.radius"
+        :type="treeData.type"
+        :layout-type="treeData.layoutType"
+        :duration="treeData.duration"
         class="tree"
         @clicked="onClick"
         @expand="onExpand"
@@ -240,65 +241,65 @@ import Sidebar from '@/components/Sidebar';
 import Proxy from '@/proxies/Proxy';
 import treeData from './data1.json';
 
+Object.assign(treeData, {
+  type: 'tree',
+  layoutType: 'euclidean',
+  duration: 750,
+  Marginx: 30,
+  Marginy: 30,
+  radius: 5,
+  nodeText: 'text',
+  currentNode: null,
+  zoomable: true,
+  isLoading: false,
+  events: [],
+  data: {
+    Graph: {
+      tree: {
+        children: [
+          { children: [], id: 1, text: 'Home1' },
+          { children: [], id: 2, text: 'Home2' },
+          { children: [], id: 3, text: 'Home3' },
+        ],
+        id: 0,
+        text: 'Home',
+      },
+      links: [],
+      text: 'TREEDATA',
+    },
+  },
+});
+
 export default {
   components: {
     tree,
     Sidebar,
   },
   data() {
-    Object.assign(treeData, {
-      type: 'tree',
-      layoutType: 'euclidean',
-      duration: 750,
-      Marginx: 30,
-      Marginy: 30,
-      radius: 5,
-      nodeText: 'text',
-      currentNode: null,
-      zoomable: true,
-      isLoading: false,
-      events: [],
-      data: {
-        Graph: {
-          tree: {
-            children:
-                    [
-                      { children: [], id: 1, text: 'Home1' },
-                      { children: [], id: 2, text: 'Home2' },
-                      { children: [], id: 3, text: 'Home3' },
-                    ],
-            id: 0,
-            text: 'Home',
-          },
-          links: [],
-          text: 'TREEDATA',
-        },
-      },
-    });
-    // return treeData;
     return {
-      socketMessage: '',
-      treeData: treeData,
-    }
+      message: {
+        sent: '',
+        received: '',
+      },
+      treeData,
+      events: [],
+    };
   },
   sockets: {
-    // Fired when the server sends something on the "ping_server" channel.
-    ping_server(data) {
-      this.socketMessage = data;
+    ping_server(response) {
+      this.message.received = response;
     },
-  },
-  created() {
-    
   },
   methods: {
     pingServer() {
-      // Send the "pingServer" event to the server.
-      this.$socket.emit('ping_server', this.message);
+      this.$socket.emit('ping_server', this.message.sent);
     },
     do(action) {
       if (this.currentNode) {
         this.isLoading = true;
-        this.$refs.tree[action](this.currentNode).then(() => { this.isLoading = false; });
+        this.$refs.tree[action](this.currentNode).then(() => {
+          this.isLoading = false;
+        });
       }
     },
     getId(node) {
@@ -333,7 +334,9 @@ export default {
     },
     resetZoom() {
       this.isLoading = true;
-      this.$refs.tree.resetZoom().then(() => { this.isLoading = false; });
+      this.$refs.tree.resetZoom().then(() => {
+        this.isLoading = false;
+      });
     },
     async getTopics() {
       try {
@@ -341,7 +344,7 @@ export default {
         // this.treeData.data.Graph.tree
         console.log(response);
       } catch (e) {
-        throw (e);
+        throw e;
       }
     },
   },
@@ -350,7 +353,7 @@ export default {
 
 <style lang="scss" scoped>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -365,7 +368,7 @@ export default {
   height: 800px;
   width: 100%;
 }
-.log  {
+.log {
   height: 500px;
   overflow-x: auto;
   overflow-y: auto;

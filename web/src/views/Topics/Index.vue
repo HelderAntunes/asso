@@ -134,11 +134,11 @@ export default {
     async createTopic() {
       try {
         const name = this.form.name;
-        const response = await new Proxy('topics').create({ name: name })
-        this.topics.push({ destination: name, arguments: {} })
+        await new Proxy('topics').create({ name });
+        this.topics.push({ destination: name, arguments: {} });
         this.dialog.visible = false;
-      } catch(e) {
-        throw(e);
+      } catch (e) {
+        throw (e);
       }
     },
     onClickDelete(topic) {
@@ -149,7 +149,7 @@ export default {
     },
     async deleteTopic() {
       try {
-        const response = await new Proxy('topics').destroy(this.topic.destination)
+        await new Proxy('topics').destroy(this.topic.destination);
         this.topics.splice(this.topics.findIndex(x => x.destination === this.topic.destination), 1);
         this.$message({
           message: `Topic ${this.topic.destination} deleted with success!`,
@@ -157,8 +157,8 @@ export default {
         });
         this.topic = null;
         this.dialog.visible = false;
-      } catch(e) {
-        throw(e);
+      } catch (e) {
+        throw (e);
       }
     },
   },
