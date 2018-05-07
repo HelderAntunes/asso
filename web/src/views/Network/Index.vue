@@ -231,7 +231,6 @@
         @expand="onExpand"
         @retract="onRetract"/>
     </div>
-
   </div>
 </template>
 
@@ -240,6 +239,8 @@ import { tree } from 'vued3tree';
 import Sidebar from '@/components/Sidebar';
 import Proxy from '@/proxies/Proxy';
 import treeData from './data1.json';
+
+const d3 = require('d3');
 
 Object.assign(treeData, {
   type: 'tree',
@@ -285,12 +286,44 @@ export default {
       events: [],
     };
   },
+  mounted() {
+    const path = d3.select('path.linktree');
+    const startPoint = this.pathStartPoint(path);
+    const marker = d3.select('svg').append('circle');
+    console.log(marker);
+    console.log(startPoint);
+    marker.attr('r', 5)
+      .attr('transform', `translate(${startPoint})`);
+    this.transition(marker, path);
+  },
   sockets: {
     ping_server(response) {
       this.message.received = response;
     },
   },
   methods: {
+    pathStartPoint(path) {
+      let d = path.attr('d'),
+        dsplitted = d.split(' ');
+      return dsplitted[1].split(',');
+    },
+    transition(marker, path) {
+      setTimeout(()=>{
+      marker.transition()
+        .duration(7500)
+        .attrTween('transform', this.translateAlong(path.node()))
+        .each('end', transition);// infinite loop
+    },1000);
+    },
+    translateAlong(path) {
+      const l = path.getTotalLength();
+      return function (i) {
+        return function (t) {
+          const p = path.getPointAtLength(t * l);
+          return `translate(${p.x},${p.y})`;// Move marker
+        };
+      };
+    },
     pingServer() {
       this.$socket.emit('ping_server', this.message.sent);
     },
@@ -374,5 +407,15 @@ export default {
   overflow-y: auto;
   overflow: auto;
   text-align: left;
+}
+
+path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
+circle {
+  fill: red;
 }
 </style>

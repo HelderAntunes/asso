@@ -148,7 +148,7 @@ export default {
       try {
         const name = this.form.name;
         await new Proxy('subscribers').create({ name });
-        this.subscribers.push({ name: name, bindings: [] });
+        this.subscribers.push({ name, bindings: [] });
         this.dialog.visible = false;
       } catch (e) {
         throw e;
