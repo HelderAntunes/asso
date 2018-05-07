@@ -220,8 +220,8 @@
         :zoomable="treeData.zoomable"
         :data="treeData.data.Graph.tree"
         :node-text="treeData.nodeText"
-        :margin-x="treeData.Marginx"
-        :margin-y="treeData.Marginy"
+        margin-x=0
+        margin-y=0
         :radius="treeData.radius"
         :type="treeData.type"
         :layout-type="treeData.layoutType"
@@ -246,8 +246,6 @@ Object.assign(treeData, {
   type: 'tree',
   layoutType: 'euclidean',
   duration: 750,
-  Marginx: 30,
-  Marginy: 30,
   radius: 5,
   nodeText: 'text',
   currentNode: null,
@@ -288,12 +286,10 @@ export default {
   },
   mounted() {
     const path = d3.select('path.linktree');
-    const startPoint = this.pathStartPoint(path);
+    let startPoint = this.pathStartPoint(path);
+    startPoint = ["36", "300"]
     const marker = d3.select('svg').append('circle');
-    console.log(marker);
-    console.log(startPoint);
-    marker.attr('r', 5)
-      .attr('transform', `translate(${startPoint})`);
+    marker.attr('transform', `translate(${startPoint})`).attr('r', 5)
     this.transition(marker, path);
   },
   sockets: {
@@ -319,8 +315,8 @@ export default {
       const l = path.getTotalLength();
       return function (i) {
         return function (t) {
-          const p = path.getPointAtLength(t * l);
-          return `translate(${p.x},${p.y})`;// Move marker
+          const p = path.getPointAtLength(Math.abs(1 - t) * l);
+          return `translate(${p.x + 36},${p.y})`;// Move marker
         };
       };
     },
