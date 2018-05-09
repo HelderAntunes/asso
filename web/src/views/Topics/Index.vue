@@ -134,9 +134,22 @@ export default {
     async createTopic() {
       try {
         const name = this.form.name;
-        await new Proxy('topics').create({ name });
-        this.topics.push({ destination: name, arguments: {} });
-        this.dialog.visible = false;
+        var result = await new Proxy('topics').create({ name });
+        
+        if(result.statusCode === 201){        
+          this.topics.push({ destination: name, arguments: {} });
+          this.dialog.visible = false;
+          
+          this.$message({
+            message: `Topic ${name} created with success!`,
+            type: 'success',
+          });
+        }else{
+          this.$message({
+            message: `Topic ${name} was not created!`,
+            type: 'error',
+          });
+        }
       } catch (e) {
         throw e;
       }
@@ -149,7 +162,9 @@ export default {
     },
     async deleteTopic() {
       try {
-        await new Proxy('topics').destroy(this.topic.destination);
+        var response = await new Proxy('topics').destroy(this.topic.destination);
+        console.log(response);
+        if(response.result === "Success"){
         this.topics.splice(
           this.topics.findIndex(x => x.destination === this.topic.destination),
           1,
@@ -160,6 +175,12 @@ export default {
         });
         this.topic = null;
         this.dialog.visible = false;
+        }else{
+          this.$message({
+          message: `Topic ${this.topic.destination} was not deleted!`,
+          type: 'error',
+        });
+        }
       } catch (e) {
         throw e;
       }
