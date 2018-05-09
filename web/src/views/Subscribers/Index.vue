@@ -147,9 +147,15 @@ export default {
     async createSubscriber() {
       try {
         const name = this.form.name;
-        await new Proxy('subscribers').create({ name });
+        const result = await new Proxy('subscribers').create({ name });
+        console.log(result);
         this.subscribers.push({ name, bindings: [] });
         this.dialog.visible = false;
+
+        this.$message({
+          message: `Subscriber ${name} created with success!`,
+          type: 'success',
+        });
       } catch (e) {
         throw e;
       }
@@ -162,7 +168,8 @@ export default {
     },
     async deleteSubscriber() {
       try {
-        await new Proxy('subscribers').destroy(this.subscriber.name);
+        const response = await new Proxy('subscribers').destroy(this.subscriber.name);
+        console.log(response);
         this.subscribers.splice(
           this.subscribers.findIndex(x => x.name === this.subscriber.name),
           1,
