@@ -17,7 +17,7 @@
           :data="topics"
           class="dashboard-table">
           <el-table-column
-            label="Name">
+            label="Destination">
             <template slot-scope="scope">
               <span>{{ scope.row.destination }}</span>
             </template>
@@ -41,7 +41,7 @@
                 type="danger"
                 icon="el-icon-delete"
                 circle
-                @click="onClickDelete"/>
+                @click="onClickDelete(scope.row)"/>
             </template>
           </el-table-column>
         </el-table>
@@ -66,7 +66,7 @@
             <el-button @click="dialog.visible = false">Cancel</el-button>
             <el-button
               type="primary"
-              @click="dialog.visible = false">Confirm</el-button>
+              @click="deleteTopic">Confirm</el-button>
           </span>
         </el-dialog>
         <el-dialog
@@ -87,7 +87,7 @@
             <el-button @click="dialog.visible = false">Cancel</el-button>
             <el-button
               type="primary"
-              @click="dialog.visible = false">Confirm</el-button>
+              @click="createTopic">Confirm</el-button>
           </span>
         </el-dialog>
       </div>
@@ -105,6 +105,7 @@ export default {
   },
   data() {
     return {
+      topic: {},
       form: {
         name: '',
       },
@@ -130,10 +131,38 @@ export default {
       this.dialog.title = 'Create Topic';
       this.dialog.visible = true;
     },
-    onClickDelete() {
+    async createTopic() {
+      try {
+        const name = this.form.name;
+        await new Proxy('topics').create({ name });
+        this.topics.push({ destination: name, arguments: {} });
+        this.dialog.visible = false;
+      } catch (e) {
+        throw e;
+      }
+    },
+    onClickDelete(topic) {
       this.dialog.action = 'DELETE';
       this.dialog.title = 'Delete Topic';
       this.dialog.visible = true;
+      this.topic = topic;
+    },
+    async deleteTopic() {
+      try {
+        await new Proxy('topics').destroy(this.topic.destination);
+        this.topics.splice(
+          this.topics.findIndex(x => x.destination === this.topic.destination),
+          1,
+        );
+        this.$message({
+          message: `Topic ${this.topic.destination} deleted with success!`,
+          type: 'success',
+        });
+        this.topic = null;
+        this.dialog.visible = false;
+      } catch (e) {
+        throw e;
+      }
     },
   },
 };

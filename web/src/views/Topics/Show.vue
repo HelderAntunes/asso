@@ -30,13 +30,13 @@ export default {
   },
   data() {
     return {
-      topics: [],
+      topic: null,
     };
   },
   async created() {
     try {
       const response = await new Proxy('topics').all();
-      this.topics = response;
+      this.topic = response;
     } catch (e) {
       throw e;
     }

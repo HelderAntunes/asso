@@ -1,0 +1,346 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/nodejs', '/usr/bin/npm', 'install' ]
+2 info using npm@1.3.10
+3 info using node@v0.10.25
+4 warn package.json mqtt-live-monitor@1.0.0 No README data
+5 verbose readDependencies using package.json deps
+6 verbose install where, deps [ '/home/marcelo/Marcelo/asso/server',
+6 verbose install   [ 'amqplib',
+6 verbose install     'body-parser',
+6 verbose install     'cors',
+6 verbose install     'express',
+6 verbose install     'http-rabbitmq-manager',
+6 verbose install     'mongoose',
+6 verbose install     'request' ] ]
+7 info preinstall mqtt-live-monitor@1.0.0
+8 verbose readDependencies using package.json deps
+9 verbose cache add [ 'amqplib@^0.5.2', null ]
+10 verbose cache add name=undefined spec="amqplib@^0.5.2" args=["amqplib@^0.5.2",null]
+11 verbose parsed url { protocol: null,
+11 verbose parsed url   slashes: null,
+11 verbose parsed url   auth: null,
+11 verbose parsed url   host: null,
+11 verbose parsed url   port: null,
+11 verbose parsed url   hostname: null,
+11 verbose parsed url   hash: null,
+11 verbose parsed url   search: null,
+11 verbose parsed url   query: null,
+11 verbose parsed url   pathname: 'amqplib@^0.5.2',
+11 verbose parsed url   path: 'amqplib@^0.5.2',
+11 verbose parsed url   href: 'amqplib@^0.5.2' }
+12 verbose cache add name="amqplib" spec="^0.5.2" args=["amqplib","^0.5.2"]
+13 verbose parsed url { protocol: null,
+13 verbose parsed url   slashes: null,
+13 verbose parsed url   auth: null,
+13 verbose parsed url   host: null,
+13 verbose parsed url   port: null,
+13 verbose parsed url   hostname: null,
+13 verbose parsed url   hash: null,
+13 verbose parsed url   search: null,
+13 verbose parsed url   query: null,
+13 verbose parsed url   pathname: '^0.5.2',
+13 verbose parsed url   path: '^0.5.2',
+13 verbose parsed url   href: '^0.5.2' }
+14 verbose addNamed [ 'amqplib', '^0.5.2' ]
+15 verbose addNamed [ null, '>=0.5.2-0 <0.6.0-0' ]
+16 verbose cache add [ 'body-parser@^1.18.2', null ]
+17 verbose cache add name=undefined spec="body-parser@^1.18.2" args=["body-parser@^1.18.2",null]
+18 verbose parsed url { protocol: null,
+18 verbose parsed url   slashes: null,
+18 verbose parsed url   auth: null,
+18 verbose parsed url   host: null,
+18 verbose parsed url   port: null,
+18 verbose parsed url   hostname: null,
+18 verbose parsed url   hash: null,
+18 verbose parsed url   search: null,
+18 verbose parsed url   query: null,
+18 verbose parsed url   pathname: 'body-parser@^1.18.2',
+18 verbose parsed url   path: 'body-parser@^1.18.2',
+18 verbose parsed url   href: 'body-parser@^1.18.2' }
+19 verbose cache add name="body-parser" spec="^1.18.2" args=["body-parser","^1.18.2"]
+20 verbose parsed url { protocol: null,
+20 verbose parsed url   slashes: null,
+20 verbose parsed url   auth: null,
+20 verbose parsed url   host: null,
+20 verbose parsed url   port: null,
+20 verbose parsed url   hostname: null,
+20 verbose parsed url   hash: null,
+20 verbose parsed url   search: null,
+20 verbose parsed url   query: null,
+20 verbose parsed url   pathname: '^1.18.2',
+20 verbose parsed url   path: '^1.18.2',
+20 verbose parsed url   href: '^1.18.2' }
+21 verbose addNamed [ 'body-parser', '^1.18.2' ]
+22 verbose addNamed [ null, '>=1.18.2-0 <2.0.0-0' ]
+23 silly lockFile 9a1f43da-amqplib-0-5-2 amqplib@^0.5.2
+24 verbose lock amqplib@^0.5.2 /home/marcelo/.npm/9a1f43da-amqplib-0-5-2.lock
+25 silly lockFile f1a8a4ce-body-parser-1-18-2 body-parser@^1.18.2
+26 verbose lock body-parser@^1.18.2 /home/marcelo/.npm/f1a8a4ce-body-parser-1-18-2.lock
+27 verbose cache add [ 'express@^4.16.1', null ]
+28 verbose cache add name=undefined spec="express@^4.16.1" args=["express@^4.16.1",null]
+29 verbose parsed url { protocol: null,
+29 verbose parsed url   slashes: null,
+29 verbose parsed url   auth: null,
+29 verbose parsed url   host: null,
+29 verbose parsed url   port: null,
+29 verbose parsed url   hostname: null,
+29 verbose parsed url   hash: null,
+29 verbose parsed url   search: null,
+29 verbose parsed url   query: null,
+29 verbose parsed url   pathname: 'express@^4.16.1',
+29 verbose parsed url   path: 'express@^4.16.1',
+29 verbose parsed url   href: 'express@^4.16.1' }
+30 verbose cache add name="express" spec="^4.16.1" args=["express","^4.16.1"]
+31 verbose parsed url { protocol: null,
+31 verbose parsed url   slashes: null,
+31 verbose parsed url   auth: null,
+31 verbose parsed url   host: null,
+31 verbose parsed url   port: null,
+31 verbose parsed url   hostname: null,
+31 verbose parsed url   hash: null,
+31 verbose parsed url   search: null,
+31 verbose parsed url   query: null,
+31 verbose parsed url   pathname: '^4.16.1',
+31 verbose parsed url   path: '^4.16.1',
+31 verbose parsed url   href: '^4.16.1' }
+32 verbose addNamed [ 'express', '^4.16.1' ]
+33 verbose addNamed [ null, '>=4.16.1-0 <5.0.0-0' ]
+34 silly lockFile 9b2433a3-express-4-16-1 express@^4.16.1
+35 verbose lock express@^4.16.1 /home/marcelo/.npm/9b2433a3-express-4-16-1.lock
+36 verbose cache add [ 'cors@^2.8.4', null ]
+37 verbose cache add name=undefined spec="cors@^2.8.4" args=["cors@^2.8.4",null]
+38 verbose parsed url { protocol: null,
+38 verbose parsed url   slashes: null,
+38 verbose parsed url   auth: null,
+38 verbose parsed url   host: null,
+38 verbose parsed url   port: null,
+38 verbose parsed url   hostname: null,
+38 verbose parsed url   hash: null,
+38 verbose parsed url   search: null,
+38 verbose parsed url   query: null,
+38 verbose parsed url   pathname: 'cors@^2.8.4',
+38 verbose parsed url   path: 'cors@^2.8.4',
+38 verbose parsed url   href: 'cors@^2.8.4' }
+39 verbose cache add name="cors" spec="^2.8.4" args=["cors","^2.8.4"]
+40 verbose parsed url { protocol: null,
+40 verbose parsed url   slashes: null,
+40 verbose parsed url   auth: null,
+40 verbose parsed url   host: null,
+40 verbose parsed url   port: null,
+40 verbose parsed url   hostname: null,
+40 verbose parsed url   hash: null,
+40 verbose parsed url   search: null,
+40 verbose parsed url   query: null,
+40 verbose parsed url   pathname: '^2.8.4',
+40 verbose parsed url   path: '^2.8.4',
+40 verbose parsed url   href: '^2.8.4' }
+41 verbose addNamed [ 'cors', '^2.8.4' ]
+42 verbose addNamed [ null, '>=2.8.4-0 <3.0.0-0' ]
+43 silly lockFile ea71c8b0-cors-2-8-4 cors@^2.8.4
+44 verbose lock cors@^2.8.4 /home/marcelo/.npm/ea71c8b0-cors-2-8-4.lock
+45 verbose cache add [ 'http-rabbitmq-manager@0.0.2', null ]
+46 verbose cache add name=undefined spec="http-rabbitmq-manager@0.0.2" args=["http-rabbitmq-manager@0.0.2",null]
+47 verbose parsed url { protocol: null,
+47 verbose parsed url   slashes: null,
+47 verbose parsed url   auth: null,
+47 verbose parsed url   host: null,
+47 verbose parsed url   port: null,
+47 verbose parsed url   hostname: null,
+47 verbose parsed url   hash: null,
+47 verbose parsed url   search: null,
+47 verbose parsed url   query: null,
+47 verbose parsed url   pathname: 'http-rabbitmq-manager@0.0.2',
+47 verbose parsed url   path: 'http-rabbitmq-manager@0.0.2',
+47 verbose parsed url   href: 'http-rabbitmq-manager@0.0.2' }
+48 verbose cache add name="http-rabbitmq-manager" spec="0.0.2" args=["http-rabbitmq-manager","0.0.2"]
+49 verbose parsed url { protocol: null,
+49 verbose parsed url   slashes: null,
+49 verbose parsed url   auth: null,
+49 verbose parsed url   host: null,
+49 verbose parsed url   port: null,
+49 verbose parsed url   hostname: null,
+49 verbose parsed url   hash: null,
+49 verbose parsed url   search: null,
+49 verbose parsed url   query: null,
+49 verbose parsed url   pathname: '0.0.2',
+49 verbose parsed url   path: '0.0.2',
+49 verbose parsed url   href: '0.0.2' }
+50 verbose addNamed [ 'http-rabbitmq-manager', '0.0.2' ]
+51 verbose addNamed [ '0.0.2', '0.0.2' ]
+52 silly lockFile d168ede7-http-rabbitmq-manager-0-0-2 http-rabbitmq-manager@0.0.2
+53 verbose lock http-rabbitmq-manager@0.0.2 /home/marcelo/.npm/d168ede7-http-rabbitmq-manager-0-0-2.lock
+54 verbose cache add [ 'mongoose@^5.0.14', null ]
+55 verbose cache add name=undefined spec="mongoose@^5.0.14" args=["mongoose@^5.0.14",null]
+56 verbose parsed url { protocol: null,
+56 verbose parsed url   slashes: null,
+56 verbose parsed url   auth: null,
+56 verbose parsed url   host: null,
+56 verbose parsed url   port: null,
+56 verbose parsed url   hostname: null,
+56 verbose parsed url   hash: null,
+56 verbose parsed url   search: null,
+56 verbose parsed url   query: null,
+56 verbose parsed url   pathname: 'mongoose@^5.0.14',
+56 verbose parsed url   path: 'mongoose@^5.0.14',
+56 verbose parsed url   href: 'mongoose@^5.0.14' }
+57 verbose cache add name="mongoose" spec="^5.0.14" args=["mongoose","^5.0.14"]
+58 verbose parsed url { protocol: null,
+58 verbose parsed url   slashes: null,
+58 verbose parsed url   auth: null,
+58 verbose parsed url   host: null,
+58 verbose parsed url   port: null,
+58 verbose parsed url   hostname: null,
+58 verbose parsed url   hash: null,
+58 verbose parsed url   search: null,
+58 verbose parsed url   query: null,
+58 verbose parsed url   pathname: '^5.0.14',
+58 verbose parsed url   path: '^5.0.14',
+58 verbose parsed url   href: '^5.0.14' }
+59 verbose addNamed [ 'mongoose', '^5.0.14' ]
+60 verbose addNamed [ null, '>=5.0.14-0 <6.0.0-0' ]
+61 silly lockFile 16146210-mongoose-5-0-14 mongoose@^5.0.14
+62 verbose lock mongoose@^5.0.14 /home/marcelo/.npm/16146210-mongoose-5-0-14.lock
+63 verbose cache add [ 'request@^2.85.0', null ]
+64 verbose cache add name=undefined spec="request@^2.85.0" args=["request@^2.85.0",null]
+65 verbose parsed url { protocol: null,
+65 verbose parsed url   slashes: null,
+65 verbose parsed url   auth: null,
+65 verbose parsed url   host: null,
+65 verbose parsed url   port: null,
+65 verbose parsed url   hostname: null,
+65 verbose parsed url   hash: null,
+65 verbose parsed url   search: null,
+65 verbose parsed url   query: null,
+65 verbose parsed url   pathname: 'request@^2.85.0',
+65 verbose parsed url   path: 'request@^2.85.0',
+65 verbose parsed url   href: 'request@^2.85.0' }
+66 verbose cache add name="request" spec="^2.85.0" args=["request","^2.85.0"]
+67 verbose parsed url { protocol: null,
+67 verbose parsed url   slashes: null,
+67 verbose parsed url   auth: null,
+67 verbose parsed url   host: null,
+67 verbose parsed url   port: null,
+67 verbose parsed url   hostname: null,
+67 verbose parsed url   hash: null,
+67 verbose parsed url   search: null,
+67 verbose parsed url   query: null,
+67 verbose parsed url   pathname: '^2.85.0',
+67 verbose parsed url   path: '^2.85.0',
+67 verbose parsed url   href: '^2.85.0' }
+68 verbose addNamed [ 'request', '^2.85.0' ]
+69 verbose addNamed [ null, '>=2.85.0-0 <3.0.0-0' ]
+70 silly lockFile 0ca18e28-request-2-85-0 request@^2.85.0
+71 verbose lock request@^2.85.0 /home/marcelo/.npm/0ca18e28-request-2-85-0.lock
+72 silly addNameRange { name: 'amqplib', range: '>=0.5.2-0 <0.6.0-0', hasData: false }
+73 silly addNameRange { name: 'body-parser',
+73 silly addNameRange   range: '>=1.18.2-0 <2.0.0-0',
+73 silly addNameRange   hasData: false }
+74 silly addNameRange { name: 'express', range: '>=4.16.1-0 <5.0.0-0', hasData: false }
+75 silly addNameRange { name: 'cors', range: '>=2.8.4-0 <3.0.0-0', hasData: false }
+76 silly addNameRange { name: 'mongoose',
+76 silly addNameRange   range: '>=5.0.14-0 <6.0.0-0',
+76 silly addNameRange   hasData: false }
+77 verbose url raw amqplib
+78 verbose url resolving [ 'https://registry.npmjs.org/', './amqplib' ]
+79 verbose url resolved https://registry.npmjs.org/amqplib
+80 info trying registry request attempt 1 at 20:23:28
+81 http GET https://registry.npmjs.org/amqplib
+82 verbose url raw body-parser
+83 verbose url resolving [ 'https://registry.npmjs.org/', './body-parser' ]
+84 verbose url resolved https://registry.npmjs.org/body-parser
+85 info trying registry request attempt 1 at 20:23:28
+86 http GET https://registry.npmjs.org/body-parser
+87 verbose url raw express
+88 verbose url resolving [ 'https://registry.npmjs.org/', './express' ]
+89 verbose url resolved https://registry.npmjs.org/express
+90 info trying registry request attempt 1 at 20:23:28
+91 http GET https://registry.npmjs.org/express
+92 verbose url raw cors
+93 verbose url resolving [ 'https://registry.npmjs.org/', './cors' ]
+94 verbose url resolved https://registry.npmjs.org/cors
+95 info trying registry request attempt 1 at 20:23:28
+96 http GET https://registry.npmjs.org/cors
+97 verbose url raw http-rabbitmq-manager/0.0.2
+98 verbose url resolving [ 'https://registry.npmjs.org/',
+98 verbose url resolving   './http-rabbitmq-manager/0.0.2' ]
+99 verbose url resolved https://registry.npmjs.org/http-rabbitmq-manager/0.0.2
+100 info trying registry request attempt 1 at 20:23:28
+101 http GET https://registry.npmjs.org/http-rabbitmq-manager/0.0.2
+102 silly addNameRange { name: 'request', range: '>=2.85.0-0 <3.0.0-0', hasData: false }
+103 verbose url raw mongoose
+104 verbose url resolving [ 'https://registry.npmjs.org/', './mongoose' ]
+105 verbose url resolved https://registry.npmjs.org/mongoose
+106 info trying registry request attempt 1 at 20:23:28
+107 http GET https://registry.npmjs.org/mongoose
+108 verbose url raw request
+109 verbose url resolving [ 'https://registry.npmjs.org/', './request' ]
+110 verbose url resolved https://registry.npmjs.org/request
+111 info trying registry request attempt 1 at 20:23:28
+112 http GET https://registry.npmjs.org/request
+113 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+114 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+115 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+116 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+117 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+118 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+119 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+120 info trying registry request attempt 2 at 20:23:38
+121 http GET https://registry.npmjs.org/body-parser
+122 info trying registry request attempt 2 at 20:23:38
+123 http GET https://registry.npmjs.org/amqplib
+124 info trying registry request attempt 2 at 20:23:38
+125 http GET https://registry.npmjs.org/cors
+126 info trying registry request attempt 2 at 20:23:39
+127 http GET https://registry.npmjs.org/express
+128 info trying registry request attempt 2 at 20:23:39
+129 http GET https://registry.npmjs.org/http-rabbitmq-manager/0.0.2
+130 info trying registry request attempt 2 at 20:23:39
+131 http GET https://registry.npmjs.org/request
+132 info trying registry request attempt 2 at 20:23:39
+133 http GET https://registry.npmjs.org/mongoose
+134 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+135 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+136 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+137 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+138 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+139 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+140 info retry will retry, error on last attempt: Error: CERT_UNTRUSTED
+141 info trying registry request attempt 3 at 20:24:39
+142 http GET https://registry.npmjs.org/body-parser
+143 info trying registry request attempt 3 at 20:24:39
+144 http GET https://registry.npmjs.org/express
+145 info trying registry request attempt 3 at 20:24:39
+146 http GET https://registry.npmjs.org/amqplib
+147 info trying registry request attempt 3 at 20:24:39
+148 http GET https://registry.npmjs.org/cors
+149 info trying registry request attempt 3 at 20:24:39
+150 http GET https://registry.npmjs.org/http-rabbitmq-manager/0.0.2
+151 info trying registry request attempt 3 at 20:24:39
+152 http GET https://registry.npmjs.org/mongoose
+153 info trying registry request attempt 3 at 20:24:39
+154 http GET https://registry.npmjs.org/request
+155 silly lockFile 9b2433a3-express-4-16-1 express@^4.16.1
+156 silly lockFile 9b2433a3-express-4-16-1 express@^4.16.1
+157 error Error: CERT_UNTRUSTED
+157 error     at SecurePair.<anonymous> (tls.js:1370:32)
+157 error     at SecurePair.EventEmitter.emit (events.js:92:17)
+157 error     at SecurePair.maybeInitFinished (tls.js:982:10)
+157 error     at CleartextStream.read [as _read] (tls.js:469:13)
+157 error     at CleartextStream.Readable.read (_stream_readable.js:320:10)
+157 error     at EncryptedStream.write [as _write] (tls.js:366:25)
+157 error     at doWrite (_stream_writable.js:223:10)
+157 error     at writeOrBuffer (_stream_writable.js:213:5)
+157 error     at EncryptedStream.Writable.write (_stream_writable.js:180:11)
+157 error     at write (_stream_readable.js:583:24)
+157 error     at flow (_stream_readable.js:592:7)
+157 error     at Socket.pipeOnReadable (_stream_readable.js:624:5)
+158 error If you need help, you may report this log at:
+158 error     <http://github.com/isaacs/npm/issues>
+158 error or email it to:
+158 error     <npm-@googlegroups.com>
+159 error System Linux 3.16.0-38-generic
+160 error command "/usr/bin/nodejs" "/usr/bin/npm" "install"
+161 error cwd /home/marcelo/Marcelo/asso/server
+162 error node -v v0.10.25
+163 error npm -v 1.3.10
+164 verbose exit [ 1, true ]

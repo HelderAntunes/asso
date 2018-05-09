@@ -17,24 +17,89 @@
           :data="subscribers"
           class="dashboard-table">
           <el-table-column
-            label="Row #1">
+            label="Name">
             <template slot-scope="scope">
-              <span>{{ scope.row }}</span>
+              <span>{{ scope.row.name }}</span>
             </template>
           </el-table-column>
           <el-table-column
-            label="Row #2">
+            label="Bindings">
             <template slot-scope="scope">
-              <span>{{ scope.row }}</span>
+              <el-popover
+                placement="top">
+                <ul>
+                  <li
+                    v-for="(value, key) in scope.row.bindings[0]"
+                    :key="key">
+                    {{ key }} : {{ value }}
+                  </li>
+                </ul>
+                <el-button slot="reference">Show</el-button>
+              </el-popover>
             </template>
           </el-table-column>
           <el-table-column
-            label="Row #3">
+            label="Operations">
             <template slot-scope="scope">
-              <span>{{ scope.row }}</span>
+              <router-link
+                :to="{ name: 'subscribers.show', params: {id: scope.row.name} }">
+                <el-button
+                  icon="el-icon-search"
+                  circle/>
+              </router-link>
+              <el-button
+                type="danger"
+                icon="el-icon-delete"
+                circle
+                @click="onClickDelete(scope.row)"/>
             </template>
           </el-table-column>
         </el-table>
+        <div class="pt2">
+          <el-button
+            type="primary"
+            @click="onClickCreate">Create Subscriber</el-button>
+        </div>
+        <el-dialog
+          v-if="dialog.action === 'DELETE'"
+          :title="dialog.title"
+          :visible.sync="dialog.visible"
+          width="50%">
+          <el-alert
+            title="Permanent action"
+            type="warning"
+            description="Do you really want to delete this subscriber?"
+            show-icon/>
+          <span
+            slot="footer"
+            class="dialog-footer">
+            <el-button @click="dialog.visible = false">Cancel</el-button>
+            <el-button
+              type="primary"
+              @click="deleteSubscriber">Confirm</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog
+          v-if="dialog.action === 'CREATE'"
+          :title="dialog.title"
+          :visible.sync="dialog.visible"
+          width="50%">
+          <el-form :model="form">
+            <el-form-item label="Subscriber name">
+              <el-input
+                v-model="form.name"
+                auto-complete="off"/>
+            </el-form-item>
+          </el-form>
+          <span
+            slot="footer"
+            class="dialog-footer">
+            <el-button @click="dialog.visible = false">Cancel</el-button>
+            <el-button
+              type="primary"
+              @click="createSubscriber">Confirm</el-button>
+          </span>
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -49,25 +114,70 @@ export default {
     Sidebar,
   },
   data() {
-    /* const item = {
-      date: '2016-05-02',
-      name: 'Tom',
-      address: 'No. 189, Grove St, Los Angeles',
-    }; */
     return {
-      // subscribers: Array(20).fill(item),
+      subscriber: {},
+      form: {
+        name: '',
+      },
+      dialog: {
+        title: '',
+        visible: false,
+        action: '',
+      },
       subscribers: [],
     };
   },
   async created() {
     try {
       const response = await new Proxy('subscribers').all();
-      this.subscribers = response.data;
+      this.subscribers = response.map(x => ({
+        name: x.name,
+        bindings: x.bindings,
+      }));
     } catch (e) {
-      throw (e);
+      throw e;
     }
   },
-  methods: {},
+  methods: {
+    onClickCreate() {
+      this.dialog.action = 'CREATE';
+      this.dialog.title = 'Create Subscriber';
+      this.dialog.visible = true;
+    },
+    async createSubscriber() {
+      try {
+        const name = this.form.name;
+        await new Proxy('subscribers').create({ name });
+        this.subscribers.push({ name, bindings: [] });
+        this.dialog.visible = false;
+      } catch (e) {
+        throw e;
+      }
+    },
+    onClickDelete(subscriber) {
+      this.dialog.action = 'DELETE';
+      this.dialog.title = 'Delete Subscriber';
+      this.dialog.visible = true;
+      this.subscriber = subscriber;
+    },
+    async deleteSubscriber() {
+      try {
+        await new Proxy('subscribers').destroy(this.subscriber.name);
+        this.subscribers.splice(
+          this.subscribers.findIndex(x => x.name === this.subscriber.name),
+          1,
+        );
+        this.$message({
+          message: `Subcriber ${this.subscriber.name} deleted with success!`,
+          type: 'success',
+        });
+        this.topic = null;
+        this.dialog.visible = false;
+      } catch (e) {
+        throw e;
+      }
+    },
+  },
 };
 </script>
 

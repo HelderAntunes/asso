@@ -23,6 +23,9 @@ services:
       - database
     environment:
       - AMPQ_ADDRESS=amqp://guest:guest@rabbitmq:5672/vhost
+    depends_on:
+      - "database"
+      - "rabbitmq"
 
   client:
     image: ambientum/node:9
@@ -31,6 +34,8 @@ services:
     command: bash -c "yarn && npm run dev"
     ports:
       - 3000:3000
+    depends_on:
+      - "server"
 
   database:
     build: ./db
