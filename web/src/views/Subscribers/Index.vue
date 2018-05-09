@@ -147,7 +147,7 @@ export default {
     async createSubscriber() {
       try {
         const name = this.form.name;
-        var result = await new Proxy('subscribers').create({ name });
+        const result = await new Proxy('subscribers').create({ name });
         console.log(result);
         this.subscribers.push({ name, bindings: [] });
         this.dialog.visible = false;

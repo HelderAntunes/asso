@@ -220,12 +220,12 @@
         :zoomable="treeData.zoomable"
         :data="treeData.data.Graph.tree"
         :node-text="treeData.nodeText"
-        margin-x=0
-        margin-y=0
         :radius="treeData.radius"
         :type="treeData.type"
         :layout-type="treeData.layoutType"
         :duration="treeData.duration"
+        margin-x="0"
+        margin-y="0"
         class="tree"
         @clicked="onClick"
         @expand="onExpand"
@@ -287,9 +287,9 @@ export default {
   mounted() {
     const path = d3.select('path.linktree');
     let startPoint = this.pathStartPoint(path);
-    startPoint = ["36", "300"]
+    startPoint = ['36', '300'];
     const marker = d3.select('svg').append('circle');
-    marker.attr('transform', `translate(${startPoint})`).attr('r', 5)
+    marker.attr('transform', `translate(${startPoint})`).attr('r', 5);
     this.transition(marker, path);
   },
   sockets: {
@@ -299,21 +299,21 @@ export default {
   },
   methods: {
     pathStartPoint(path) {
-      let d = path.attr('d'),
-        dsplitted = d.split(' ');
+      const d = path.attr('d');
+      const dsplitted = d.split(' ');
       return dsplitted[1].split(',');
     },
     transition(marker, path) {
-      setTimeout(()=>{
-      marker.transition()
-        .duration(7500)
-        .attrTween('transform', this.translateAlong(path.node()))
-        .each('end', transition);// infinite loop
-    },1000);
+      setTimeout(() => {
+        marker.transition()
+          .duration(7500)
+          .attrTween('transform', this.translateAlong(path.node()))
+          .each('end', transition);// infinite loop
+      }, 1000);
     },
     translateAlong(path) {
       const l = path.getTotalLength();
-      return function (i) {
+      return function () {
         return function (t) {
           const p = path.getPointAtLength(Math.abs(1 - t) * l);
           return `translate(${p.x + 36},${p.y})`;// Move marker
