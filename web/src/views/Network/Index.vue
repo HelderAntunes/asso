@@ -14,210 +14,11 @@
         <button @click="pingServer()">Ping Server</button>
         <p>Message from server: "{{ message.received }}"</p>
       </div>
-      <!--div class="panel panel-default">
-        <div class="panel-heading">Props</div>
-
-        <div class="panel-body">
-          <div class="form-horizontal">
-
-            <div class="form-group">
-              <label
-                for="type"
-                class="control-label col-sm-3">type</label>
-              <div class="col-sm-9">
-                <select
-                  id="type"
-                  v-model="type"
-                  class="form-control">
-                  <option>tree</option>
-                  <option>cluster</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label
-                for="layout-type"
-                class="control-label col-sm-3">layoutType</label>
-              <div class="col-sm-9">
-                <select
-                  id="layout-type"
-                  v-model="layoutType"
-                  class="form-control">
-                  <option>euclidean</option>
-                  <option>circular</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label
-                for="margin-x"
-                class="control-label col-sm-3">marginx</label>
-              <div class="col-sm-7">
-                <input
-                  id="margin-x"
-                  v-model.number="Marginx"
-                  class="form-control"
-                  type="range"
-                  min="-200"
-                  max="200">
-              </div>
-              <div class="col-sm-2">
-                <p>{{ Marginx }}px</p>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label
-                for="margin-y"
-                class="control-label col-sm-3">marginy</label>
-              <div class="col-sm-7">
-                <input
-                  id="margin-y"
-                  v-model.number="Marginy"
-                  class="form-control"
-                  type="range"
-                  min="-200"
-                  max="200">
-              </div>
-              <div class="col-sm-2">
-                <p>{{ Marginy }}px</p>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label
-                for="margin-y"
-                class="control-label col-sm-3">radius</label>
-              <div class="col-sm-7">
-                <input
-                  id="margin-y"
-                  v-model.number="radius"
-                  class="form-control"
-                  type="range"
-                  min="1"
-                  max="10">
-              </div>
-              <div class="col-sm-2">
-                <p>{{ radius }}px</p>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label
-                for="velocity"
-                class="control-label col-sm-3">Duration</label>
-              <div class="col-sm-7">
-                <input
-                  id="velocity"
-                  v-model.number="duration"
-                  class="form-control"
-                  type="range"
-                  min="0"
-                  max="3000">
-              </div>
-              <div class="col-sm-2">
-                <p>{{ duration }}ms</p>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <span v-if="currentNode">Current Node: {{ currentNode.data.text }}</span>
-              <span v-else>No Node selected.</span>
-              <i
-                v-if="isLoading"
-                class="fa fa-spinner fa-spin fa-2x fa-fw"/>
-            </div>
-
-            <button
-              :disabled="!currentNode"
-              type="button"
-              class="btn btn-primary"
-              data-toggle="tooltip"
-              data-placement="top"
-              title="Expand All from current"
-              @click="expandAll">
-              <i
-                class="fa fa-expand"
-                aria-hidden="true"/>
-            </button>
-
-            <button
-              :disabled="!currentNode"
-              type="button"
-              class="btn btn-secondary"
-              data-toggle="tooltip"
-              data-placement="top"
-              title="Collapse All from current"
-              @click="collapseAll">
-              <i
-                class="fa fa-compress"
-                aria-hidden="true"/>
-            </button>
-
-            <button
-              :disabled="!currentNode"
-              type="button"
-              class="btn btn-success"
-              data-toggle="tooltip"
-              data-placement="top"
-              title="Show Only from current"
-              @click="showOnly">
-              <i
-                class="fa fa-search-plus"
-                aria-hidden="true"/>
-            </button>
-
-            <button
-              :disabled="!currentNode"
-              type="button"
-              class="btn btn-warning"
-              data-toggle="tooltip"
-              data-placement="top"
-              title="Show current"
-              @click="show">
-              <i
-                class="fa fa-binoculars"
-                aria-hidden="true"/>
-            </button>
-
-            <button
-              v-if="zoomable"
-              type="button"
-              class="btn btn-warning"
-              data-toggle="tooltip"
-              data-placement="top"
-              title="Reset Zoom"
-              @click="resetZoom">
-              <i
-                class="fa fa-arrows-alt"
-                aria-hidden="true"/>
-            </button>
-
-          </div>
-        </div>
-      </div>
-
-
-      <div class="panel panel-default">
-        <div class="panel-heading">Events</div>
-
-        <div class="panel-body log">
-          <div
-            v-for="(event,index) in events"
-            :key="index">
-            <p><b>Name:</b> {{ event.eventName }} <b>Data:</b>{{ event.data.text }}</p>
-          </div>
-        </div>
-      </div-->
-
     </div>
     <div class="flex flex-column p3 sm-col-12 lg-col-9">
       <tree
         ref="tree"
         :identifier="getId"
-        :zoomable="treeData.zoomable"
         :data="treeData.data.Graph.tree"
         :node-text="treeData.nodeText"
         :radius="treeData.radius"
@@ -249,6 +50,8 @@ Object.assign(treeData, {
   radius: 5,
   nodeText: 'text',
   currentNode: null,
+  marginX: 0,
+  marginY: 0,
   zoomable: true,
   isLoading: false,
   events: [],
@@ -299,16 +102,17 @@ export default {
   },
   methods: {
     pathStartPoint(path) {
-      const d = path.attr('d');
-      const dsplitted = d.split(' ');
-      return dsplitted[1].split(',');
+      const d = path.attr('d')
+        .split(' ');
+      return d[1].split(',');
     },
     transition(marker, path) {
       setTimeout(() => {
-        marker.transition()
+        marker
+          .transition()
           .duration(7500)
           .attrTween('transform', this.translateAlong(path.node()))
-          .each('end', transition);// infinite loop
+          .each('end', function() {}); // infinite loop
       }, 1000);
     },
     translateAlong(path) {
@@ -316,7 +120,7 @@ export default {
       return function () {
         return function (t) {
           const p = path.getPointAtLength(Math.abs(1 - t) * l);
-          return `translate(${p.x + 36},${p.y})`;// Move marker
+          return `translate(${p.x + 36},${p.y})`; // Move marker
         };
       };
     },
