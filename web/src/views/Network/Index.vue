@@ -50,9 +50,6 @@ Object.assign(treeData, {
   radius: 5,
   nodeText: 'text',
   currentNode: null,
-  marginX: 0,
-  marginY: 0,
-  zoomable: true,
   isLoading: false,
   events: [],
   data: {
@@ -88,12 +85,7 @@ export default {
     };
   },
   mounted() {
-    const path = d3.select('path.linktree');
-    let startPoint = this.pathStartPoint(path);
-    startPoint = ['36', '300'];
-    const marker = d3.select('svg').append('circle');
-    marker.attr('transform', `translate(${startPoint})`).attr('r', 5);
-    this.transition(marker, path);
+    this.animateMessage('Home', 'Home2');
   },
   sockets: {
     ping_server(response) {
@@ -101,10 +93,44 @@ export default {
     },
   },
   methods: {
-    pathStartPoint(path) {
-      const d = path.attr('d')
-        .split(' ');
-      return d[1].split(',');
+    animateMessage(senderName, receiverName) {
+      let senderNode = null;
+      let receiverNode = null;
+      d3.selectAll('.nodetree').each((d, i) => {
+        if (d.data.text === senderName) {
+          senderNode = d;
+        } else if (d.data.text === receiverName) {
+          receiverNode = d;
+        }
+      });
+      if (senderNode == null && receiverNode == null) {
+        throw ('Invalid node name');
+      }
+
+      const senderCoords = { x: senderNode.x, y: senderNode.y };
+      const receiverCoords = { x: receiverNode.x, y: receiverNode.y };
+
+      let animationPath = null;
+      d3.selectAll('path.linktree').each(function (d, i) {
+        const path = d3.select(this);
+        console.log(path)
+        const attrD = path.attr('d').split(' ');
+        console.log(attrD);
+        console.log(attrD[1].split(','))
+
+        if(points.xi === senderCoords.x && points.yi === senderCoords.y && points.xf === receiverCoords.x && points.yf === receiverCoords.y) {
+            animationPath = path;
+        }
+      });
+
+      if(animationPath != null) {
+        this.startAnimation(animationPath, senderCoords);
+      }
+    },
+    startAnimation(path, startPoint){
+      const marker = d3.select('svg').append('circle');
+      marker.attr('transform', `translate(${startPoint})`).attr('r', 5);
+      this.transition(marker, path);
     },
     transition(marker, path) {
       setTimeout(() => {
@@ -112,7 +138,7 @@ export default {
           .transition()
           .duration(7500)
           .attrTween('transform', this.translateAlong(path.node()))
-          .each('end', function() {}); // infinite loop
+          .each('end', () => {}); // infinite loop
       }, 1000);
     },
     translateAlong(path) {
@@ -164,12 +190,6 @@ export default {
     onEvent(eventName, data) {
       this.events.push({ eventName, data: data.data });
       console.log({ eventName, data });
-    },
-    resetZoom() {
-      this.isLoading = true;
-      this.$refs.tree.resetZoom().then(() => {
-        this.isLoading = false;
-      });
     },
     async getTopics() {
       try {
