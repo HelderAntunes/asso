@@ -36,6 +36,7 @@ amqp.connect(process.env.AMPQ_ADDRESS, function(err, connection) {
     ch.assertQueue('', {exclusive: true}, function(err, q) {
       ch.bindQueue(q.queue, ex, '#');
       ch.consume(q.queue, function(msg) {
+        // TODO: send to client through socketIO the object { msg, pub, topic, [subs] }
         var message = new Message({topic: msg.fields.routingKey, content: msg.content.toString(), publisher: msg.properties.appId});
         message.save();
         utils.sendToBroker('topic_logs', msg.fields.routingKey, msg.content.toString(), msg.properties.appId);
@@ -80,6 +81,7 @@ app.get('/tree', (req, res) => {
   const tree = { nodes: [], edges: []};
   let idCounter = 1;
 
+  // TODO: add subscribers
   rabbitAPI.getBindingsForSource({
     vhost : 'vhost',
     exchange : 'proxy'
@@ -117,7 +119,6 @@ app.get('/tree', (req, res) => {
       }
 
       res.send(tree);
-      // TODO: add subscribers
     });
   });
 });
