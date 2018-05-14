@@ -25,8 +25,8 @@
         :type="treeData.type"
         :layout-type="treeData.layoutType"
         :duration="treeData.duration"
-        margin-x="0"
-        margin-y="0"
+        :margin-x="treeData.marginX"
+        :margin-y="treeData.marginY"
         class="tree"
         @clicked="onClick"
         @expand="onExpand"
@@ -48,6 +48,8 @@ Object.assign(treeData, {
   layoutType: 'euclidean',
   duration: 750,
   radius: 5,
+  marginX: 0,
+  marginY: 0,
   nodeText: 'text',
   currentNode: null,
   isLoading: false,
@@ -96,7 +98,7 @@ export default {
     animateMessage(senderName, receiverName) {
       let senderNode = null;
       let receiverNode = null;
-      d3.selectAll('.nodetree').each((d, i) => {
+      d3.selectAll('.nodetree').each((d) => {
         if (d.data.text === senderName) {
           senderNode = d;
         } else if (d.data.text === receiverName) {
@@ -104,30 +106,31 @@ export default {
         }
       });
       if (senderNode == null && receiverNode == null) {
-        throw ('Invalid node name');
+        throw new Error('Invalid node name');
       }
 
       const senderCoords = { x: senderNode.x, y: senderNode.y };
       const receiverCoords = { x: receiverNode.x, y: receiverNode.y };
 
       let animationPath = null;
-      d3.selectAll('path.linktree').each(function (d, i) {
+      d3.selectAll('path.linktree').each(function () {
         const path = d3.select(this);
-        console.log(path)
         const attrD = path.attr('d').split(' ');
-        console.log(attrD);
-        console.log(attrD[1].split(','))
+        const startPoint = attrD[2].split(',');
+        const endPoint = (attrD[0].substring(attrD[0].lastIndexOf('M') + 1, attrD[0].lastIndexOf('C'))).split(',');
+        const points = { xi: startPoint[0], yi: startPoint[1], xf: endPoint[0], yf: endPoint[1] };
 
-        if(points.xi === senderCoords.x && points.yi === senderCoords.y && points.xf === receiverCoords.x && points.yf === receiverCoords.y) {
-            animationPath = path;
+        if (points.xi === senderCoords.x && points.yi === senderCoords.y
+          && points.xf === receiverCoords.x && points.yf === receiverCoords.y) {
+          animationPath = path;
         }
       });
 
-      if(animationPath != null) {
-        this.startAnimation(animationPath, senderCoords);
+      if (animationPath != null) {
+        this.startAnimation(animationPath, [senderCoords.x, senderCoords.y]);
       }
     },
-    startAnimation(path, startPoint){
+    startAnimation(path, startPoint) {
       const marker = d3.select('svg').append('circle');
       marker.attr('transform', `translate(${startPoint})`).attr('r', 5);
       this.transition(marker, path);
@@ -143,11 +146,9 @@ export default {
     },
     translateAlong(path) {
       const l = path.getTotalLength();
-      return function () {
-        return function (t) {
-          const p = path.getPointAtLength(Math.abs(1 - t) * l);
-          return `translate(${p.x + 36},${p.y})`; // Move marker
-        };
+      return () => (t) => {
+        const p = path.getPointAtLength(Math.abs(1 - t) * l);
+        return `translate(${p.x + 36},${p.y})`; // Move marker
       };
     },
     pingServer() {
