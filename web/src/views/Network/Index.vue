@@ -14,218 +14,19 @@
         <button @click="pingServer()">Ping Server</button>
         <p>Message from server: "{{ message.received }}"</p>
       </div>
-      <!--div class="panel panel-default">
-        <div class="panel-heading">Props</div>
-
-        <div class="panel-body">
-          <div class="form-horizontal">
-
-            <div class="form-group">
-              <label
-                for="type"
-                class="control-label col-sm-3">type</label>
-              <div class="col-sm-9">
-                <select
-                  id="type"
-                  v-model="type"
-                  class="form-control">
-                  <option>tree</option>
-                  <option>cluster</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label
-                for="layout-type"
-                class="control-label col-sm-3">layoutType</label>
-              <div class="col-sm-9">
-                <select
-                  id="layout-type"
-                  v-model="layoutType"
-                  class="form-control">
-                  <option>euclidean</option>
-                  <option>circular</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label
-                for="margin-x"
-                class="control-label col-sm-3">marginx</label>
-              <div class="col-sm-7">
-                <input
-                  id="margin-x"
-                  v-model.number="Marginx"
-                  class="form-control"
-                  type="range"
-                  min="-200"
-                  max="200">
-              </div>
-              <div class="col-sm-2">
-                <p>{{ Marginx }}px</p>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label
-                for="margin-y"
-                class="control-label col-sm-3">marginy</label>
-              <div class="col-sm-7">
-                <input
-                  id="margin-y"
-                  v-model.number="Marginy"
-                  class="form-control"
-                  type="range"
-                  min="-200"
-                  max="200">
-              </div>
-              <div class="col-sm-2">
-                <p>{{ Marginy }}px</p>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label
-                for="margin-y"
-                class="control-label col-sm-3">radius</label>
-              <div class="col-sm-7">
-                <input
-                  id="margin-y"
-                  v-model.number="radius"
-                  class="form-control"
-                  type="range"
-                  min="1"
-                  max="10">
-              </div>
-              <div class="col-sm-2">
-                <p>{{ radius }}px</p>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label
-                for="velocity"
-                class="control-label col-sm-3">Duration</label>
-              <div class="col-sm-7">
-                <input
-                  id="velocity"
-                  v-model.number="duration"
-                  class="form-control"
-                  type="range"
-                  min="0"
-                  max="3000">
-              </div>
-              <div class="col-sm-2">
-                <p>{{ duration }}ms</p>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <span v-if="currentNode">Current Node: {{ currentNode.data.text }}</span>
-              <span v-else>No Node selected.</span>
-              <i
-                v-if="isLoading"
-                class="fa fa-spinner fa-spin fa-2x fa-fw"/>
-            </div>
-
-            <button
-              :disabled="!currentNode"
-              type="button"
-              class="btn btn-primary"
-              data-toggle="tooltip"
-              data-placement="top"
-              title="Expand All from current"
-              @click="expandAll">
-              <i
-                class="fa fa-expand"
-                aria-hidden="true"/>
-            </button>
-
-            <button
-              :disabled="!currentNode"
-              type="button"
-              class="btn btn-secondary"
-              data-toggle="tooltip"
-              data-placement="top"
-              title="Collapse All from current"
-              @click="collapseAll">
-              <i
-                class="fa fa-compress"
-                aria-hidden="true"/>
-            </button>
-
-            <button
-              :disabled="!currentNode"
-              type="button"
-              class="btn btn-success"
-              data-toggle="tooltip"
-              data-placement="top"
-              title="Show Only from current"
-              @click="showOnly">
-              <i
-                class="fa fa-search-plus"
-                aria-hidden="true"/>
-            </button>
-
-            <button
-              :disabled="!currentNode"
-              type="button"
-              class="btn btn-warning"
-              data-toggle="tooltip"
-              data-placement="top"
-              title="Show current"
-              @click="show">
-              <i
-                class="fa fa-binoculars"
-                aria-hidden="true"/>
-            </button>
-
-            <button
-              v-if="zoomable"
-              type="button"
-              class="btn btn-warning"
-              data-toggle="tooltip"
-              data-placement="top"
-              title="Reset Zoom"
-              @click="resetZoom">
-              <i
-                class="fa fa-arrows-alt"
-                aria-hidden="true"/>
-            </button>
-
-          </div>
-        </div>
-      </div>
-
-
-      <div class="panel panel-default">
-        <div class="panel-heading">Events</div>
-
-        <div class="panel-body log">
-          <div
-            v-for="(event,index) in events"
-            :key="index">
-            <p><b>Name:</b> {{ event.eventName }} <b>Data:</b>{{ event.data.text }}</p>
-          </div>
-        </div>
-      </div-->
-
     </div>
     <div class="flex flex-column p3 sm-col-12 lg-col-9">
       <tree
         ref="tree"
         :identifier="getId"
-        :zoomable="treeData.zoomable"
         :data="treeData.data.Graph.tree"
         :node-text="treeData.nodeText"
-        margin-x=0
-        margin-y=0
         :radius="treeData.radius"
         :type="treeData.type"
         :layout-type="treeData.layoutType"
         :duration="treeData.duration"
+        :margin-x="treeData.marginX"
+        :margin-y="treeData.marginY"
         class="tree"
         @clicked="onClick"
         @expand="onExpand"
@@ -235,7 +36,7 @@
 </template>
 
 <script>
-import { tree } from 'vued3tree';
+import tree from '@/components/WayBetterTree/Tree';
 import Sidebar from '@/components/Sidebar';
 import Proxy from '@/proxies/Proxy';
 import treeData from './data1.json';
@@ -247,9 +48,10 @@ Object.assign(treeData, {
   layoutType: 'euclidean',
   duration: 750,
   radius: 5,
+  marginX: 0,
+  marginY: 0,
   nodeText: 'text',
   currentNode: null,
-  zoomable: true,
   isLoading: false,
   events: [],
   data: {
@@ -285,12 +87,7 @@ export default {
     };
   },
   mounted() {
-    const path = d3.select('path.linktree');
-    let startPoint = this.pathStartPoint(path);
-    startPoint = ["36", "300"]
-    const marker = d3.select('svg').append('circle');
-    marker.attr('transform', `translate(${startPoint})`).attr('r', 5)
-    this.transition(marker, path);
+    this.animateMessage('Home', 'Home1');
   },
   sockets: {
     ping_server(response) {
@@ -298,26 +95,61 @@ export default {
     },
   },
   methods: {
-    pathStartPoint(path) {
-      let d = path.attr('d'),
-        dsplitted = d.split(' ');
-      return dsplitted[1].split(',');
+    animateMessage(senderName, receiverName) {
+      let senderNode = null;
+      let receiverNode = null;
+      d3.selectAll('.nodetree').each((d) => {
+        if (d.data.text === senderName) {
+          senderNode = d;
+        } else if (d.data.text === receiverName) {
+          receiverNode = d;
+        }
+      });
+      if (senderNode == null && receiverNode == null) {
+        throw new Error('Invalid node name');
+      }
+
+      const senderCoords = { x: senderNode.x, y: senderNode.y };
+      const receiverCoords = { x: receiverNode.x, y: receiverNode.y };
+      let inverseDirection = false;
+      let animationPath = null;
+      d3.selectAll('path.linktree').each(function () {
+        const path = d3.select(this);
+        path.attr('d', (d) => {
+          console.log(receiverCoords)
+          console.log(d.parent)
+          if (d.x === receiverCoords.x && d.y === receiverCoords.y) {
+            animationPath = path;
+          } else if(d.x === senderCoords.x && d.y === senderCoords.y) {
+            animationPath = path;
+            inverseDirection = true;
+          }
+        });
+      });
+      if (animationPath != null) {
+        this.startAnimation(animationPath, [senderCoords.x, senderCoords.y], inverseDirection);
+      }
     },
-    transition(marker, path) {
-      setTimeout(()=>{
-      marker.transition()
-        .duration(7500)
-        .attrTween('transform', this.translateAlong(path.node()))
-        .each('end', transition);// infinite loop
-    },1000);
+    startAnimation(path, startPoint, inverseDirection) {
+      const marker = d3.select('svg').append('circle');
+      marker.attr('transform', `translate(${startPoint})`).attr('r', 5);
+      this.transition(marker, path, inverseDirection);
     },
-    translateAlong(path) {
+    transition(marker, path, inverseDirection) {
+      setTimeout(() => {
+        marker
+          .transition()
+          .duration(7500)
+          .attrTween('transform', this.translateAlong(path.node(), inverseDirection))
+          .each('end', () => {}); // infinite loop
+      }, 1000);
+    },
+    translateAlong(path, inverseDirection) {
       const l = path.getTotalLength();
-      return function (i) {
-        return function (t) {
-          const p = path.getPointAtLength(Math.abs(1 - t) * l);
-          return `translate(${p.x + 36},${p.y})`;// Move marker
-        };
+      return () => (t) => {
+        let aux = inverseDirection ? t : (1 - t)
+        const p = path.getPointAtLength(Math.abs(aux) * l);
+        return `translate(${p.x + 36},${p.y})`; // Move marker
       };
     },
     pingServer() {
@@ -360,12 +192,6 @@ export default {
     onEvent(eventName, data) {
       this.events.push({ eventName, data: data.data });
       console.log({ eventName, data });
-    },
-    resetZoom() {
-      this.isLoading = true;
-      this.$refs.tree.resetZoom().then(() => {
-        this.isLoading = false;
-      });
     },
     async getTopics() {
       try {
