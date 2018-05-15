@@ -87,7 +87,7 @@ export default {
     };
   },
   mounted() {
-    this.animateMessage('Home', 'Home2');
+    this.animateMessage('Home', 'Home1');
   },
   sockets: {
     ping_server(response) {
@@ -111,43 +111,44 @@ export default {
 
       const senderCoords = { x: senderNode.x, y: senderNode.y };
       const receiverCoords = { x: receiverNode.x, y: receiverNode.y };
-      const animationPath = null;
+      let inverseDirection = false;
+      let animationPath = null;
       d3.selectAll('path.linktree').each(function () {
         const path = d3.select(this);
-        const attrD = path.attr('d', d => console.log(d));
-        /*         .split(' ');
-        const startPoint = attrD[2].split(',');
-        const endPoint = (attrD[0].substring(attrD[0].lastIndexOf('M') + 1, attrD[0].lastIndexOf('C'))).split(',');
-        const points = { xi: startPoint[0], yi: startPoint[1], xf: endPoint[0], yf: endPoint[1] };
-
-        if (points.xi === senderCoords.x && points.yi === senderCoords.y
-          && points.xf === receiverCoords.x && points.yf === receiverCoords.y) {
-          animationPath = path;
-        } */
+        path.attr('d', (d) => {
+          console.log(receiverCoords)
+          console.log(d.parent)
+          if (d.x === receiverCoords.x && d.y === receiverCoords.y) {
+            animationPath = path;
+          } else if(d.x === senderCoords.x && d.y === senderCoords.y) {
+            animationPath = path;
+            inverseDirection = true;
+          }
+        });
       });
-
       if (animationPath != null) {
-        this.startAnimation(animationPath, [senderCoords.x, senderCoords.y]);
+        this.startAnimation(animationPath, [senderCoords.x, senderCoords.y], inverseDirection);
       }
     },
-    startAnimation(path, startPoint) {
+    startAnimation(path, startPoint, inverseDirection) {
       const marker = d3.select('svg').append('circle');
       marker.attr('transform', `translate(${startPoint})`).attr('r', 5);
-      this.transition(marker, path);
+      this.transition(marker, path, inverseDirection);
     },
-    transition(marker, path) {
+    transition(marker, path, inverseDirection) {
       setTimeout(() => {
         marker
           .transition()
           .duration(7500)
-          .attrTween('transform', this.translateAlong(path.node()))
+          .attrTween('transform', this.translateAlong(path.node(), inverseDirection))
           .each('end', () => {}); // infinite loop
       }, 1000);
     },
-    translateAlong(path) {
+    translateAlong(path, inverseDirection) {
       const l = path.getTotalLength();
       return () => (t) => {
-        const p = path.getPointAtLength(Math.abs(1 - t) * l);
+        let aux = inverseDirection ? t : (1 - t)
+        const p = path.getPointAtLength(Math.abs(aux) * l);
         return `translate(${p.x + 36},${p.y})`; // Move marker
       };
     },
