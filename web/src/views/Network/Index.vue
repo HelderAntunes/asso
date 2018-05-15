@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { tree } from 'vued3tree';
+import tree from '@/components/WayBetterTree/Tree';
 import Sidebar from '@/components/Sidebar';
 import Proxy from '@/proxies/Proxy';
 import treeData from './data1.json';
@@ -111,11 +111,11 @@ export default {
 
       const senderCoords = { x: senderNode.x, y: senderNode.y };
       const receiverCoords = { x: receiverNode.x, y: receiverNode.y };
-
-      let animationPath = null;
+      const animationPath = null;
       d3.selectAll('path.linktree').each(function () {
         const path = d3.select(this);
-        const attrD = path.attr('d').split(' ');
+        const attrD = path.attr('d', d => console.log(d));
+        /*         .split(' ');
         const startPoint = attrD[2].split(',');
         const endPoint = (attrD[0].substring(attrD[0].lastIndexOf('M') + 1, attrD[0].lastIndexOf('C'))).split(',');
         const points = { xi: startPoint[0], yi: startPoint[1], xf: endPoint[0], yf: endPoint[1] };
@@ -123,7 +123,7 @@ export default {
         if (points.xi === senderCoords.x && points.yi === senderCoords.y
           && points.xf === receiverCoords.x && points.yf === receiverCoords.y) {
           animationPath = path;
-        }
+        } */
       });
 
       if (animationPath != null) {
