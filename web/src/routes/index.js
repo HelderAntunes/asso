@@ -37,11 +37,6 @@ export default [
     component: () => import('@/views/Topics/Show'),
   },
   {
-    path: '/teste',
-    name: 'teste.vue',
-    component: () => import('@/views/Test/Index'),
-  },
-  {
     path: '/',
     redirect: '/network/tree',
   },
