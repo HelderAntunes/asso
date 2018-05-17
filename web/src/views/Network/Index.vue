@@ -6,8 +6,10 @@
         class="sm-col sm-col-12 lg-col-2">
         <Sidebar />
       </div>
-
       <div>
+        <el-button
+          type="primary"
+          @click="showMessageModal = true">Create Message</el-button>
         <input
           v-model="message.sent"
           placeholder="Send a message">
@@ -32,12 +34,19 @@
         @expand="onExpand"
         @retract="onRetract"/>
     </div>
+    <el-dialog
+      :visible.sync="showMessageModal"
+      title="Create Message"
+      width="50%">
+      <message-modal :topics="topics" @closeModal="closeModal"/>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import tree from '@/components/WayBetterTree/Tree';
 import Sidebar from '@/components/Sidebar';
+import MessageModal from './MessageModal';
 import Proxy from '@/proxies/Proxy';
 import treeData from './data1.json';
 
@@ -75,6 +84,7 @@ export default {
   components: {
     tree,
     Sidebar,
+    MessageModal,
   },
   data() {
     return {
@@ -82,12 +92,25 @@ export default {
         sent: '',
         received: '',
       },
+      showMessageModal: false,
+      topics: [],
       treeData,
       events: [],
     };
   },
-  mounted() {
-    this.animateMessage('Home', 'Home1');
+  async created() {
+    try {
+      const response = await new Proxy('topics').all();
+      console.log(response);
+      this.topics = response;
+    } catch (e) {
+      this.$message({
+        message: 'Error retrieving topics!',
+        type: 'error',
+      });
+    }
+
+    // Example -> this.animateMessage('Home', 'Home1');
   },
   sockets: {
     ping_server(response) {
@@ -95,6 +118,9 @@ export default {
     },
   },
   methods: {
+    closeModal() {
+      this.showMessageModal = false;
+    },
     animateMessage(senderName, receiverName) {
       let senderNode = null;
       let receiverNode = null;
@@ -116,18 +142,20 @@ export default {
       d3.selectAll('path.linktree').each(function () {
         const path = d3.select(this);
         path.attr('d', (d) => {
-          console.log(receiverCoords)
-          console.log(d.parent)
           if (d.x === receiverCoords.x && d.y === receiverCoords.y) {
             animationPath = path;
-          } else if(d.x === senderCoords.x && d.y === senderCoords.y) {
+          } else if (d.x === senderCoords.x && d.y === senderCoords.y) {
             animationPath = path;
             inverseDirection = true;
           }
         });
       });
       if (animationPath != null) {
-        this.startAnimation(animationPath, [senderCoords.x, senderCoords.y], inverseDirection);
+        this.startAnimation(
+          animationPath,
+          [senderCoords.x, senderCoords.y],
+          inverseDirection,
+        );
       }
     },
     startAnimation(path, startPoint, inverseDirection) {
@@ -136,20 +164,21 @@ export default {
       this.transition(marker, path, inverseDirection);
     },
     transition(marker, path, inverseDirection) {
-      setTimeout(() => {
-        marker
-          .transition()
-          .duration(7500)
-          .attrTween('transform', this.translateAlong(path.node(), inverseDirection))
-          .each('end', () => {}); // infinite loop
-      }, 1000);
+      marker
+        .transition()
+        .duration(7500)
+        .attrTween(
+          'transform',
+          this.translateAlong(path.node(), inverseDirection),
+        )
+        .remove();
     },
     translateAlong(path, inverseDirection) {
       const l = path.getTotalLength();
       return () => (t) => {
-        let aux = inverseDirection ? t : (1 - t)
+        const aux = inverseDirection ? t : 1 - t;
         const p = path.getPointAtLength(Math.abs(aux) * l);
-        return `translate(${p.x + 36},${p.y})`; // Move marker
+        return `translate(${p.x + 36},${p.y})`; // 36 is the parent transformation
       };
     },
     pingServer() {
@@ -192,15 +221,6 @@ export default {
     onEvent(eventName, data) {
       this.events.push({ eventName, data: data.data });
       console.log({ eventName, data });
-    },
-    async getTopics() {
-      try {
-        const response = await new Proxy('topics').all();
-        // this.treeData.data.Graph.tree
-        console.log(response);
-      } catch (e) {
-        throw e;
-      }
     },
   },
 };

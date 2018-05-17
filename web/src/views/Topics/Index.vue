@@ -163,7 +163,6 @@ export default {
     async deleteTopic() {
       try {
         const response = await new Proxy('topics').destroy(this.topic.destination);
-        console.log(response);
         if (response.result === 'Success') {
           this.topics.splice(
             this.topics.findIndex(x => x.destination === this.topic.destination),
