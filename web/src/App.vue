@@ -20,7 +20,5 @@ export default {
      * The name of the application.
      */
   name: 'ASSO',
-
-
 };
 </script>

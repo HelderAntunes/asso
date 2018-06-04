@@ -38,7 +38,9 @@
       :visible.sync="showMessageModal"
       title="Create Message"
       width="50%">
-      <message-modal :topics="topics" @closeModal="closeModal"/>
+      <message-modal
+        :topics="topics"
+        @closeModal="closeModal"/>
     </el-dialog>
   </div>
 </template>
@@ -46,12 +48,12 @@
 <script>
 import tree from '@/components/WayBetterTree/Tree';
 import Sidebar from '@/components/Sidebar';
-import MessageModal from './MessageModal';
 import Proxy from '@/proxies/Proxy';
-import treeData from './data1.json';
+import MessageModal from './MessageModal';
 
 const d3 = require('d3');
 
+const treeData = {};
 Object.assign(treeData, {
   type: 'tree',
   layoutType: 'euclidean',
@@ -139,7 +141,7 @@ export default {
       const receiverCoords = { x: receiverNode.x, y: receiverNode.y };
       let inverseDirection = false;
       let animationPath = null;
-      d3.selectAll('path.linktree').each(function () {
+      d3.selectAll('path.linktree').each(function checkPaths() {
         const path = d3.select(this);
         path.attr('d', (d) => {
           if (d.x === receiverCoords.x && d.y === receiverCoords.y) {

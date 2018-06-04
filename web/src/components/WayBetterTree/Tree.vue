@@ -4,12 +4,12 @@
     class="viewport treeclass"/>
 </template>
 <script>
+/* eslint-disable */
 import resize from 'vue-resize-directive';
+import * as d3 from 'd3';
 import euclidean from './euclidean-layout';
 import circular from './circular-layout';
 import { compareString, anchorTodx, drawLink, toPromise, findInParents, mapMany, removeTextAndGraph, translate } from './d3-utils';
-
-import * as d3 from 'd3';
 
 const layout = {
   euclidean,

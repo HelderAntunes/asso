@@ -7,8 +7,15 @@
           auto-complete="off"/>
       </el-form-item>
       <el-form-item label="Topic">
-        <el-select v-model="form.topic" placeholder="Please, select the desired topic" style="width: 100%">
-          <el-option v-for="topic in topics" :key="topic.destination" :label="topic.destination" :value="topic.destination"></el-option>
+        <el-select
+          v-model="form.topic"
+          placeholder="Please, select the desired topic"
+          style="width: 100%">
+          <el-option
+            v-for="topic in topics"
+            :key="topic.destination"
+            :label="topic.destination"
+            :value="topic.destination"/>
         </el-select>
       </el-form-item>
       <el-form-item label="Message">
@@ -36,8 +43,8 @@ export default {
   props: {
     topics: {
       type: Array,
-      default: [],
-    }
+      default: () => [],
+    },
   },
   data() {
     return {
