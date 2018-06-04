@@ -9,11 +9,12 @@ const rabbitAPI = require('./config/rabbit');
 // open mongoose connection
 mongoose.connect();
 
+// init Socket.io
+const server = require('http').createServer(app);
+socketIO.connect(server);
+
 // listen to requests
 app.listen(port, () => console.info(`Server initialized on port ${port} (${env})`));
-
-// init Socket.io
-socketIO.connect(app);
 
 /**
 * Exports express

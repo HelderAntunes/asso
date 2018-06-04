@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const controller = require('../controllers/device.controller');
+const controller = require('../controllers/topic.controller');
 
 /**
  * Routes related to queues / topics

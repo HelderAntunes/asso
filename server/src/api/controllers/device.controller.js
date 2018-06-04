@@ -33,5 +33,5 @@ const index = (req, res) => {
 }
 
 module.exports = {
-    list,
+    index,
 }

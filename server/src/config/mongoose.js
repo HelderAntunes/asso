@@ -20,7 +20,6 @@ mongoose.set('debug', true);
 exports.connect = () => {
   mongoose.connect('mongodb://database:27017/test', {
     keepAlive: 1,
-    useMongoClient: true,
   });
   return mongoose.connection;
 };
