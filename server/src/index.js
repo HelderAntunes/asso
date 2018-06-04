@@ -4,13 +4,13 @@ const { port, env } = require('./config/vars');
 const app = require('./config/express');
 const mongoose = require('./config/mongoose');
 const socketIO = require('./config/socket');
-const rabbitAPI = require('./config/rabbit');
 
 // open mongoose connection
 mongoose.connect();
 
 // init Socket.io
 const server = require('http').createServer(app);
+
 socketIO.connect(server);
 
 // listen to requests

@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon --legacy-watch ./src/index.js",
-    "lint": "eslint **/*.js --ignore-path .gitignore --ignore-pattern internals/scripts",
+    "lint": "eslint **/*.js",
     "lint:fix": "yarn lint -- --fix",
     "lint:watch": "yarn lint -- --watch"
   },
