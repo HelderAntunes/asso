@@ -1,54 +1,60 @@
-var request = require("request");
+const request = require("request-promise");
 
-exports.initdb = function() {
-  // CREATE TOPICS
-  var options = { method: 'POST',
+const createTopics = async () => {
+  let options = {
+    method: 'POST',
     url: 'http://localhost:8080/topics',
-    headers:
-     { 'cache-control': 'no-cache',
-       'content-type': 'application/json' },
-    body: { name: 'home.kitchen' },
-    json: true };
+    headers: {
+      'cache-control': 'no-cache',
+      'content-type': 'application/json'
+    },
+    body: {
+      name: 'home.kitchen'
+    },
+    json: true
+  };
 
-  request(options, function (error, response, body) {
-    if (error) throw new Error(error);
-
+  try {
+    await request(options);
     options.body.name = 'home.bedroom';
-    request(options, function (error, response, body) {
-      if (error) throw new Error(error);
+    await request(options);
+    options.body.name = 'home.study';
+    await request(options);
+  } catch (e) {
+    throw new Error(error);
+  }
+};
 
-      options.body.name = 'home.study';
-      request(options, function (error, response, body) {
-        if (error) throw new Error(error);
+const createMessages = async () => {
+  let options = {
+    method: 'POST',
+    url: 'http://localhost:8080/messages',
+    headers: {
+      'cache-control': 'no-cache',
+      'content-type': 'application/json'
+    },
+    body: {
+      content: '27 ºC',
+      topic: 'home.kitchen',
+      publisher: 'sensor'
+    },
+    json: true
+  };
 
-        // SEND MESSAGES
-        var options2 = { method: 'POST',
-          url: 'http://localhost:8080/messages',
-          headers:
-           { 'cache-control': 'no-cache',
-             'content-type': 'application/json' },
-          body: { content: '27 ºC', topic: 'home.kitchen', publisher: 'sensor' },
-          json: true };
+  try {
+    await request(options);
+    options.body.content = '28 ºC';
+    options.body.topic = 'home.bedroom';
+    await request(options);
+    options.body.content = '29 ºC';
+    options.body.topic = 'home.study';
+    await request(options);
+  } catch (e) {
+    throw new Error(error);
+  }
+};
 
-        request(options2, function (error, response, body) {
-          if (error) throw new Error(error);
-
-          options2.body.content = '28 ºC';
-          options2.body.topic = 'home.bedroom';
-          options2.body.content = 'sensor';
-          request(options2, function (error, response, body) {
-            if (error) throw new Error(error);
-
-            options2.body.content = '29 ºC';
-            options2.body.topic = 'home.study';
-            options2.body.content = 'sensor';
-            request(options2, function (error, response, body) {
-              if (error) throw new Error(error);
-              console.log(body);
-            });
-          });
-        });
-      });
-    });
-  });
-}
+module.exports = {
+  createTopics,
+  createMessages
+};

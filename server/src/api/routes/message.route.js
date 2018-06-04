@@ -1,32 +1,20 @@
 const router = require('express').Router();
-const utils = require('../utils');
-const Message = require('../database').Message;
+const controller = require('../controllers/message.controller');
 
 /**
- * Function that creates all the routes related to messages
- * @param service - The service used by the handlers
- * @returns {*} - A router containing all the routes/handlers
+ * Routes related to messages sent between devices
  */
-module.exports = function messagesRouter() {
 
-  router.get('/', (req, res) => {
-    Message.find({}, function(err, msgs) {
-      if (err) return res.status(400).send(err);
-      res.send(msgs);
-    });
-  });
+router
+  .route('/')
+  .get(controller.index);
 
-  router.get('/:id', (req, res) => {
-    Message.findById(req.params.id, (err, msg) => {
-      if (err) return res.status(400).send(err);
-      res.send(msg);
-    });
-  });
+router
+  .route('/:id')
+  .get(controller.show);
 
-  router.post('/', (req, res) => {
-    res.send('Sent '+ req.body.content + " to topic " + req.body.topic + " by " + req.body.publisher);
-    utils.sendToBroker('proxy', req.body.topic, req.body.content, req.body.publisher);
-  });
+router
+  .route('/')
+  .post(controller.create);
 
-  return router;
-};
+module.exports = router;
