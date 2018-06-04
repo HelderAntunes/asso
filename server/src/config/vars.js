@@ -6,4 +6,5 @@ module.exports = {
   mongo: {
     uri: process.env.MONGO_URI,
   },
+  amqpAddress: process.env.AMPQ_ADDRESS,
 };

@@ -33,8 +33,6 @@ services:
     links:
       - rabbitmq
       - database
-    environment:
-      - AMPQ_ADDRESS=amqp://guest:guest@rabbitmq:5672/vhost
     restart: always
     depends_on:
       - "database"
