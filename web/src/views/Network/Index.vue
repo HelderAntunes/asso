@@ -102,9 +102,8 @@ export default {
   },
   async created() {
     try {
-      const response = await new Proxy('topics').all();
-      console.log(response);
-      this.topics = response;
+      const response = await new Proxy('api/topics').all();
+      this.topics = response.data;
     } catch (e) {
       this.$message({
         message: 'Error retrieving topics!',

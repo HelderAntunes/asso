@@ -1,4 +1,5 @@
 const rabbitAPI = require('../../config/rabbit');
+const request = require('request');
 const Message = require('../models/message.model');
 
 const index = (req, res) => {
@@ -6,8 +7,8 @@ const index = (req, res) => {
         vhost: 'vhost',
         exchange: 'proxy'
     }, function (err, response) {
-        if (err) return res.json(err);
-        res.json(response);
+        if (err) return res.internalServerError(err);
+        res.ok(JSON.parse(response));
     });
 };
 
@@ -17,8 +18,8 @@ const show = (req, res) => {
         vhost: 'vhost',
         queue: destination
     }, function (err, response) {
-        if (err) return res.json(err);
-        res.json(response);
+        if (err) return res.internalServerError(err);
+        res.ok(response);
     });
 };
 
@@ -32,7 +33,7 @@ const create = (req, res) => {
         durable: true,
         arguments: {},
     }, function (err, response_) {
-        if (err) return res.send(err);
+        if (err) return res.internalServerError(err);
 
         request.post({
             headers: {
@@ -46,9 +47,9 @@ const create = (req, res) => {
                 }
             }
         }, function (error, response, body) {
-            if (err) return res.send(err);
+            if (err) return res.internalServerError(err);
 
-            res.json(response);
+            res.ok(response);
         });
     });
 };
@@ -60,8 +61,8 @@ const destroy = (req, res) => {
         vhost: 'vhost',
         queue: destination
     }, function (err, response) {
-        if (err) return res.send(err);
-        res.send(response);
+        if (err) return res.internalServerError(err);
+        res.ok(response);
     });
 };
 
@@ -70,7 +71,7 @@ const topicMessages = async (req, res) => {
         const messages = await Message.find({
             topic: req.params.id
         });
-        res.send(msgs);
+        res.ok(msgs);
     } catch(e) {
         throw(e);
     }

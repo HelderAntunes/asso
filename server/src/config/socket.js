@@ -1,5 +1,6 @@
 exports.connect = (server) => {
   const socketIO = require('socket.io')(server);
+  socketIO.set('origins', '*:*');
 
   socketIO.on('connection', function(socket){
     console.log('a user connected');

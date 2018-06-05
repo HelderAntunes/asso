@@ -7,14 +7,14 @@
         <Sidebar />
       </div>
       <div class="flex flex-column p3">
-        <h2>Manage Subscribers</h2>
+        <h2>Manage Devices</h2>
         <el-breadcrumb
           class="breadcrumb pb3"
           separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>Subscribers</el-breadcrumb-item>
+          <el-breadcrumb-item>Devices</el-breadcrumb-item>
         </el-breadcrumb>
         <el-table
-          :data="subscribers"
+          :data="devices"
           class="dashboard-table">
           <el-table-column
             label="Name">
@@ -42,7 +42,7 @@
             label="Operations">
             <template slot-scope="scope">
               <router-link
-                :to="{ name: 'subscribers.show', params: {id: scope.row.name} }">
+                :to="{ name: 'devices.show', params: {id: scope.row.name} }">
                 <el-button
                   icon="el-icon-search"
                   circle/>
@@ -58,7 +58,7 @@
         <div class="pt2">
           <el-button
             type="primary"
-            @click="onClickCreate">Create Subscriber</el-button>
+            @click="onClickCreate">Create Device</el-button>
         </div>
         <el-dialog
           v-if="dialog.action === 'DELETE'"
@@ -68,7 +68,7 @@
           <el-alert
             title="Permanent action"
             type="warning"
-            description="Do you really want to delete this subscriber?"
+            description="Do you really want to delete this device?"
             show-icon/>
           <span
             slot="footer"
@@ -76,7 +76,7 @@
             <el-button @click="dialog.visible = false">Cancel</el-button>
             <el-button
               type="primary"
-              @click="deleteSubscriber">Confirm</el-button>
+              @click="deleteDevice">Confirm</el-button>
           </span>
         </el-dialog>
         <el-dialog
@@ -85,7 +85,7 @@
           :visible.sync="dialog.visible"
           width="50%">
           <el-form :model="form">
-            <el-form-item label="Subscriber name">
+            <el-form-item label="Device name">
               <el-input
                 v-model="form.name"
                 auto-complete="off"/>
@@ -97,7 +97,7 @@
             <el-button @click="dialog.visible = false">Cancel</el-button>
             <el-button
               type="primary"
-              @click="createSubscriber">Confirm</el-button>
+              @click="createDevice">Confirm</el-button>
           </span>
         </el-dialog>
       </div>
@@ -115,7 +115,7 @@ export default {
   },
   data() {
     return {
-      subscriber: {},
+      device: {},
       form: {
         name: '',
       },
@@ -124,13 +124,13 @@ export default {
         visible: false,
         action: '',
       },
-      subscribers: [],
+      devices: [],
     };
   },
   async created() {
     try {
-      const response = await new Proxy('subscribers').all();
-      this.subscribers = response.map(x => ({
+      const response = await new Proxy('api/devices').all();
+      this.devices = response.data.map(x => ({
         name: x.name,
         bindings: x.bindings,
       }));
@@ -141,44 +141,44 @@ export default {
   methods: {
     onClickCreate() {
       this.dialog.action = 'CREATE';
-      this.dialog.title = 'Create Subscriber';
+      this.dialog.title = 'Create Device';
       this.dialog.visible = true;
     },
-    async createSubscriber() {
+    async createDevice() {
       try {
         const name = this.form.name;
-        const result = await new Proxy('subscribers').create({ name });
+        const result = await new Proxy('api/devices').create({ name });
         console.log(result);
-        this.subscribers.push({ name, bindings: [] });
+        this.devices.push({ name, bindings: [] });
         this.dialog.visible = false;
 
         this.$message({
-          message: `Subscriber ${name} created with success!`,
+          message: `Device ${name} created with success!`,
           type: 'success',
         });
       } catch (e) {
         throw e;
       }
     },
-    onClickDelete(subscriber) {
+    onClickDelete(device) {
       this.dialog.action = 'DELETE';
-      this.dialog.title = 'Delete Subscriber';
+      this.dialog.title = 'Delete device';
       this.dialog.visible = true;
-      this.subscriber = subscriber;
+      this.device = device;
     },
-    async deleteSubscriber() {
+    async deleteDevice() {
       try {
-        const response = await new Proxy('subscribers').destroy(this.subscriber.name);
+        const response = await new Proxy('subscribers').destroy(this.device.name);
         console.log(response);
-        this.subscribers.splice(
-          this.subscribers.findIndex(x => x.name === this.subscriber.name),
+        this.devices.splice(
+          this.devices.findIndex(x => x.name === this.device.name),
           1,
         );
         this.$message({
-          message: `Subcriber ${this.subscriber.name} deleted with success!`,
+          message: `Device ${this.device.name} deleted with success!`,
           type: 'success',
         });
-        this.topic = null;
+        this.device = null;
         this.dialog.visible = false;
       } catch (e) {
         throw e;

@@ -8,23 +8,23 @@
 export default [
   {
     path: '/network/statistics',
-    name: 'network_statistics',
+    name: 'network.statistics',
     component: () => import('@/views/Network/Statistics'),
   },
   {
     path: '/network/tree',
-    name: 'network_tree',
+    name: 'network.tree',
     component: () => import('@/views/Network/Index'),
   },
   {
-    path: '/subscribers',
-    name: 'subscribers',
-    component: () => import('@/views/Subscribers/Index'),
+    path: '/devices',
+    name: 'devices',
+    component: () => import('@/views/Devices/Index'),
   },
   {
-    path: '/subscribers/:id',
-    name: 'subscribers.show',
-    component: () => import('@/views/Subscribers/Show'),
+    path: '/devices/:id',
+    name: 'devices.show',
+    component: () => import('@/views/Devices/Show'),
   },
   {
     path: '/topics',

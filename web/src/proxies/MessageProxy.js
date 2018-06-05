@@ -7,7 +7,7 @@ class MessageProxy extends Proxy {
    * @param {Object} parameters The query parameters.
    */
   constructor(parameters = {}) {
-    super('messages', parameters);
+    super('api/messages', parameters);
   }
 }
 

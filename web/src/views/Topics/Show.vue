@@ -14,7 +14,6 @@
           <el-breadcrumb-item :to="{ name: 'topics' }">Topics</el-breadcrumb-item>
           <el-breadcrumb-item>Topic {{ $route.params.id }}</el-breadcrumb-item>
         </el-breadcrumb>
-
       </div>
     </div>
   </div>
@@ -35,10 +34,13 @@ export default {
   },
   async created() {
     try {
-      const response = await new Proxy('topics').all();
+      const response = await new Proxy('api/topics').find(this.$route.params.id);
       this.topic = response;
     } catch (e) {
-      throw e;
+      this.$message({
+        message: 'Error retrieving topics!',
+        type: 'error',
+      });
     }
   },
   methods: {},

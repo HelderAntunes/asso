@@ -17,7 +17,7 @@
           :data="topics"
           class="dashboard-table">
           <el-table-column
-            label="Destination">
+            label="Topic">
             <template slot-scope="scope">
               <span>{{ scope.row.destination }}</span>
             </template>
@@ -74,7 +74,11 @@
           :title="dialog.title"
           :visible.sync="dialog.visible"
           width="50%">
-          <el-form :model="form">
+          <el-alert
+            title="Define the topic and routing key by separating the name with dots"
+            type="info"/>
+          <el-form
+            :model="form">
             <el-form-item label="Topic name">
               <el-input
                 v-model="form.name"
@@ -119,10 +123,13 @@ export default {
   },
   async created() {
     try {
-      const response = await new Proxy('topics').all();
-      this.topics = response;
+      const response = await new Proxy('api/topics').all();
+      this.topics = response.data;
     } catch (e) {
-      throw e;
+      this.$message({
+        message: 'Error retrieving topics!',
+        type: 'error',
+      });
     }
   },
   methods: {
@@ -134,9 +141,9 @@ export default {
     async createTopic() {
       try {
         const name = this.form.name;
-        const result = await new Proxy('topics').create({ name });
+        const response = await new Proxy('api/topics').create({ name });
 
-        if (result.statusCode === 201) {
+        if (response.code === '200') {
           this.topics.push({ destination: name, arguments: {} });
           this.dialog.visible = false;
 
@@ -162,8 +169,8 @@ export default {
     },
     async deleteTopic() {
       try {
-        const response = await new Proxy('topics').destroy(this.topic.destination);
-        if (response.result === 'Success') {
+        const response = await new Proxy('api/topics').destroy(this.topic.destination);
+        if (response.code === '200') {
           this.topics.splice(
             this.topics.findIndex(x => x.destination === this.topic.destination),
             1,

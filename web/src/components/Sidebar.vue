@@ -15,7 +15,7 @@
           <el-menu-item
             index="1-1">
             <router-link
-              :to="{ name: 'network_tree' }"
+              :to="{ name: 'network.tree' }"
               class="link" >
               <span>Network View</span>
             </router-link>
@@ -23,7 +23,7 @@
           <el-menu-item
             index="1-2">
             <router-link
-              :to="{ name: 'network_statistics' }"
+              :to="{ name: 'network.statistics' }"
               class="link" >
               <span>Statistics</span>
             </router-link>
@@ -33,10 +33,10 @@
       <el-menu-item
         index="2">
         <router-link
-          :to="{ name: 'subscribers' }"
+          :to="{ name: 'devices' }"
           class="link">
           <i class="fas fa-mobile"/>
-          <span>Subscribers</span>
+          <span>Devices</span>
         </router-link>
       </el-menu-item>
       <el-menu-item
