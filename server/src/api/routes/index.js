@@ -1,7 +1,8 @@
 const express = require('express');
 const seeds = require('../seeds');
-const rabbitAPI = require('../../config/rabbit')
+const rabbitAPI = require('../../config/rabbit');
 const messageRoutes = require('./message.route');
+const Message = require('../models/message.model');
 const deviceRoutes = require('./device.route');
 const topicRoutes = require('./topic.route');
 
@@ -19,19 +20,19 @@ router
   .get((req, res) => {
     rabbitAPI.overview(function (err, response) {
       if (err) {
-        res.send(err);
+        res.internalServerError(err);
       } else {
-        res.send(utils.prettyJson(response));
+        res.ok(response);
       }
     });
   });
 
 router
   .route('/seed')
-  .get((req, res) => {
-    seeds.createTopics();
-    seeds.createMessages();
-    res.send({
+  .get(async (req, res) => {
+    await seeds.createTopics();
+    await seeds.createMessages();
+    res.ok({
       "msg": "Database seeded with success!"
     });
   });
@@ -49,9 +50,8 @@ router
       vhost: 'vhost',
       exchange: 'proxy'
     }, function (err, response) {
-      if (err) return res.send(err);
-
-      let queues = JSON.parse(response);
+      if (err) return res.json(err);
+      let queues = response;
       tree.nodes.push({
         id: idCounter++,
         name: 'broker',
@@ -77,7 +77,7 @@ router
       }
 
       Message.find().distinct('publisher', function (err, publishers) {
-        if (err) return res.status(400).send(err);
+        if (err) return res.badRequest(err);
 
         for (let i = 0; i < publishers.length; i++, idCounter++) {
           tree.nodes.push({
@@ -92,7 +92,7 @@ router
           });
         }
 
-        res.send(tree);
+        res.ok(tree);
       });
     });
   });

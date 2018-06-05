@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
 const routes = require('../api/routes');
+const responseEnhancer = require('../api/middleware/response');
 
 /**
  * Express instance
@@ -18,6 +19,12 @@ app.use(morgan('dev'));
 // Parse body params and attach them to req.body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.set('json spaces', 2);
+
+app.use(responseEnhancer({
+    withStatusCode: true, // Include status code in response body.
+    withStatusMessage: true, // Include status message in response body.
+}));
 
 // Lets you use HTTP verbs such as PUT or DELETE
 // in places where the client doesn't support it

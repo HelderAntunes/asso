@@ -1,5 +1,7 @@
+const rabbitmq = require('http-rabbitmq-manager');
+
 // Rabbit connection
-const rabbitAPI = require('http-rabbitmq-manager').client({
+const rabbitAPI = rabbitmq.client({
   host : 'rabbitmq',
   port : 15672,
   timeout : 25000,
@@ -7,4 +9,4 @@ const rabbitAPI = require('http-rabbitmq-manager').client({
   password : 'guest'
 });
 
-exports.rabbitAPI;
+module.exports = rabbitAPI;

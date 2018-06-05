@@ -6,8 +6,8 @@ const index = (req, res) => {
         vhost: 'vhost',
         exchange: 'proxy'
     }, function (err, response) {
-        if (err) return res.send(err);
-        res.send(utils.prettyJson(response));
+        if (err) return res.json(err);
+        res.json(response);
     });
 };
 
@@ -17,8 +17,8 @@ const show = (req, res) => {
         vhost: 'vhost',
         queue: destination
     }, function (err, response) {
-        if (err) return res.send(err);
-        res.send(response);
+        if (err) return res.json(err);
+        res.json(response);
     });
 };
 
@@ -48,7 +48,7 @@ const create = (req, res) => {
         }, function (error, response, body) {
             if (err) return res.send(err);
 
-            res.send(response);
+            res.json(response);
         });
     });
 };

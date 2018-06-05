@@ -3,7 +3,7 @@ const request = require("request-promise");
 const createTopics = async () => {
   let options = {
     method: 'POST',
-    url: 'http://localhost:8080/topics',
+    url: 'http://localhost:8080/api/topics',
     headers: {
       'cache-control': 'no-cache',
       'content-type': 'application/json'
@@ -21,14 +21,14 @@ const createTopics = async () => {
     options.body.name = 'home.study';
     await request(options);
   } catch (e) {
-    throw new Error(error);
+    throw new Error(e);
   }
 };
 
 const createMessages = async () => {
   let options = {
     method: 'POST',
-    url: 'http://localhost:8080/messages',
+    url: 'http://localhost:8080/api/messages',
     headers: {
       'cache-control': 'no-cache',
       'content-type': 'application/json'
@@ -50,7 +50,7 @@ const createMessages = async () => {
     options.body.topic = 'home.study';
     await request(options);
   } catch (e) {
-    throw new Error(error);
+    throw new Error(e);
   }
 };
 

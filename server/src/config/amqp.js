@@ -13,7 +13,7 @@ const sendToBroker = (ex, key, content, publisher) => {
       'appId': publisher
     });
   }).catch(e => {
-    throw new Error(err)
+    throw new Error(e)
   });
 };
 
@@ -40,7 +40,7 @@ const sendMessageToProxy = () => {
         }, {noAck: true});
       });
   }).catch(e => {
-    throw new Error(err)
+    throw new Error(e)
   });
 }
 

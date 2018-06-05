@@ -1,26 +1,29 @@
 const Message = require('../models/message.model');
+const amqp = require('../../config/amqp');
 
 const index = async (req, res) => {
     try {
-        const messages = Message.find({});
-        res.json(messages);
+        const messages = await Message.find({});
+        res.ok(messages);
     } catch(e) {
-        throw(e);
+        res.internalServerError(e);
     }
 };
 
-const show = (req, res) => {
+const show = async (req, res) => {
     try {
-        const message = Message.findById(req.params.id);
-        res.json(message);
+        const message = await Message.findById(req.params.id);
+        res.ok(message);
     } catch(e) {
-        throw(e);
+        res.internalServerError(e);
     }
 };
 
 const create = (req, res) => {
-    res.send('Sent '+ req.body.content + " to topic " + req.body.topic + " by " + req.body.publisher);
-    utils.sendToBroker('proxy', req.body.topic, req.body.content, req.body.publisher);
+    res.ok({
+        message: `Sent ${req.body.content} to topic ${req.body.topic} by ${req.body.publisher}`
+    })
+    amqp.sendToBroker('proxy', req.body.topic, req.body.content, req.body.publisher);
 };
 
 module.exports = {
