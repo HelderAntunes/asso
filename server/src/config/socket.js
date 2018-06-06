@@ -10,7 +10,7 @@ exports.connect = (server) => {
 
     socket.on('ping_server', function(msg){
       console.log('message: ' + msg);
-      io.emit('ping_server', msg);
+      socketIO.emit('ping_server', msg);
     });
   });
 }
