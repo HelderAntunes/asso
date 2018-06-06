@@ -10,6 +10,10 @@ router
   .get(controller.index);
 
 router
+  .route('/seed')
+  .get(controller.seed);
+
+router
   .route('/:id')
   .get(controller.show);
 

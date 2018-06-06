@@ -23,22 +23,6 @@
             </template>
           </el-table-column>
           <el-table-column
-            label="Bindings">
-            <template slot-scope="scope">
-              <el-popover
-                placement="top">
-                <ul>
-                  <li
-                    v-for="(value, key) in scope.row.bindings[0]"
-                    :key="key">
-                    {{ key }} : {{ value }}
-                  </li>
-                </ul>
-                <el-button slot="reference">Show</el-button>
-              </el-popover>
-            </template>
-          </el-table-column>
-          <el-table-column
             label="Operations">
             <template slot-scope="scope">
               <router-link
@@ -59,6 +43,9 @@
           <el-button
             type="primary"
             @click="onClickCreate">Create Device</el-button>
+          <el-button
+            type="primary"
+            @click="seedDevices">Seed Devices</el-button>
         </div>
         <el-dialog
           v-if="dialog.action === 'DELETE'"
@@ -130,15 +117,26 @@ export default {
   async created() {
     try {
       const response = await new Proxy('api/devices').all();
-      this.devices = response.data.map(x => ({
-        name: x.name,
-        bindings: x.bindings,
-      }));
+      this.devices = response.data;
     } catch (e) {
       throw e;
     }
   },
   methods: {
+    async seedDevices() {
+      try {
+        const response = await new Proxy().submit(
+          "get",
+          'api/devices/seed'
+        );
+        this.$message({
+          message: `Devices seeded with success!`,
+          type: "success"
+        });
+      } catch (e) {
+        throw e;
+      }
+    },
     onClickCreate() {
       this.dialog.action = 'CREATE';
       this.dialog.title = 'Create Device';
@@ -148,8 +146,7 @@ export default {
       try {
         const name = this.form.name;
         const result = await new Proxy('api/devices').create({ name });
-        console.log(result);
-        this.devices.push({ name, bindings: [] });
+        this.devices.push({ name });
         this.dialog.visible = false;
 
         this.$message({
@@ -168,8 +165,7 @@ export default {
     },
     async deleteDevice() {
       try {
-        const response = await new Proxy('subscribers').destroy(this.device.name);
-        console.log(response);
+        const response = await new Proxy('api/devices').destroy(this.device.name);
         this.devices.splice(
           this.devices.findIndex(x => x.name === this.device.name),
           1,

@@ -9,4 +9,20 @@ router
   .route('/')
   .get(controller.index);
 
+router
+  .route('/seed')
+  .get(controller.seed);
+
+router
+  .route('/:id')
+  .get(controller.show);
+
+router
+  .route('/')
+  .post(controller.create);
+
+router
+  .route('/:id')
+  .delete(controller.destroy);
+  
 module.exports = router;

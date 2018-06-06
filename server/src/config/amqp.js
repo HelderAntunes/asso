@@ -36,7 +36,7 @@ const sendMessageToProxy = () => {
           var message = new Message({topic: msg.fields.routingKey, content: msg.content.toString(), publisher: msg.properties.appId});
           message.save();
   
-          utils.sendToBroker('topic_logs', msg.fields.routingKey, msg.content.toString(), msg.properties.appId);
+          sendToBroker('topic_logs', msg.fields.routingKey, msg.content.toString(), msg.properties.appId);
         }, {noAck: true});
       });
   }).catch(e => {

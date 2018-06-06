@@ -53,7 +53,7 @@ export default {
       const response = await new Proxy('api/queues').find(
         this.$route.params.id,
       );
-      this.queue = response;
+      this.queue = response.data;
     } catch (e) {
       this.$message({
         message: 'Error retrieving queue!',

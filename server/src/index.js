@@ -8,13 +8,9 @@ const socketIO = require('./config/socket');
 // open mongoose connection
 mongoose.connect();
 
-// init Socket.io
-const server = require('http').createServer(app);
-
-socketIO.connect(server);
-
 // listen to requests
-app.listen(port, () => console.info(`Server initialized on port ${port} (${env})`));
+const server = app.listen(port, () => console.info(`Server initialized on port ${port} (${env})`));
+socketIO.connect(server);
 
 /**
 * Exports express

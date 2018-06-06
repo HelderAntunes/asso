@@ -101,7 +101,27 @@ const destroy = (req, res) => {
 
 const queueMessages = (req, res) => {
 
-}
+};
+
+const seed = (req, res) => {
+    for(let i = 0; i < 10; i++) {
+        const queueNames = ['bedroom', 'kitchen', 'study', 'classrom', 'laboratory'];
+        rabbitAPI.createQueue({
+            vhost : 'vhost',
+            queue : queueNames[Math.floor(Math.random() * queueNames.length)],
+            auto_delete : false,
+            durable : true,
+            arguments : {},
+        }, function (err, res) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(res);
+            }
+        });
+    }
+    res.ok({});
+};
 
 module.exports = {
     index,
@@ -109,4 +129,5 @@ module.exports = {
     create,
     destroy,
     queueMessages,
+    seed
 }

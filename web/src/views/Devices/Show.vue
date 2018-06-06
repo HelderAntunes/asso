@@ -11,8 +11,8 @@
         <el-breadcrumb
           class="breadcrumb pb3"
           separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item :to="{ name: 'Subscribers' }">Topics</el-breadcrumb-item>
-          <el-breadcrumb-item>Subscriber {{ $route.params.id }}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ name: 'devices' }">Devices</el-breadcrumb-item>
+          <el-breadcrumb-item>Device {{ $route.params.id }}</el-breadcrumb-item>
         </el-breadcrumb>
 
       </div>
@@ -30,13 +30,13 @@ export default {
   },
   data() {
     return {
-      subscriber: [],
+      device: {},
     };
   },
   async created() {
     try {
-      const response = await new Proxy('subscribers').find(this.$route.params.id);
-      this.subscriber = response;
+      const response = await new Proxy('api/devices').find(this.$route.params.id);
+      this.device = response.data;
     } catch (e) {
       throw e;
     }

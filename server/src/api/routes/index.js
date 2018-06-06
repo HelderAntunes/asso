@@ -1,5 +1,4 @@
 const express = require('express');
-const seeds = require('../seeds');
 const rabbitAPI = require('../../config/rabbit');
 const messageRoutes = require('./message.route');
 const Message = require('../models/message.model');
@@ -38,16 +37,6 @@ router
         } else {
           res.ok(JSON.parse(response));
         }
-    });
-  });
-
-router
-  .route('/seed')
-  .get(async (req, res) => {
-    await seeds.createQueues();
-    await seeds.createMessages();
-    res.ok({
-      "msg": "Database seeded with success!"
     });
   });
 
