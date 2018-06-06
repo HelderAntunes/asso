@@ -11,9 +11,25 @@
         <el-breadcrumb
           class="breadcrumb pb3"
           separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item :to="{ name: 'topics' }">Topics</el-breadcrumb-item>
-          <el-breadcrumb-item>Topic {{ $route.params.id }}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ name: 'queues' }">Queues</el-breadcrumb-item>
+          <el-breadcrumb-item>Queue {{ $route.params.id }}</el-breadcrumb-item>
         </el-breadcrumb>
+        <div class="">
+          <h3>Topics and Routing</h3>
+        </div>
+        <div>
+          <h3>
+            Messages
+          </h3>
+        </div>
+        <div>
+          <h3>
+            Queue configurations
+          </h3>
+          <tree-view
+            :data="queue"
+            :options="{maxDepth: 3}"/>
+        </div>
       </div>
     </div>
   </div>
@@ -29,16 +45,18 @@ export default {
   },
   data() {
     return {
-      topic: null,
+      queue: null,
     };
   },
   async created() {
     try {
-      const response = await new Proxy('api/topics').find(this.$route.params.id);
-      this.topic = response;
+      const response = await new Proxy('api/queues').find(
+        this.$route.params.id,
+      );
+      this.queue = response;
     } catch (e) {
       this.$message({
-        message: 'Error retrieving topics!',
+        message: 'Error retrieving queue!',
         type: 'error',
       });
     }

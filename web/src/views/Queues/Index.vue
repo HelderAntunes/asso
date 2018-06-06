@@ -7,32 +7,38 @@
         <Sidebar />
       </div>
       <div class="flex flex-column p3">
-        <h2>Manage Topics</h2>
+        <h2>Manage Queues</h2>
         <el-breadcrumb
           class="breadcrumb pb3"
           separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>Topics</el-breadcrumb-item>
+          <el-breadcrumb-item>Queues</el-breadcrumb-item>
         </el-breadcrumb>
         <el-table
-          :data="topics"
+          :data="queues"
           class="dashboard-table">
           <el-table-column
-            label="Topic">
+            label="Queue">
             <template slot-scope="scope">
-              <span>{{ scope.row.destination }}</span>
+              <span>{{ scope.row.name }}</span>
             </template>
           </el-table-column>
           <el-table-column
-            label="Arguments">
+            label="Bindings">
             <template slot-scope="scope">
-              <span>{{ scope.row.arguments }}</span>
+              <span>{{ showBindings(scope.row.bindings) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="Messages">
+            <template slot-scope="scope">
+              <span>{{ scope.row.messages }}</span>
             </template>
           </el-table-column>
           <el-table-column
             label="Operations">
             <template slot-scope="scope">
               <router-link
-                :to="{ name: 'topics.show', params: {id: scope.row.destination} }">
+                :to="{ name: 'queues.show', params: {id: scope.row.name} }">
                 <el-button
                   icon="el-icon-search"
                   circle/>
@@ -48,7 +54,7 @@
         <div class="pt2">
           <el-button
             type="primary"
-            @click="onClickCreate">Create Topic</el-button>
+            @click="onClickCreate">Create Queue</el-button>
         </div>
         <el-dialog
           v-if="dialog.action === 'DELETE'"
@@ -58,7 +64,7 @@
           <el-alert
             title="Permanent action"
             type="warning"
-            description="Do you really want to delete this topic?"
+            description="Do you really want to delete this queue?"
             show-icon/>
           <span
             slot="footer"
@@ -66,7 +72,7 @@
             <el-button @click="dialog.visible = false">Cancel</el-button>
             <el-button
               type="primary"
-              @click="deleteTopic">Confirm</el-button>
+              @click="deleteQueue">Confirm</el-button>
           </span>
         </el-dialog>
         <el-dialog
@@ -74,15 +80,29 @@
           :title="dialog.title"
           :visible.sync="dialog.visible"
           width="50%">
-          <el-alert
-            title="Define the topic and routing key by separating the name with dots"
-            type="info"/>
           <el-form
             :model="form">
-            <el-form-item label="Topic name">
+            <el-form-item label="Name">
               <el-input
                 v-model="form.name"
                 auto-complete="off"/>
+            </el-form-item>
+            <el-form-item label="Bindings">
+              <br>
+              <el-select
+                v-model="form.bindings"
+                multiple
+                filterable
+                allow-create
+                default-first-option
+                placeholder="Choose bindings for the queue"
+                style="width:100%">
+                <el-option
+                  v-for="bind in bindings"
+                  :key="bind.destination"
+                  :label="bind.destination"
+                  :value="bind.destination"/>
+              </el-select>
             </el-form-item>
           </el-form>
           <span
@@ -91,7 +111,7 @@
             <el-button @click="dialog.visible = false">Cancel</el-button>
             <el-button
               type="primary"
-              @click="createTopic">Confirm</el-button>
+              @click="createQueue">Confirm</el-button>
           </span>
         </el-dialog>
       </div>
@@ -109,51 +129,58 @@ export default {
   },
   data() {
     return {
-      topic: {},
+      queue: {},
       form: {
         name: '',
+        bindings: [],
       },
       dialog: {
         title: '',
         visible: false,
         action: '',
       },
-      topics: [],
+      queues: [],
+      bindings: [],
     };
   },
   async created() {
     try {
-      const response = await new Proxy('api/topics').all();
-      this.topics = response.data;
+      let response = await new Proxy('api/queues').all();
+      this.queues = response.data;
+      response = await new Proxy('api/bindings').all();
+      this.bindings = response.data;
     } catch (e) {
       this.$message({
-        message: 'Error retrieving topics!',
+        message: 'Error retrieving queues!',
         type: 'error',
       });
     }
   },
   methods: {
+    showBindings(bindings) {
+      return bindings.map(x => x.destination).join(', ');
+    },
     onClickCreate() {
       this.dialog.action = 'CREATE';
-      this.dialog.title = 'Create Topic';
+      this.dialog.title = 'Create Queue';
       this.dialog.visible = true;
     },
-    async createTopic() {
+    async createQueue() {
       try {
         const name = this.form.name;
-        const response = await new Proxy('api/topics').create({ name });
+        const response = await new Proxy('api/queues').create({ name });
 
         if (response.code === '200') {
-          this.topics.push({ destination: name, arguments: {} });
+          this.queues.push({ destination: name, arguments: {} });
           this.dialog.visible = false;
 
           this.$message({
-            message: `Topic ${name} created with success!`,
+            message: `Queue ${name} created with success!`,
             type: 'success',
           });
         } else {
           this.$message({
-            message: `Topic ${name} was not created!`,
+            message: `Queue ${name} was not created!`,
             type: 'error',
           });
         }
@@ -161,29 +188,29 @@ export default {
         throw e;
       }
     },
-    onClickDelete(topic) {
+    onClickDelete(queue) {
       this.dialog.action = 'DELETE';
-      this.dialog.title = 'Delete Topic';
+      this.dialog.title = 'Delete Queue';
       this.dialog.visible = true;
-      this.topic = topic;
+      this.queue = queue;
     },
-    async deleteTopic() {
+    async deleteQueue() {
       try {
-        const response = await new Proxy('api/topics').destroy(this.topic.destination);
+        const response = await new Proxy('api/queues').destroy(this.queue.name);
         if (response.code === '200') {
-          this.topics.splice(
-            this.topics.findIndex(x => x.destination === this.topic.destination),
+          this.queues.splice(
+            this.queues.findIndex(x => x.name === this.queue.name),
             1,
           );
           this.$message({
-            message: `Topic ${this.topic.destination} deleted with success!`,
+            message: `Queue ${this.queue.name} deleted with success!`,
             type: 'success',
           });
-          this.topic = null;
+          this.queue = null;
           this.dialog.visible = false;
         } else {
           this.$message({
-            message: `Topic ${this.topic.destination} was not deleted!`,
+            message: `Queue ${this.queue.name} was not deleted!`,
             type: 'error',
           });
         }

@@ -7,13 +7,8 @@
 
 export default [
   {
-    path: '/network/statistics',
-    name: 'network.statistics',
-    component: () => import('@/views/Network/Statistics'),
-  },
-  {
-    path: '/network/tree',
-    name: 'network.tree',
+    path: '/network',
+    name: 'network',
     component: () => import('@/views/Network/Index'),
   },
   {
@@ -27,22 +22,22 @@ export default [
     component: () => import('@/views/Devices/Show'),
   },
   {
-    path: '/topics',
-    name: 'topics',
-    component: () => import('@/views/Topics/Index'),
+    path: '/queues',
+    name: 'queues',
+    component: () => import('@/views/Queues/Index'),
   },
   {
-    path: '/topics/:id',
-    name: 'topics.show',
-    component: () => import('@/views/Topics/Show'),
+    path: '/queues/:id',
+    name: 'queues.show',
+    component: () => import('@/views/Queues/Show'),
   },
   {
     path: '/',
-    redirect: '/network/tree',
+    redirect: '/network',
   },
 
   {
     path: '/*',
-    redirect: '/network/tree',
+    redirect: '/network',
   },
 ];

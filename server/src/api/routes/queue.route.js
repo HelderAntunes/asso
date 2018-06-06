@@ -1,8 +1,8 @@
 const router = require('express').Router();
-const controller = require('../controllers/topic.controller');
+const controller = require('../controllers/queue.controller');
 
 /**
- * Routes related to queues / topics
+ * Routes related to queues
  */
 
 router
@@ -23,6 +23,6 @@ router
 
 router
   .route('/:id/messages')
-  .get(controller.topicMessages);
+  .get(controller.queueMessages);
 
 module.exports = router;

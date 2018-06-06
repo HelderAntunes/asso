@@ -4,7 +4,7 @@ const rabbitAPI = require('../../config/rabbit');
 const messageRoutes = require('./message.route');
 const Message = require('../models/message.model');
 const deviceRoutes = require('./device.route');
-const topicRoutes = require('./topic.route');
+const queueRoutes = require('./queue.route');
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ const router = express.Router();
  */
 router.use('/messages', messageRoutes);
 router.use('/devices', deviceRoutes);
-router.use('/topics', topicRoutes);
+router.use('/queues', queueRoutes);
 
 router
   .route('/overview')
@@ -25,12 +25,26 @@ router
         res.ok(response);
       }
     });
+  }); 
+
+router
+  .route('/bindings')
+  .get((req, res) => {
+    rabbitAPI.listBindings({
+      vhost : 'vhost'
+    }, function (err, response) {
+        if (err) {
+          res.internalServerError(err);
+        } else {
+          res.ok(JSON.parse(response));
+        }
+    });
   });
 
 router
   .route('/seed')
   .get(async (req, res) => {
-    await seeds.createTopics();
+    await seeds.createQueues();
     await seeds.createMessages();
     res.ok({
       "msg": "Database seeded with success!"

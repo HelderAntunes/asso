@@ -1,9 +1,9 @@
 const request = require("request-promise");
 
-const createTopics = async () => {
+const createQueues = async () => {
   let options = {
     method: 'POST',
-    url: 'http://localhost:8080/api/topics',
+    url: 'http://localhost:8080/api/queues',
     headers: {
       'cache-control': 'no-cache',
       'content-type': 'application/json'
@@ -55,6 +55,6 @@ const createMessages = async () => {
 };
 
 module.exports = {
-  createTopics,
+  createQueues,
   createMessages
 };

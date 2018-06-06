@@ -6,30 +6,15 @@
       <div class="profile">
         <div id="profile-name"><span>Hello, guys!</span></div>
       </div>
-      <el-submenu index="1">
-        <template slot="title">
-          <i class="fas fa-university"/>
+      <el-menu-item
+        index="1">
+        <router-link
+          :to="{ name: 'network' }"
+          class="link">
+          <i class="fas fa-mobile"/>
           <span>Network</span>
-        </template>
-        <el-menu-item-group>
-          <el-menu-item
-            index="1-1">
-            <router-link
-              :to="{ name: 'network.tree' }"
-              class="link" >
-              <span>Network View</span>
-            </router-link>
-          </el-menu-item>
-          <el-menu-item
-            index="1-2">
-            <router-link
-              :to="{ name: 'network.statistics' }"
-              class="link" >
-              <span>Statistics</span>
-            </router-link>
-          </el-menu-item>
-        </el-menu-item-group>
-      </el-submenu>
+        </router-link>
+      </el-menu-item>
       <el-menu-item
         index="2">
         <router-link
@@ -42,10 +27,10 @@
       <el-menu-item
         index="3">
         <router-link
-          :to="{ name: 'topics' }"
+          :to="{ name: 'queues' }"
           class="link">
           <i class="fas fa-comment"/>
-          <span>Topics</span>
+          <span>Queues</span>
         </router-link>
       </el-menu-item>
     </el-menu>

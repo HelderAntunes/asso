@@ -3,23 +3,56 @@ const request = require('request');
 const Message = require('../models/message.model');
 
 const index = (req, res) => {
-    rabbitAPI.getBindingsForSource({
-        vhost: 'vhost',
-        exchange: 'proxy'
+    rabbitAPI.listQueues({
+        vhost: 'vhost'
     }, function (err, response) {
-        if (err) return res.internalServerError(err);
-        res.ok(JSON.parse(response));
+        if (err) {
+            res.internalServerError(err);
+        } else {
+            let queues = JSON.parse(response);
+            let data = []
+
+            queues.forEach(function (element) {
+                rabbitAPI.getQueueBindings({
+                    vhost: 'vhost',
+                    queue: element.name
+                }, function (err2, response2) {
+                    if (err2) {
+                        res.json(err2);
+                    } else {
+                        let bindings = JSON.parse(response2);
+                        element.bindings = bindings;
+                        data.push(element);
+                        if (data.length == queues.length) {
+                            res.ok(data);
+                        }
+                    }
+                });
+            });
+        }
     });
 };
 
 const show = (req, res) => {
-    const destination = req.params.id;
+    const name = req.params.id;
     rabbitAPI.getQueue({
         vhost: 'vhost',
-        queue: destination
+        queue: name
     }, function (err, response) {
+        let queue = JSON.parse(response);
         if (err) return res.internalServerError(err);
-        res.ok(response);
+        rabbitAPI.getQueueBindings({
+            vhost: 'vhost',
+            queue: name
+        }, function (err2, response2) {
+            if (err2) {
+                res.json(err2);
+            } else {
+                let bindings = JSON.parse(response2);
+                queue.bindings = bindings;
+                res.ok(queue);
+            }
+        });
     });
 };
 
@@ -55,26 +88,19 @@ const create = (req, res) => {
 };
 
 const destroy = (req, res) => {
-    let destination = req.params.id;
+    let queue = req.params.id;
 
     rabbitAPI.deleteQueue({
         vhost: 'vhost',
-        queue: destination
+        queue: queue
     }, function (err, response) {
         if (err) return res.internalServerError(err);
         res.ok(response);
     });
 };
 
-const topicMessages = async (req, res) => {
-    try {
-        const messages = await Message.find({
-            topic: req.params.id
-        });
-        res.ok(msgs);
-    } catch(e) {
-        throw(e);
-    }
+const queueMessages = (req, res) => {
+
 }
 
 module.exports = {
@@ -82,5 +108,5 @@ module.exports = {
     show,
     create,
     destroy,
-    topicMessages,
+    queueMessages,
 }
