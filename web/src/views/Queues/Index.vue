@@ -123,34 +123,34 @@
 </template>
 
 <script>
-import Sidebar from "@/components/Sidebar";
-import Proxy from "@/proxies/Proxy";
+import Sidebar from '@/components/Sidebar';
+import Proxy from '@/proxies/Proxy';
 
 export default {
   components: {
-    Sidebar
+    Sidebar,
   },
   data() {
     return {
       queue: {},
       form: {
-        name: "",
-        bindings: []
+        name: '',
+        bindings: [],
       },
       dialog: {
-        title: "",
+        title: '',
         visible: false,
-        action: ""
+        action: '',
       },
       queues: [],
-      bindings: []
+      bindings: [],
     };
   },
   async created() {
     try {
-      let response = await new Proxy("api/queues").all();
+      let response = await new Proxy('api/queues').all();
       this.queues = response.data;
-      response = await new Proxy("api/bindings").all();
+      response = await new Proxy('api/bindings').all();
       this.bindings = response.data;
     } catch (e) {
       throw e;
@@ -160,42 +160,42 @@ export default {
     async seedQueues() {
       try {
         const response = await new Proxy().submit(
-          "get",
-          'api/queues/seed'
+          'get',
+          'api/queues/seed',
         );
         this.$message({
-          message: `Queues seeded with success!`,
-          type: "success"
+          message: 'Queues seeded with success!',
+          type: 'success',
         });
       } catch (e) {
         throw e;
       }
     },
     showBindings(bindings) {
-      return bindings.map(x => x.destination).join(", ");
+      return bindings.map(x => x.destination).join(', ');
     },
     onClickCreate() {
-      this.dialog.action = "CREATE";
-      this.dialog.title = "Create Queue";
+      this.dialog.action = 'CREATE';
+      this.dialog.title = 'Create Queue';
       this.dialog.visible = true;
     },
     async createQueue() {
       try {
         const name = this.form.name;
-        const response = await new Proxy("api/queues").create({ name });
+        const response = await new Proxy('api/queues').create({ name });
 
-        if (response.code === "200") {
+        if (response.code === '200') {
           this.queues.push({ destination: name });
           this.dialog.visible = false;
 
           this.$message({
             message: `Queue ${name} created with success!`,
-            type: "success"
+            type: 'success',
           });
         } else {
           this.$message({
             message: `Queue ${name} was not created!`,
-            type: "error"
+            type: 'error',
           });
         }
       } catch (e) {
@@ -203,36 +203,36 @@ export default {
       }
     },
     onClickDelete(queue) {
-      this.dialog.action = "DELETE";
-      this.dialog.title = "Delete Queue";
+      this.dialog.action = 'DELETE';
+      this.dialog.title = 'Delete Queue';
       this.dialog.visible = true;
       this.queue = queue;
     },
     async deleteQueue() {
       try {
-        const response = await new Proxy("api/queues").destroy(this.queue.name);
-        if (response.code === "200") {
+        const response = await new Proxy('api/queues').destroy(this.queue.name);
+        if (response.code === '200') {
           this.queues.splice(
             this.queues.findIndex(x => x.name === this.queue.name),
-            1
+            1,
           );
           this.$message({
             message: `Queue ${this.queue.name} deleted with success!`,
-            type: "success"
+            type: 'success',
           });
           this.queue = null;
           this.dialog.visible = false;
         } else {
           this.$message({
             message: `Queue ${this.queue.name} was not deleted!`,
-            type: "error"
+            type: 'error',
           });
         }
       } catch (e) {
         throw e;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

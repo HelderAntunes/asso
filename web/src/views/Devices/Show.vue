@@ -14,7 +14,92 @@
           <el-breadcrumb-item :to="{ name: 'devices' }">Devices</el-breadcrumb-item>
           <el-breadcrumb-item>Device {{ $route.params.id }}</el-breadcrumb-item>
         </el-breadcrumb>
-
+        <div>
+          <div class="col md-col-12">
+            <div class="col md-col-6">
+              <h3>
+                Publish
+              </h3>
+              <publish-form :device="device"/>
+            </div>
+            <div class="col md-col-6 pl2">
+              <h3>
+                Subscriptions
+              </h3>
+              <span v-if="device.subscriptions.length === 0">
+                No subscriptions for this device
+              </span>
+              <el-tag
+                v-for="subscription in device.subscriptions"
+                :key="subscription"
+                :disable-transitions="false"
+                closable
+                class="ml2"
+                @close="removeSubscription(subscription)">
+                {{ subscription }}
+              </el-tag>
+              <el-select
+                v-if="inputVisible"
+                ref="saveSubscriptionInput"
+                v-model="newSubscription"
+                class="mt2"
+                filterable
+                allow-create
+                default-first-option
+                placeholder="Choose topics of interest"
+                @keyup.enter.native="addSubscription"
+                @blur="addSubscription">
+                <el-option
+                  v-for="item in bindings"
+                  :key="item.destination"
+                  :label="item.destination"
+                  :value="item.destination"/>
+              </el-select>
+              <el-button
+                v-else
+                class="button-new-tag mt2"
+                primary
+                @click="showInput">+ New Subscription</el-button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3>
+            Messages
+          </h3>
+          <div class="col md-col-12">
+            <div class="col md-col-6">
+              <h4>
+                Sent
+              </h4>
+              <div class="mx2 mr3">
+                <el-card class="box-card">
+                  <div slot="header" class="clearfix">
+                    <span>Topic: Football</span>
+                  </div>
+                  <div v-for="o in 4" :key="o" class="text item">
+                    {{'List item ' + o }}
+                  </div>
+                </el-card>
+              </div>
+            </div>
+            <div class="col md-col-6">
+              <h4>
+                Received
+              </h4>
+              <div class="mx2 mr3">
+                <el-card class="box-card">
+                  <div slot="header" class="clearfix">
+                    <span>Topic: Football</span>
+                  </div>
+                  <div v-for="o in 4" :key="o" class="text item">
+                    {{'List item ' + o }}
+                  </div>
+                </el-card>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -23,25 +108,78 @@
 <script>
 import Sidebar from '@/components/Sidebar';
 import Proxy from '@/proxies/Proxy';
+import PublishForm from './PublishForm';
 
 export default {
   components: {
     Sidebar,
+    PublishForm,
   },
   data() {
     return {
-      device: {},
+      inputVisible: false,
+      bindings: [],
+      newSubscription: '',
+      device: {
+        subscriptions: [],
+        consumedMessages: [],
+        sentMessages: [],
+      },
     };
   },
   async created() {
     try {
-      const response = await new Proxy('api/devices').find(this.$route.params.id);
-      this.device = response.data;
+      let response = await new Proxy('api/devices').find(
+        this.$route.params.id,
+      );
+      this.device = { ...this.device, ...response.data };
+      response = await new Proxy('api/bindings').all();
+      this.bindings = response.data;
     } catch (e) {
       throw e;
     }
   },
-  methods: {},
+  methods: {
+    async removeSubscription(subscription) {
+      try {
+        const response = await new Proxy().submit(
+          'delete',
+          `api/devices/${this.device.name}/subscription/${subscription}`,
+        );
+        if (response.code === '200') {
+          this.device.subscriptions.splice(this.device.subscriptions.indexOf(subscription), 1);
+        }
+      } catch (e) {
+        throw (e);
+      }
+    },
+
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick((_) => {
+        this.$refs.saveSubscriptionInput.$el.input.focus();
+      });
+    },
+
+    async addSubscription() {
+      if (this.newSubscription) {
+        try {
+          const response = await new Proxy().submit(
+            'post',
+            `api/devices/${this.device.name}/subscription`,
+            { subscription: this.newSubscription },
+          );
+          if (response.code === '200') {
+            this.device.subscriptions.push(this.newSubscription);
+            this.inputVisible = false;
+            this.newSubscription = '';
+          }
+        } catch (e) {
+          throw (e);
+        }
+      }
+    },
+  },
 };
 </script>
 

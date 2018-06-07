@@ -125,13 +125,13 @@ export default {
   methods: {
     async seedDevices() {
       try {
-        const response = await new Proxy().submit(
-          "get",
-          'api/devices/seed'
+        await new Proxy().submit(
+          'get',
+          'api/devices/seed',
         );
         this.$message({
-          message: `Devices seeded with success!`,
-          type: "success"
+          message: 'Devices seeded with success!',
+          type: 'success',
         });
       } catch (e) {
         throw e;

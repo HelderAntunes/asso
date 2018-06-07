@@ -13,7 +13,7 @@ const index = async (req, res) => {
 const show = async (req, res) => {
     const name = req.params.id;
     try {
-        const response = await Device.findById(name);
+        const response = await Device.findOne({ name: name });
         res.ok(response);
     } catch(e) {
         res.internalServerError(e);
