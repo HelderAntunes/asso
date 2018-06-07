@@ -7,8 +7,13 @@ const mongoose = require('mongoose');
 const deviceSchema = mongoose.Schema({
     name: {
       type: String,
-      required: true
+      required: true,
+      unique: true,
     },
+    subscriptions: {
+      type: Array,
+      default: [],
+    }
 });
 
 /**

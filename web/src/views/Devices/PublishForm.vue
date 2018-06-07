@@ -1,17 +1,17 @@
 <template>
   <div class="pb3">
     <el-radio
-      v-model="messageType"
-      label="direct">Direct Message</el-radio>
+      v-model="form.destination.type"
+      label="DEVICE">Direct Message</el-radio>
     <el-radio
-      v-model="messageType"
-      label="topic">Topic Message</el-radio>
+      v-model="form.destination.type"
+      label="TOPIC">Topic Message</el-radio>
     <el-form :model="form">
       <el-form-item
-        v-if="messageType === 'topic'"
+        v-if="form.destination.type === 'TOPIC'"
         label="Topic">
         <el-select
-          v-model="form.topic"
+          v-model="form.destination.topic"
           placeholder="Select the topic"
           style="width: 100%">
           <el-option
@@ -22,10 +22,10 @@
         </el-select>
       </el-form-item>
       <el-form-item
-        v-if="messageType === 'direct'"
-        label="Receiver">
+        v-if="form.destination.type === 'DEVICE'"
+        label="Device">
         <el-select
-          v-model="form.receiver"
+          v-model="form.destination.receiver"
           placeholder="Select the device"
           style="width: 100%">
           <el-option
@@ -85,16 +85,18 @@ export default {
   },
   data() {
     return {
-      messageType: 'topic',
       form: {
-        topic: '',
+        destination: {
+          type: 'TOPIC',
+          topic: '',
+          receiver: '',
+        },
         content: '',
         periodic: {
           isPeriodic: false,
           duration: 10000,
           interval: 1000,
         },
-        receiver: '',
       },
       topics: [],
       devices: [],
@@ -113,14 +115,17 @@ export default {
   methods: {
     clearForm() {
       Object.keys(this.form).forEach((key) => {
-        if (key !== 'periodic') {
+        if (key !== 'periodic' && key !== 'destination') {
           this.form[key] = '';
         }
       });
+      this.form.destination.type = 'TOPIC';
     },
     async sendMessage() {
       try {
-        const response = await new Proxy('api/messages').create(this.form);
+        const data = this.form;
+        data.publisher = this.device.name;
+        const response = await new Proxy('api/messages').create(data);
         if (response.code === '200') {
           this.$message({
             message: 'Message published with success!',

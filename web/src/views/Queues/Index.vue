@@ -159,7 +159,7 @@ export default {
   methods: {
     async seedQueues() {
       try {
-        const response = await new Proxy().submit(
+        await new Proxy().submit(
           'get',
           'api/queues/seed',
         );

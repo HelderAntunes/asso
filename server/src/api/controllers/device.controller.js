@@ -39,7 +39,7 @@ const destroy = (req, res) => {
 const seed = (req, res) => {
     for(let i = 0; i < 10; i++) {
         const deviceNames = ['Smart Door Lock', 'Home Retrofit', 'Smart Video Doorbell', 'Smart Light', 'Wearable', 'Smoke Alarm', 'Air monitor', 'Refrigerator', 'Router', 'Smart TV'];
-        const device = new Device({ name: deviceNames[Math.floor(Math.random() * deviceNames.length)] });
+        const device = new Device({ name: deviceNames[i] });
         device.save(function (err) {
             if (err) res.internalServerError(err);
         })
@@ -47,10 +47,32 @@ const seed = (req, res) => {
     res.ok({});
 };
 
+const addSubscription = async (req, res) => {
+    const device = req.params.deviceId;
+    const subscription = req.params.subscriptionId;
+    try {
+         res.ok([]);
+    } catch(e) {
+        res.internalServerError(e);
+    }
+};
+
+const removeSubscription = async (req, res) => {
+    const device = req.params.deviceId;
+    const subscription = req.params.subscriptionId;
+    try {
+        res.ok([]);
+    } catch(e) {
+        res.internalServerError(e);
+    }
+};
+
 module.exports = {
     index,
     show,
     create,
     destroy,
-    seed
+    seed,
+    addSubscription,
+    removeSubscription
 }

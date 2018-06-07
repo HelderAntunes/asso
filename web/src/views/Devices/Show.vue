@@ -38,11 +38,12 @@
                 @close="removeSubscription(subscription)">
                 {{ subscription }}
               </el-tag>
+              <br>
               <el-select
                 v-if="inputVisible"
                 ref="saveSubscriptionInput"
                 v-model="newSubscription"
-                class="mt2"
+                class="ml2 mt2"
                 filterable
                 allow-create
                 default-first-option
@@ -57,7 +58,7 @@
               </el-select>
               <el-button
                 v-else
-                class="button-new-tag mt2"
+                class="button-new-tag ml2 mt2"
                 primary
                 @click="showInput">+ New Subscription</el-button>
             </div>
@@ -73,12 +74,24 @@
                 Sent
               </h4>
               <div class="mx2 mr3">
-                <el-card class="box-card">
-                  <div slot="header" class="clearfix">
+                <el-card
+                  v-for="message in sentMessages"
+                  :key="message._id" 
+                  class="box-card">
+                  <div
+                    slot="header"
+                    class="clearfix">
                     <span>Topic: Football</span>
                   </div>
-                  <div v-for="o in 4" :key="o" class="text item">
-                    {{'List item ' + o }}
+                  <div>
+                    <span>
+                      Hello, this is a message
+                    </span>
+                    <div class="mt2 right-align">
+                      <span style="color: grey">
+                        Sent by cenas                      
+                      </span>
+                    </div>
                   </div>
                 </el-card>
               </div>
@@ -88,12 +101,24 @@
                 Received
               </h4>
               <div class="mx2 mr3">
-                <el-card class="box-card">
-                  <div slot="header" class="clearfix">
+                <el-card
+                  v-for="message in consumedMessages"
+                  :key="message._id" 
+                  class="box-card">
+                  <div
+                    slot="header"
+                    class="clearfix">
                     <span>Topic: Football</span>
                   </div>
-                  <div v-for="o in 4" :key="o" class="text item">
-                    {{'List item ' + o }}
+                  <div>
+                    <span>
+                      Hello, this is a message
+                    </span>
+                    <div class="mt2 right-align">
+                      <span style="color: grey">
+                        Sent by cenas                      
+                      </span>
+                    </div>
                   </div>
                 </el-card>
               </div>
@@ -122,19 +147,28 @@ export default {
       newSubscription: '',
       device: {
         subscriptions: [],
-        consumedMessages: [],
-        sentMessages: [],
       },
+      consumedMessages: [],
+      sentMessages: [],
     };
   },
   async created() {
     try {
-      let response = await new Proxy('api/devices').find(
-        this.$route.params.id,
-      );
+      let response = await new Proxy('api/devices').find(this.$route.params.id);
       this.device = { ...this.device, ...response.data };
       response = await new Proxy('api/bindings').all();
       this.bindings = response.data;
+      const deviceName = encodeURIComponent(this.device.name.trim())
+      response = await new Proxy().submit(
+        'get',
+        `api/messages?publisher=${deviceName}`,
+      );
+      this.sentMessages = response.data;
+      response = await new Proxy().submit(
+        'get',
+        `api/messages?destination.receiver=${deviceName}`,
+      );
+      this.consumedMessages = response.data;
     } catch (e) {
       throw e;
     }
@@ -144,19 +178,22 @@ export default {
       try {
         const response = await new Proxy().submit(
           'delete',
-          `api/devices/${this.device.name}/subscription/${subscription}`,
+          `api/devices/${this.device.name}/subscriptions/${subscription}`,
         );
         if (response.code === '200') {
-          this.device.subscriptions.splice(this.device.subscriptions.indexOf(subscription), 1);
+          this.device.subscriptions.splice(
+            this.device.subscriptions.indexOf(subscription),
+            1,
+          );
         }
       } catch (e) {
-        throw (e);
+        throw e;
       }
     },
 
     showInput() {
       this.inputVisible = true;
-      this.$nextTick((_) => {
+      this.$nextTick(() => {
         this.$refs.saveSubscriptionInput.$el.input.focus();
       });
     },
@@ -164,10 +201,11 @@ export default {
     async addSubscription() {
       if (this.newSubscription) {
         try {
+          const url = `api/devices/${this.device.name}/subscriptions/${this.newSubscription}`;
+          console.log(url);
           const response = await new Proxy().submit(
             'post',
-            `api/devices/${this.device.name}/subscription`,
-            { subscription: this.newSubscription },
+            `api/devices/${this.device.name}/subscriptions/${this.newSubscription}`
           );
           if (response.code === '200') {
             this.device.subscriptions.push(this.newSubscription);
@@ -175,7 +213,7 @@ export default {
             this.newSubscription = '';
           }
         } catch (e) {
-          throw (e);
+          throw e;
         }
       }
     },

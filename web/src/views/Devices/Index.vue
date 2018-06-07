@@ -145,7 +145,7 @@ export default {
     async createDevice() {
       try {
         const name = this.form.name;
-        const result = await new Proxy('api/devices').create({ name });
+        await new Proxy('api/devices').create({ name });
         this.devices.push({ name });
         this.dialog.visible = false;
 
@@ -165,7 +165,7 @@ export default {
     },
     async deleteDevice() {
       try {
-        const response = await new Proxy('api/devices').destroy(this.device.name);
+        await new Proxy('api/devices').destroy(this.device.name);
         this.devices.splice(
           this.devices.findIndex(x => x.name === this.device.name),
           1,

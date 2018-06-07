@@ -14,6 +14,14 @@ router
   .get(controller.seed);
 
 router
+  .route('/:deviceId/subscriptions/:subscriptionId')
+  .post(controller.addSubscription);
+
+router
+  .route('/:deviceId/subscriptions/:subscriptionId')
+  .delete(controller.removeSubscription);
+
+router
   .route('/:id')
   .get(controller.show);
 
@@ -24,5 +32,7 @@ router
 router
   .route('/:id')
   .delete(controller.destroy);
-  
+
+
+
 module.exports = router;

@@ -4,8 +4,8 @@ const amqp = require('../../config/amqp');
 
 const index = async (req, res) => {
     try {
-        const messages = await Message.find({});
-        res.ok(JSON.parse(messages));
+        const messages = await Message.find(req.query);
+        res.ok(messages);
     } catch (e) {
         res.internalServerError(e);
     }
