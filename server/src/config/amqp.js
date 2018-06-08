@@ -17,7 +17,7 @@ const publish = (params) => {
       setInterval(function(){ 
         ch.publish('proxy', params.key, new Buffer(params.content), {
           'appId': params.publisher
-        });
+        }); 
       }, params.periodic.interval);
     } else {
       ch.publish('proxy', params.key, new Buffer(params.content), {
@@ -29,21 +29,18 @@ const publish = (params) => {
   });
 };
 
-const consume = (params) => {
+const consume = (routingKey) => {
   const open = amqp.connect(amqpAddress);
   open.then(function(conn) {
     return conn.createChannel();
   }).then(function(ch) {
     ch.assertExchange('proxy', 'topic', {durable: false});
       ch.assertQueue('', {exclusive: true}, function(err, q) {
-        ch.bindQueue(q.queue, 'proxy', params.key);
+        ch.bindQueue(q.queue, 'proxy', routingKey);
   
         ch.consume(q.queue, function(msg) {
-          io.emit('ping_server', {
-            content: msg.content.toString(),
-            topic: msg.fields.routingKey,
-            publisher: msg.properties.appId
-          });
+          const identifier = msg.receiver.replace(/[^A-Z0-9]/ig, "_");
+          io.emit(`consumeMessage_${identifier}`, msg);
         }, {noAck: true});
       });
   }).catch(e => {

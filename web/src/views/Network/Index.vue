@@ -6,16 +6,6 @@
         class="sm-col sm-col-12 lg-col-2">
         <Sidebar />
       </div>
-      <div>
-        <el-button
-          type="primary"
-          @click="showMessageModal = true">Create Message</el-button>
-        <input
-          v-model="message.sent"
-          placeholder="Send a message">
-        <button @click="pingServer()">Ping Server</button>
-        <p>Message from server: "{{ message.received }}"</p>
-      </div>
     </div>
     <div class="flex flex-column p3 sm-col-12 lg-col-9">
       <tree
@@ -113,11 +103,6 @@ export default {
 
     // Example -> this.animateMessage('Home', 'Home1');
   },
-  sockets: {
-    ping_server(response) {
-      this.message.received = response;
-    },
-  },
   methods: {
     closeModal() {
       this.showMessageModal = false;
@@ -181,9 +166,6 @@ export default {
         const p = path.getPointAtLength(Math.abs(aux) * l);
         return `translate(${p.x + 36},${p.y})`; // 36 is the parent transformation
       };
-    },
-    pingServer() {
-      this.$socket.emit('ping_server', this.message.sent);
     },
     do(action) {
       if (this.currentNode) {

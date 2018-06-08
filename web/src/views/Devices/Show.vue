@@ -166,6 +166,10 @@ export default {
         `api/messages?destination.receiver=${deviceName}`,
       );
       this.consumedMessages = response.data;
+      const identifier = (this.$route.params.id).replace(/[^A-Z0-9]/ig, "_");
+      this.$options.sockets[`consumeMessage_${identifier}`] = (message) => {
+        this.consumedMessages.push(message)
+      }
     } catch (e) {
       throw e;
     }

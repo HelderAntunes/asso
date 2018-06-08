@@ -1,5 +1,6 @@
 const rabbitAPI = require('../../config/rabbit');
 const Device = require('../models/device.model');
+const amqp = require('../../config/amqp');
 
 const index = async (req, res) => {
     try {
@@ -62,6 +63,7 @@ const addSubscription = async (req, res) => {
         
         Device.findOneAndUpdate(conditions, update, function(err, doc) {
             res.ok(doc)
+            amqp.consume(subscription);
         });
     } catch(e) {
         res.internalServerError(e);

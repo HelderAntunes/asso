@@ -15,8 +15,8 @@ exports.connect = (server) => {
       console.log('User disconnected!');
     });
 
-    socket.on('messageToTopic', function(msg){
-      io.emit('ping_server', msg);
+    socket.on('publishMessage', function(msg){
+      io.emit('publishMessage', msg);
     });
   });
 }
