@@ -1,16 +1,22 @@
-exports.connect = (server) => {
-  const socketIO = require('socket.io')(server);
+const socketIO = require('socket.io');
+let io = null;
 
-  socketIO.on('connection', function(socket){
-    console.log('a user connected');
+exports.io = () => {
+  return io;
+}
+
+exports.connect = (server) => {
+  io = socketIO(server);
+
+  io.on('connection', function(socket){
+    console.log('User connected!');
 
     socket.on('disconnect', function(){
-      console.log('user disconnected');
+      console.log('User disconnected!');
     });
 
-    socket.on('ping_server', function(msg){
-      console.log('message: ' + msg);
-      socketIO.emit('ping_server', msg);
+    socket.on('messageToTopic', function(msg){
+      io.emit('ping_server', msg);
     });
   });
 }

@@ -5,47 +5,33 @@ const mongoose = require('mongoose');
  * @private
  */
 const messageSchema = mongoose.Schema({
-    periodic: {
-      static: {
-        isPeriodic: {
-          type: Boolean,
-          default: false,
-          required: true,
-        },
-        interval: {
-          type: Number,
-          default: 1000,
-        },
-        duration: {
-          type: Number,
-          default: 100000,
-        },
-      }
+  periodic: {
+    isPeriodic: {
+      type: Boolean,
+      default: false,
+      required: true,
     },
-    destination: {
-      static: {
-        type: {
-          type: String,
-          required: true,
-        },
-        topic: {
-          type: String,
-          required: false
-        },
-        receiver: {
-          type: String,
-          required: false,
-        },
-      }
+    interval: {
+      type: Number,
+      default: 1000,
     },
-    publisher: {
-      type: String,
-      required: true
+    duration: {
+      type: Number,
+      default: 100000,
     },
-    content: {
-      type: String,
-      required: true
-    },
+  },
+  key: {
+    type: String,
+    required: true,
+  },
+  publisher: {
+    type: String,
+    required: true
+  },
+  content: {
+    type: String,
+    required: true
+  },
 });
 
 /**

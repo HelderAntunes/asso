@@ -20,11 +20,15 @@ const show = async (req, res) => {
     }
 };
 
-const create = (req, res) => {
-    res.ok({
-        message: `Sent ${req.body.content} to topic ${req.body.topic} by ${req.body.publisher}`
+const create = async (req, res) => {
+    const message = new Message({ ...req.body });
+    message.save(function (err) {
+        if (err) res.internalServerError(err);
+        else {
+            res.ok(message);
+            amqp.publish({ ...req.body });
+        }
     })
-    amqp.sendToBroker('proxy', req.body.topic, req.body.content, req.body.publisher);
 };
 
 const seed = async (req, res) => {

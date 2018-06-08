@@ -3,14 +3,14 @@ Promise = require('bluebird'); // eslint-disable-line no-global-assign
 const { port, env } = require('./config/vars');
 const app = require('./config/express');
 const mongoose = require('./config/mongoose');
-const socketIO = require('./config/socket');
+const io = require('./config/socket');
 
 // open mongoose connection
 mongoose.connect();
 
 // listen to requests
 const server = app.listen(port, () => console.info(`Server initialized on port ${port} (${env})`));
-socketIO.connect(server);
+io.connect(server);
 
 /**
 * Exports express

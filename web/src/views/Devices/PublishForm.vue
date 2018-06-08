@@ -1,17 +1,10 @@
 <template>
   <div class="pb3">
-    <el-radio
-      v-model="form.destination.type"
-      label="DEVICE">Direct Message</el-radio>
-    <el-radio
-      v-model="form.destination.type"
-      label="TOPIC">Topic Message</el-radio>
     <el-form :model="form">
       <el-form-item
-        v-if="form.destination.type === 'TOPIC'"
-        label="Topic">
+        label="Routing Key">
         <el-select
-          v-model="form.destination.topic"
+          v-model="form.key"
           placeholder="Select the topic"
           style="width: 100%">
           <el-option
@@ -19,20 +12,6 @@
             :key="topic.destination"
             :label="topic.destination"
             :value="topic.destination"/>
-        </el-select>
-      </el-form-item>
-      <el-form-item
-        v-if="form.destination.type === 'DEVICE'"
-        label="Device">
-        <el-select
-          v-model="form.destination.receiver"
-          placeholder="Select the device"
-          style="width: 100%">
-          <el-option
-            v-for="device in devices"
-            :key="device.name"
-            :label="device.name"
-            :value="device.name"/>
         </el-select>
       </el-form-item>
       <el-form-item label="Periodic Message">
@@ -86,11 +65,7 @@ export default {
   data() {
     return {
       form: {
-        destination: {
-          type: 'TOPIC',
-          topic: '',
-          receiver: '',
-        },
+        key: '',
         content: '',
         periodic: {
           isPeriodic: false,
@@ -99,15 +74,12 @@ export default {
         },
       },
       topics: [],
-      devices: [],
     };
   },
   async created() {
     try {
       let response = await new Proxy('api/bindings').all();
       this.topics = response.data;
-      response = await new Proxy('api/devices').all();
-      this.devices = response.data.filter(x => x.name !== this.device.name);
     } catch (e) {
       throw e;
     }
@@ -119,7 +91,6 @@ export default {
           this.form[key] = '';
         }
       });
-      this.form.destination.type = 'TOPIC';
     },
     async sendMessage() {
       try {
@@ -131,6 +102,7 @@ export default {
             message: 'Message published with success!',
             type: 'success',
           });
+          this.$emit('updateMessages', response.data);
           this.clearForm();
         }
       } catch (e) {

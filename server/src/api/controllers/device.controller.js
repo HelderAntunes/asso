@@ -51,7 +51,18 @@ const addSubscription = async (req, res) => {
     const device = req.params.deviceId;
     const subscription = req.params.subscriptionId;
     try {
-         res.ok([]);
+        var conditions = {
+            name: device,
+            subscriptions: { $ne: subscription }
+        };
+        
+        var update = {
+            $addToSet: { subscriptions: subscription }
+        }
+        
+        Device.findOneAndUpdate(conditions, update, function(err, doc) {
+            res.ok(doc)
+        });
     } catch(e) {
         res.internalServerError(e);
     }
@@ -61,7 +72,9 @@ const removeSubscription = async (req, res) => {
     const device = req.params.deviceId;
     const subscription = req.params.subscriptionId;
     try {
-        res.ok([]);
+        Device.update( {name: device}, { $pullAll: {subscriptions: [subscription] } },  function(err) {
+            res.ok([]);
+        });
     } catch(e) {
         res.internalServerError(e);
     }

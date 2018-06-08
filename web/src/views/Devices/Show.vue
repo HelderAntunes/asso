@@ -20,7 +20,9 @@
               <h3>
                 Publish
               </h3>
-              <publish-form :device="device"/>
+              <publish-form 
+                :device="device"
+                @updateMessages="updateMessages" />
             </div>
             <div class="col md-col-6 pl2">
               <h3>
@@ -77,21 +79,16 @@
                 <el-card
                   v-for="message in sentMessages"
                   :key="message._id" 
-                  class="box-card">
+                  class="box-card mb2">
                   <div
                     slot="header"
                     class="clearfix">
-                    <span>Topic: Football</span>
+                    <span>Routing Key: {{ message.key }}</span>
                   </div>
                   <div>
                     <span>
-                      Hello, this is a message
+                      {{ message.content }}
                     </span>
-                    <div class="mt2 right-align">
-                      <span style="color: grey">
-                        Sent by cenas                      
-                      </span>
-                    </div>
                   </div>
                 </el-card>
               </div>
@@ -108,15 +105,15 @@
                   <div
                     slot="header"
                     class="clearfix">
-                    <span>Topic: Football</span>
+                    <span>Routing Key: {{ message.key }}</span>
                   </div>
                   <div>
                     <span>
-                      Hello, this is a message
+                      {{ message.content }}
                     </span>
                     <div class="mt2 right-align">
                       <span style="color: grey">
-                        Sent by cenas                      
+                        Sent by {{ message.publisher }}                     
                       </span>
                     </div>
                   </div>
@@ -174,6 +171,9 @@ export default {
     }
   },
   methods: {
+    updateMessages(message) {
+      this.sentMessages.push(message);
+    },
     async removeSubscription(subscription) {
       try {
         const response = await new Proxy().submit(
@@ -202,13 +202,14 @@ export default {
       if (this.newSubscription) {
         try {
           const url = `api/devices/${this.device.name}/subscriptions/${this.newSubscription}`;
-          console.log(url);
           const response = await new Proxy().submit(
             'post',
             `api/devices/${this.device.name}/subscriptions/${this.newSubscription}`
           );
           if (response.code === '200') {
-            this.device.subscriptions.push(this.newSubscription);
+            const index = this.device.subscriptions.findIndex(x => x === this.newSubscription);
+            if(index === -1)
+              this.device.subscriptions.push(this.newSubscription);
             this.inputVisible = false;
             this.newSubscription = '';
           }
