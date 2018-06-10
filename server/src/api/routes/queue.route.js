@@ -14,6 +14,26 @@ router
   .get(controller.seed);
 
 router
+  .route('/:queueId/bindings/:bindingId')
+  .post(controller.addBinding);
+
+router
+  .route('/:queueId/bindings/:bindingId')
+  .delete(controller.removeBinding);
+
+router
+  .route('/:id/messages')
+  .get(controller.queueMessages);
+
+router
+  .route('/:id/bindings')
+  .get(controller.queueBindings);
+
+router
+  .route('/:id/consumers')
+  .get(controller.queueConsumers);
+
+router
   .route('/:id')
   .get(controller.show);
 
@@ -24,9 +44,5 @@ router
 router
   .route('/:id')
   .delete(controller.destroy);
-
-router
-  .route('/:id/messages')
-  .get(controller.queueMessages);
 
 module.exports = router;

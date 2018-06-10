@@ -78,7 +78,7 @@ export default {
   },
   async created() {
     try {
-      let response = await new Proxy('api/bindings').all();
+      const response = await new Proxy('api/bindings').all();
       this.topics = response.data;
     } catch (e) {
       throw e;

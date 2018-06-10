@@ -20,7 +20,7 @@
               <h3>
                 Publish
               </h3>
-              <publish-form 
+              <publish-form
                 :device="device"
                 @updateMessages="updateMessages" />
             </div>
@@ -78,7 +78,7 @@
               <div class="mx2 mr3">
                 <el-card
                   v-for="message in sentMessages"
-                  :key="message._id" 
+                  :key="message._id"
                   class="box-card mb2">
                   <div
                     slot="header"
@@ -100,7 +100,7 @@
               <div class="mx2 mr3">
                 <el-card
                   v-for="message in consumedMessages"
-                  :key="message._id" 
+                  :key="message._id"
                   class="box-card">
                   <div
                     slot="header"
@@ -113,7 +113,7 @@
                     </span>
                     <div class="mt2 right-align">
                       <span style="color: grey">
-                        Sent by {{ message.publisher }}                     
+                        Sent by {{ message.publisher }}
                       </span>
                     </div>
                   </div>
@@ -155,7 +155,7 @@ export default {
       this.device = { ...this.device, ...response.data };
       response = await new Proxy('api/bindings').all();
       this.bindings = response.data;
-      const deviceName = encodeURIComponent(this.device.name.trim())
+      const deviceName = encodeURIComponent(this.device.name.trim());
       response = await new Proxy().submit(
         'get',
         `api/messages?publisher=${deviceName}`,
@@ -166,10 +166,10 @@ export default {
         `api/messages?destination.receiver=${deviceName}`,
       );
       this.consumedMessages = response.data;
-      const identifier = (this.$route.params.id).replace(/[^A-Z0-9]/ig, "_");
+      const identifier = (this.$route.params.id).replace(/[^A-Z0-9]/ig, '_');
       this.$options.sockets[`consumeMessage_${identifier}`] = (message) => {
-        this.consumedMessages.push(message)
-      }
+        this.consumedMessages.push(message);
+      };
     } catch (e) {
       throw e;
     }
@@ -197,23 +197,18 @@ export default {
 
     showInput() {
       this.inputVisible = true;
-      this.$nextTick(() => {
-        this.$refs.saveSubscriptionInput.$el.input.focus();
-      });
     },
 
     async addSubscription() {
       if (this.newSubscription) {
         try {
-          const url = `api/devices/${this.device.name}/subscriptions/${this.newSubscription}`;
           const response = await new Proxy().submit(
             'post',
-            `api/devices/${this.device.name}/subscriptions/${this.newSubscription}`
+            `api/devices/${this.device.name}/subscriptions/${this.newSubscription}`,
           );
           if (response.code === '200') {
             const index = this.device.subscriptions.findIndex(x => x === this.newSubscription);
-            if(index === -1)
-              this.device.subscriptions.push(this.newSubscription);
+            if (index === -1) { this.device.subscriptions.push(this.newSubscription); }
             this.inputVisible = false;
             this.newSubscription = '';
           }

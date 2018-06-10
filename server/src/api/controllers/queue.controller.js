@@ -81,8 +81,7 @@ const create = (req, res) => {
             }
         }, function (error, response, body) {
             if (err) return res.internalServerError(err);
-
-            res.ok(response);
+            else res.ok(response);
         });
     });
 };
@@ -95,17 +94,74 @@ const destroy = (req, res) => {
         queue: queue
     }, function (err, response) {
         if (err) return res.internalServerError(err);
-        res.ok(response);
+        else res.ok(response);
     });
 };
 
 const queueMessages = (req, res) => {
+    let queue = req.params.id;
+    rabbitAPI.getMessages({
+        vhost : 'vhost',
+        queue : queue,
+        count : 5,
+        requeue : true,
+        encoding : "auto",
+        truncate : 50000
+    }, function (err, response) {
+        if (err) return res.internalServerError(err);
+        else res.ok(response);
+    });
+};
 
+const queueBindings = (req, res) => {
+    let queue = req.params.id;
+    rabbitAPI.getQueueBindings({
+        vhost : 'vhost',
+        queue : queue
+    }, function (err, response) {
+        if (err) return res.internalServerError(err);
+        else res.ok(response);
+    });
+};
+
+const queueConsumers = (req, res) => {
+    res.ok([]);
+};
+
+const addBinding = async (req, res) => {
+    const queue = req.params.queueId;
+    const binding = req.params.bindingId;
+    request.post({
+        headers: {
+            'content-type': 'application/json'
+        },
+        url: 'http://guest:guest@rabbitmq:15672/api/bindings/vhost/e/proxy/q/' + queue,
+        json: {
+            "routing_key": binding,
+        }
+    }, function (error, response, body) {
+        if (err) return res.internalServerError(err);
+        else res.ok(response);
+    });
+};
+
+const removeBinding = async (req, res) => {
+    const queue = req.params.queueId;
+    const binding = req.params.bindingId;
+    request.delete({
+        headers: {
+            'content-type': 'application/json'
+        },
+        url: 'http://guest:guest@rabbitmq:15672/api/bindings/vhost/e/proxy/q/' + queue + '/' + binding,
+    }, function (error, response, body) {
+        if (err) return res.internalServerError(err);
+        else res.ok(response);
+    });
 };
 
 const seed = (req, res) => {
     for(let i = 0; i < 10; i++) {
-        const queueNames = ['bedroom', 'kitchen', 'study', 'classrom', 'laboratory'];
+        const queueNames = ['bedroom', 'kitchen', 'car', 'classroom', 'laboratory'];
         rabbitAPI.createQueue({
             vhost : 'vhost',
             queue : queueNames[Math.floor(Math.random() * queueNames.length)],
@@ -129,5 +185,9 @@ module.exports = {
     create,
     destroy,
     queueMessages,
-    seed
+    queueBindings,
+    queueConsumers,
+    seed,
+    addBinding,
+    removeBinding
 }
