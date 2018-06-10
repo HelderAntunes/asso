@@ -1,4 +1,5 @@
 const amqp = require('amqplib');
+var all = require('bluebird').all;
 const { amqpAddress } = require('./vars');
 const io = require('./socket').io();
 

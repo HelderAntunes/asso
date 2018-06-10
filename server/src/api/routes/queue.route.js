@@ -10,10 +10,6 @@ router
   .get(controller.index);
 
 router
-  .route('/seed')
-  .get(controller.seed);
-
-router
   .route('/:queueId/bindings/:bindingId')
   .post(controller.addBinding);
 
@@ -24,11 +20,7 @@ router
 router
   .route('/:id/messages')
   .get(controller.queueMessages);
-
-router
-  .route('/:id/bindings')
-  .get(controller.queueBindings);
-
+  
 router
   .route('/:id/consumers')
   .get(controller.queueConsumers);

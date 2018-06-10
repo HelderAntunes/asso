@@ -55,9 +55,6 @@
           <el-button
             type="primary"
             @click="onClickCreate">Create Queue</el-button>
-          <el-button
-            type="primary"
-            @click="seedQueues">Seed Queues</el-button>
         </div>
         <el-dialog
           v-if="dialog.action === 'DELETE'"
@@ -157,22 +154,8 @@ export default {
     }
   },
   methods: {
-    async seedQueues() {
-      try {
-        await new Proxy().submit(
-          'get',
-          'api/queues/seed',
-        );
-        this.$message({
-          message: 'Queues seeded with success!',
-          type: 'success',
-        });
-      } catch (e) {
-        throw e;
-      }
-    },
     showBindings(bindings) {
-      return bindings.map(x => x.destination).join(', ');
+      return bindings.map(x => x.routing_key).join(', ');
     },
     onClickCreate() {
       this.dialog.action = 'CREATE';
@@ -182,10 +165,11 @@ export default {
     async createQueue() {
       try {
         const name = this.form.name;
-        const response = await new Proxy('api/queues').create({ name });
+        const bindings = this.form.bindings;
+        const response = await new Proxy('api/queues').create({ name, bindings });
 
         if (response.code === '200') {
-          this.queues.push({ destination: name });
+          this.queues.push(response.data);
           this.dialog.visible = false;
 
           this.$message({

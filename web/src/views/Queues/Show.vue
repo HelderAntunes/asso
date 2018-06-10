@@ -38,8 +38,8 @@
             :disable-transitions="false"
             closable
             class="ml2"
-            @close="removeBind(bind)">
-            {{ bind.destination }}
+            @close="removeBinding(bind)">
+            {{ bind.routing_key }}
           </el-tag>
           <br>
           <el-input
@@ -113,7 +113,7 @@ export default {
       try {
         const response = await new Proxy().submit(
           'delete',
-          `api/queues/${this.queue.name}/bindings/${binding.destination}`,
+          `api/queues/${this.queue.name}/bindings/${binding.routing_key}`,
         );
         if (response.code === '200') {
           this.queue.bindings.splice(
@@ -141,10 +141,10 @@ export default {
           );
           if (response.code === '200') {
             const index = this.queue.bindings.findIndex(
-              x => x.destination === this.newBinding,
+              x => x.routing_key === this.newBinding,
             );
             if (index === -1) {
-              this.queue.bindings.push({ destination: this.newBinding });
+              this.queue.bindings.push({ routing_key: this.newBinding });
             }
             this.inputVisible = false;
             this.newBinding = '';
