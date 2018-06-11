@@ -41,9 +41,7 @@ const seed = (req, res) => {
     for(let i = 0; i < 10; i++) {
         const deviceNames = ['Smart Door Lock', 'Home Retrofit', 'Smart Video Doorbell', 'Smart Light', 'Wearable', 'Smoke Alarm', 'Air monitor', 'Refrigerator', 'Router', 'Smart TV'];
         const device = new Device({ name: deviceNames[i] });
-        device.save(function (err) {
-            if (err) res.internalServerError(err);
-        })
+        device.save();
     }
     res.ok({});
 };

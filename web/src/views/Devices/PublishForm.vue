@@ -3,16 +3,9 @@
     <el-form :model="form">
       <el-form-item
         label="Routing Key">
-        <el-select
+        <el-input
           v-model="form.key"
-          placeholder="Select the topic"
-          style="width: 100%">
-          <el-option
-            v-for="topic in topics"
-            :key="topic.destination"
-            :label="topic.destination"
-            :value="topic.destination"/>
-        </el-select>
+          placeholder="Select the topic" />
       </el-form-item>
       <el-form-item label="Periodic Message">
         <el-switch v-model="form.periodic.isPeriodic"/>

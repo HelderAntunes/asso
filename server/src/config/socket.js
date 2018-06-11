@@ -1,7 +1,7 @@
 const socketIO = require('socket.io');
 let io = null;
 
-exports.io = () => {
+exports.obj = () => {
   return io;
 }
 
