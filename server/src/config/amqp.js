@@ -4,7 +4,7 @@ const {
   amqpAddress
 } = require('./vars');
 
-const publishToSource = (params) => {
+const publishToSource = (msg) => {
   const open = amqp.connect(amqpAddress);
   open.then(function (conn) {
     return conn.createChannel();
@@ -12,8 +12,8 @@ const publishToSource = (params) => {
     ch.assertExchange('source', 'topic', {
       durable: true
     });
-    ch.publish('source', params.key, new Buffer(params.content), {
-      'appId': params.publisher
+    ch.publish('source', msg.key, new Buffer(msg.content), {
+      'appId': msg.publisher
     });
   }).catch(e => {
     throw new Error(e)
@@ -64,8 +64,7 @@ const consumeThroughProxy = (io) => {
     ch.bindQueue(q.queue, 'proxy', '#');
 
     ch.consume(q.queue, function (msg) {
-      const routingKey = msg.fields.routingKey.replace(/[^A-Z0-9]/ig, "_");
-      io.emit(`routing_key_${routingKey}`, msg)
+      io.emit(`routing_key_message`, msg)
     }, {
       noAck: true
     });

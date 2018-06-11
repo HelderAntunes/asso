@@ -1,4 +1,5 @@
 const socketIO = require('socket.io');
+const amqp = require('./amqp');
 let io = null;
 
 exports.obj = () => {
@@ -15,8 +16,8 @@ exports.connect = (server) => {
       console.log('User disconnected!');
     });
 
-    socket.on('publishMessage', function(msg){
-      io.emit('publishMessage', msg);
+    socket.on('publish_message', function(msg){
+      amqp.publishToSource(msg);
     });
   });
 }

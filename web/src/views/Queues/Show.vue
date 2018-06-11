@@ -28,6 +28,7 @@
             it will receive all the messages, regardless of the routing key"
             type="info"
             show-icon/>
+          <br>
           <span v-if="queue.bindings.length === 0">
             No bindings for this queue
           </span>
@@ -101,6 +102,20 @@ export default {
         `api/queues/${this.queue.name}/messages`,
       );
       this.messages = response.data;
+
+      this.$options.sockets.routing_key_message = (message) => {
+        const routingKey = message.fields.routingKey;
+        this.queue.bindings.forEach((x) => {
+          console.log(x);
+        });
+        // Just testing. Later change this to after animation
+        const enc = new TextDecoder("utf-8");
+        this.$socket.emit('publish_message', {
+          publisher: message.properties.appId,
+          key: message.fields.routingKey,
+          content: enc.decode(message.content),
+        });
+      };
     } catch (e) {
       this.$message({
         message: 'Error retrieving queue!',
@@ -116,10 +131,7 @@ export default {
           `api/queues/${this.queue.name}/bindings/${binding.routing_key}`,
         );
         if (response.code === '200') {
-          this.queue.bindings.splice(
-            this.queue.bindings.indexOf(binding),
-            1,
-          );
+          this.queue.bindings.splice(this.queue.bindings.indexOf(binding), 1);
         }
       } catch (e) {
         throw e;
@@ -135,9 +147,7 @@ export default {
         try {
           const response = await new Proxy().submit(
             'post',
-            `api/queues/${this.queue.name}/bindings/${
-              this.newBinding
-            }`,
+            `api/queues/${this.queue.name}/bindings/${this.newBinding}`,
           );
           if (response.code === '200') {
             const index = this.queue.bindings.findIndex(
