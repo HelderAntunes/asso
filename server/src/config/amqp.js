@@ -4,6 +4,22 @@ const {
   amqpAddress
 } = require('./vars');
 
+const publishToSource = (params) => {
+  const open = amqp.connect(amqpAddress);
+  open.then(function (conn) {
+    return conn.createChannel();
+  }).then(function (ch) {
+    ch.assertExchange('source', 'topic', {
+      durable: true
+    });
+    ch.publish('source', params.key, new Buffer(params.content), {
+      'appId': params.publisher
+    });
+  }).catch(e => {
+    throw new Error(e)
+  });
+};
+
 const publishToProxy = (params) => {
   const open = amqp.connect(amqpAddress);
   open.then(function (conn) {
@@ -48,9 +64,7 @@ const consumeThroughProxy = (io) => {
     ch.bindQueue(q.queue, 'proxy', '#');
 
     ch.consume(q.queue, function (msg) {
-      const device = msg.properties.appId.replace(/[^A-Z0-9]/ig, "_");
       const routingKey = msg.fields.routingKey.replace(/[^A-Z0-9]/ig, "_");
-      io.emit(`message_${device}`, msg);
       io.emit(`routing_key_${routingKey}`, msg)
     }, {
       noAck: true
@@ -60,25 +74,25 @@ const consumeThroughProxy = (io) => {
   });
 }
 
-const consumeProxyMessage = (routingKey) => {
+const consumeMessage = (routingKey) => {
   const open = amqp.connect(amqpAddress);
   open.then(function (conn) {
     return conn.createChannel();
   }).then(function (ch) {
-    ch.assertExchange('proxy', 'topic', {
+    ch.assertExchange('source', 'topic', {
       durable: false
     });
-    ch.assertQueue('', {
+    let q = '';
+    ch.assertQueue(q, {
       exclusive: false
-    }, function (err, q) {
-      ch.bindQueue(q.queue, 'proxy', routingKey);
+    });
+    ch.bindQueue(q.queue, 'source', routingKey);
 
-      ch.consume(q.queue, function (msg) {
-        const identifier = msg.receiver.replace(/[^A-Z0-9]/ig, "_");
-        io.emit(`consumeMessage_${identifier}`, msg);
-      }, {
-        noAck: true
-      });
+    ch.consume(q.queue, function (msg) {
+      const device = msg.properties.appId.replace(/[^A-Z0-9]/ig, "_");
+      io.emit(`message_${identifier}`, msg);
+    }, {
+      noAck: true
     });
   }).catch(e => {
     throw new Error(e)
@@ -88,5 +102,6 @@ const consumeProxyMessage = (routingKey) => {
 module.exports = {
   consumeThroughProxy,
   publishToProxy,
-  consumeProxyMessage
+  publishToSource,
+  consumeMessage
 }

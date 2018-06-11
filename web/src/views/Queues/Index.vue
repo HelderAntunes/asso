@@ -13,6 +13,18 @@
           separator-class="el-icon-arrow-right">
           <el-breadcrumb-item>Queues</el-breadcrumb-item>
         </el-breadcrumb>
+        <div class="pb3">
+          <h4>
+            Message Settings
+          </h4>
+          <el-radio-group
+            v-model="settings"
+            @change="changeMessageSettings">
+            <el-radio label="CONTINUOUS">Continuous delivery</el-radio>
+            <el-radio label="MANUAL">Manual delivery</el-radio>
+            <el-radio label="NOTIFICATION">Notification of new messages</el-radio>
+          </el-radio-group>
+        </div>
         <el-table
           :data="queues"
           class="dashboard-table">
@@ -122,6 +134,8 @@
 <script>
 import Sidebar from '@/components/Sidebar';
 import Proxy from '@/proxies/Proxy';
+import store from '@/store';
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -141,19 +155,29 @@ export default {
       },
       queues: [],
       bindings: [],
+      settings: '',
     };
+  },
+  computed: {
+    ...mapState({
+      messageSettings: state => state.queue.message,
+    }),
   },
   async created() {
     try {
       let response = await new Proxy('api/queues').all();
-      this.queues = response.data;
+      this.queues = (response.data).filter(x => x.name !== 'proxy');
       response = await new Proxy('api/bindings').all();
       this.bindings = response.data;
+      this.settings = this.messageSettings;
     } catch (e) {
       throw e;
     }
   },
   methods: {
+    changeMessageSettings() {
+      store.dispatch('queue/update', this.settings);
+    },
     showBindings(bindings) {
       return bindings.map(x => x.routing_key).join(', ');
     },
