@@ -57,10 +57,14 @@
             primary
             @click="showInput">+ New Binding</el-button>
         </div>
-        <div>
+        <div id="messages">
           <h3>
             Messages
           </h3>
+          <factory></factory>
+          <truck></truck>
+          <band></band>
+          <div id="cube"></div>
         </div>
         <div>
           <h3>
@@ -77,11 +81,17 @@
 
 <script>
 import Sidebar from '@/components/Sidebar';
+import Factory from '@/components/Factory';
+import Truck from '@/components/Truck';
+import Band from '@/components/Band';
 import Proxy from '@/proxies/Proxy';
 
 export default {
   components: {
     Sidebar,
+    Factory,
+    Truck,
+    Band, 
   },
   data() {
     return {
@@ -109,7 +119,7 @@ export default {
           console.log(x);
         });
         // Just testing. Later change this to after animation
-        const enc = new TextDecoder("utf-8");
+        const enc = new TextDecoder('utf-8');
         this.$socket.emit('publish_message', {
           publisher: message.properties.appId,
           key: message.fields.routingKey,
@@ -169,6 +179,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 #side-bar {
   border-right: solid 1px #e6e6e6;
   height: 100vh;
@@ -179,5 +190,18 @@ export default {
   border-radius: 5px;
   padding: 10px;
   min-height: 60%;
+}
+
+#cube {
+  width: 50px;
+	height: 26px;
+	position: absolute;
+  background-color: brown;
+  left: 858px ;
+  top: 740px;
+}
+
+#messages {
+  height: 400px;
 }
 </style>

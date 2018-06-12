@@ -70,7 +70,6 @@
           <h3>
             Messages
           </h3>
-          <div class="col md-col-12">
             <div class="col md-col-6">
               <h4>
                 Sent
@@ -222,6 +221,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 #side-bar {
   border-right: solid 1px #e6e6e6;
   height: 100vh;
