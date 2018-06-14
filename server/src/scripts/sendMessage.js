@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-var amqp = require('amqplib/callback_api');
-var host = process.env.AMPQ_ADDRESS;
+var amqp = require('amqplib');
+const {
+  amqpAddress
+} = require('../config/vars');
 
 function sendRandomTemperature(ex, ch)
 {
@@ -20,16 +22,19 @@ if (args.length == 0) {
   process.exit(1);
 }
 
-amqp.connect(host, function(err, conn) {
-  if (err) throw new Error(err);
+const open = amqp.connect(amqpAddress);
+open.then(function (conn) {
+  return conn.createChannel();
+}).then(function (ch) {
+  var ex = 'source';
 
-  conn.createChannel(function(err, ch) {
-    var ex = 'proxy';
-
-    ch.assertExchange(ex, 'topic', {durable: false});
-
-    setInterval(function(){ sendRandomTemperature(ex, ch)}, 1000);
+  ch.assertExchange(ex, 'topic', {
+    durable: false
   });
 
-  setTimeout(function() { conn.close(); process.exit(0) }, args[0]*1000);
+  setInterval(function(){ sendRandomTemperature(ex, ch)}, 1000);
+
+  setTimeout(function() { open.close(); process.exit(0) }, args[0]*1000);
+}).catch(e => {
+  throw new Error(e)
 });

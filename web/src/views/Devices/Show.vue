@@ -70,54 +70,53 @@
           <h3>
             Messages
           </h3>
-            <div class="col md-col-6">
-              <h4>
-                Sent
-              </h4>
-              <div class="mx2 mr3">
-                <el-card
-                  v-for="message in sentMessages"
-                  :key="message._id"
-                  class="box-card mb2">
-                  <div
-                    slot="header"
-                    class="clearfix">
-                    <span>Routing Key: {{ message.key }}</span>
-                  </div>
-                  <div>
-                    <span>
-                      {{ message.content }}
-                    </span>
-                  </div>
-                </el-card>
-              </div>
+          <div class="col md-col-6">
+            <h4>
+              Sent
+            </h4>
+            <div class="mx2 mr3">
+              <el-card
+                v-for="message in sentMessages"
+                :key="message._id"
+                class="box-card mb2">
+                <div
+                  slot="header"
+                  class="clearfix">
+                  <span>Routing Key: {{ message.key }}</span>
+                </div>
+                <div>
+                  <span>
+                    {{ message.content }}
+                  </span>
+                </div>
+              </el-card>
             </div>
-            <div class="col md-col-6">
-              <h4>
-                Received
-              </h4>
-              <div class="mx2 mr3">
-                <el-card
-                  v-for="message in consumedMessages"
-                  :key="message._id"
-                  class="box-card">
-                  <div
-                    slot="header"
-                    class="clearfix">
-                    <span>Routing Key: {{ message.key }}</span>
-                  </div>
-                  <div>
-                    <span>
-                      {{ message.content }}
+          </div>
+          <div class="col md-col-6">
+            <h4>
+              Received
+            </h4>
+            <div class="mx2 mr3">
+              <el-card
+                v-for="message in consumedMessages"
+                :key="message._id"
+                class="box-card">
+                <div
+                  slot="header"
+                  class="clearfix">
+                  <span>Routing Key: {{ message.key }}</span>
+                </div>
+                <div>
+                  <span>
+                    {{ message.content }}
+                  </span>
+                  <div class="mt2 right-align">
+                    <span style="color: grey">
+                      Sent by {{ message.publisher }}
                     </span>
-                    <div class="mt2 right-align">
-                      <span style="color: grey">
-                        Sent by {{ message.publisher }}
-                      </span>
-                    </div>
                   </div>
-                </el-card>
-              </div>
+                </div>
+              </el-card>
             </div>
           </div>
         </div>
@@ -166,6 +165,7 @@ export default {
       );
       this.consumedMessages = response.data;
       const identifier = (this.$route.params.id).replace(/[^A-Z0-9]/ig, '_');
+
       this.$options.sockets[`message_${identifier}`] = (message) => {
         this.consumedMessages.push(message);
       };

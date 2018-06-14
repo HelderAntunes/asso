@@ -10,7 +10,7 @@ const publishToSource = (msg) => {
     return conn.createChannel();
   }).then(function (ch) {
     ch.assertExchange('source', 'topic', {
-      durable: true
+      durable: false
     });
     ch.publish('source', msg.key, new Buffer(msg.content), {
       'appId': msg.publisher
@@ -73,7 +73,7 @@ const consumeThroughProxy = (io) => {
   });
 }
 
-const consumeMessage = (routingKey) => {
+const consumeMessage = (routingKey, identifier) => {
   const open = amqp.connect(amqpAddress);
   open.then(function (conn) {
     return conn.createChannel();
@@ -89,6 +89,7 @@ const consumeMessage = (routingKey) => {
 
     ch.consume(q.queue, function (msg) {
       const device = msg.properties.appId.replace(/[^A-Z0-9]/ig, "_");
+      //DEBUG Trying to figure out why message just won't be received!!!!
       io.emit(`message_${identifier}`, msg);
     }, {
       noAck: true

@@ -61,10 +61,10 @@
           <h3>
             Messages
           </h3>
-          <factory></factory>
-          <truck></truck>
-          <band></band>
-          <div id="cube"></div>
+          <factory />
+          <truck />
+          <band />
+          <div id="cube" />
         </div>
         <div>
           <h3>
@@ -91,7 +91,7 @@ export default {
     Sidebar,
     Factory,
     Truck,
-    Band, 
+    Band,
   },
   data() {
     return {
@@ -194,8 +194,8 @@ export default {
 
 #cube {
   width: 50px;
-	height: 26px;
-	position: absolute;
+  height: 26px;
+  position: absolute;
   background-color: brown;
   left: 858px ;
   top: 740px;

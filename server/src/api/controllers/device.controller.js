@@ -54,14 +54,14 @@ const addSubscription = async (req, res) => {
             name: device,
             subscriptions: { $ne: subscription }
         };
-        
+
         var update = {
             $addToSet: { subscriptions: subscription }
         }
-        
+
         Device.findOneAndUpdate(conditions, update, function(err, doc) {
             res.ok(doc)
-            amqp.consume(subscription);
+            amqp.consumeMessage(subscription, device.replace(/[^A-Z0-9]/ig, '_'));
         });
     } catch(e) {
         res.internalServerError(e);
