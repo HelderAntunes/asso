@@ -8,96 +8,84 @@ const queueRoutes = require('./queue.route');
 const router = express.Router();
 
 /**
- * API Routes
- */
+* API Routes
+*/
 router.use('/messages', messageRoutes);
 router.use('/devices', deviceRoutes);
 router.use('/queues', queueRoutes);
 
 router
-  .route('/overview')
-  .get((req, res) => {
-    rabbitAPI.overview(function (err, response) {
-      if (err) {
-        res.internalServerError(err);
-      } else {
-        res.ok(response);
-      }
-    });
-  }); 
+.route('/overview')
+.get((req, res) => {
+  rabbitAPI.overview(function (err, response) {
+    if (err) {
+      res.internalServerError(err);
+    } else {
+      res.ok(response);
+    }
+  });
+});
 
 router
-  .route('/bindings')
-  .get((req, res) => {
-    rabbitAPI.listBindings({
-      vhost : 'vhost'
-    }, function (err, response) {
+.route('/bindings')
+.get((req, res) => {
+  rabbitAPI.listBindings({
+    vhost : 'vhost'
+  }, function (err, response) {
+    if (err) {
+      res.internalServerError(err);
+    } else {
+      res.ok(JSON.parse(response));
+    }
+  });
+});
+
+router
+.route('/tree')
+.get((req, res) => {
+  let tree = {
+    nodes: [],
+    edges: []
+  };
+
+  rabbitAPI.listQueues({
+    vhost: 'vhost'
+  }, function (err, response) {
+    if (err) {
+      res.internalServerError(err);
+    } else {
+      tree.nodes = JSON.parse(response).map(queue => { return {id: queue.name}; });
+      tree.nodes.shift()
+      tree.nodes.unshift({id:'source','name':'source'})
+
+      rabbitAPI.getBindingsForSource({
+        vhost: 'vhost',
+        exchange: 'source'
+      }, function (err, response) {
         if (err) {
           res.internalServerError(err);
         } else {
-          res.ok(JSON.parse(response));
-        }
-    });
-  });
+          tree.edges = JSON.parse(response).map(binding => { return {sid: binding.source, tid: binding.destination, name: binding.routing_key}; });
 
-router
-  .route('/tree')
-  .get((req, res) => {
-    const tree = {
-      nodes: [],
-      edges: []
-    };
-    let idCounter = 1;
+          rabbitAPI.listConsumers({
+            vhost : 'vhost',
+          }, function  (err, response) {
+            if (err) {
+              res.internalServerError(err);
+            } else {
+              let nodes = JSON.parse(response).map(consumer => { return {id: consumer.consumer_tag, name: ''}; });
+              let edges = JSON.parse(response).map(consumer => { return {sid: consumer.queue.name, tid: consumer.consumer_tag, name: ''}; });
 
-    rabbitAPI.getBindingsForSource({
-      vhost: 'vhost',
-      exchange: 'proxy'
-    }, function (err, response) {
-      if (err) return res.json(err);
-      let queues = response;
-      tree.nodes.push({
-        id: idCounter++,
-        name: 'broker',
-        regex: '#',
-        type: 'broker'
-      });
-      for (let i = 0; i < queues.length; i++, idCounter++) {
-        if (queues[i].destination.includes('amq.gen')) { // skip rabbit default queues
-          idCounter--;
-          continue;
-        }
+              Array.prototype.push.apply(tree.nodes,nodes);
+              Array.prototype.push.apply(tree.edges,edges);
 
-        tree.nodes.push({
-          id: idCounter,
-          name: queues[i].destination,
-          regex: queues[i].routing_key,
-          type: 'queue'
-        });
-        tree.edges.push({
-          start: 1,
-          end: idCounter
-        });
-      }
-
-      Message.find().distinct('publisher', function (err, publishers) {
-        if (err) return res.badRequest(err);
-
-        for (let i = 0; i < publishers.length; i++, idCounter++) {
-          tree.nodes.push({
-            id: idCounter,
-            name: publishers[i],
-            type: 'publisher'
-          });
-
-          tree.edges.push({
-            start: idCounter,
-            end: 1
+              res.ok(tree);
+            }
           });
         }
-
-        res.ok(tree);
       });
-    });
+    }
   });
+});
 
 module.exports = router;
