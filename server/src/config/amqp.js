@@ -89,7 +89,6 @@ const consumeMessage = (subscription, identifier, callback) => {
     })
     ch.bindQueue(q.queue, 'source', subscription.topic);
     ch.consume(q.queue, function (msg) {
-      console.log(msg);
       const device = msg.properties.appId.replace(/[^A-Z0-9]/ig, "_");
       io.obj().emit(`message_${identifier}`, msg);
       io.obj().emit(`routing_key_message`, msg);

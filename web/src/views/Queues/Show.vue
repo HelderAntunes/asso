@@ -67,8 +67,12 @@
               v-for="(msg, index) in messages"
               :key="msg.id"
               :style="{ top: (272 - index * 21) + 'px' }"
-              class="package"/>
+              class="package"
+              @click="handleMessageClick(msg)"/>
           </div>
+          <message-modal
+            :data="message"
+            @updateMessage="updateMessage"/>
         </div>
         <div>
           <h3>
@@ -87,11 +91,14 @@
 import Sidebar from '@/components/Sidebar';
 import Band from '@/components/Band';
 import Proxy from '@/proxies/Proxy';
+import store from '@/store';
+import MessageModal from './MessageModal';
 
 export default {
   components: {
     Sidebar,
     Band,
+    MessageModal,
   },
   data() {
     return {
@@ -101,6 +108,7 @@ export default {
       messages: [],
       inputVisible: false,
       newBinding: '',
+      message: null,
     };
   },
   async created() {
@@ -129,7 +137,7 @@ export default {
           });
         }
       };
-      this.messages.push({ id: 1 });
+      this.messages.push({ id: 1, content: 'hello', topic: 'papagaios', publisher: 'radio' });
     } catch (e) {
       this.$message({
         message: 'Error retrieving queue!',
@@ -138,6 +146,15 @@ export default {
     }
   },
   methods: {
+    handleMessageClick(msg) {
+      this.message = msg;
+      store.dispatch('queue/show', { modal: 'MessageModal' });
+    },
+    updateMessage(message) {
+      const index = this.messages.findIndex(x => x.id === message.id);
+      const newObj = Object.assign({}, this.messages[index], { ...message });
+      this.$set(this.messages, index, newObj);
+    },
     matchKey(routingKey) {
       return this.queue.bindings.some((x) => {
         let pattern = x.routing_key.replace(/\*/i, '\\w*');
@@ -162,11 +179,9 @@ export default {
         throw e;
       }
     },
-
     showInput() {
       this.inputVisible = true;
     },
-
     async addBinding() {
       if (this.newBinding) {
         try {
