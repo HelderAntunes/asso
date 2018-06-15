@@ -61,6 +61,11 @@
           <h3>
             Messages
           </h3>
+          <el-button
+            v-if="messageSettings === 'MANUAL'"
+            class="button-new-tag ml2 mt2"
+            primary
+            @click="publishMessage">Send Message</el-button>
           <div id="wrapper">
             <band />
             <div
@@ -87,6 +92,7 @@
 import Sidebar from '@/components/Sidebar';
 import Band from '@/components/Band';
 import Proxy from '@/proxies/Proxy';
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -102,6 +108,11 @@ export default {
       inputVisible: false,
       newBinding: '',
     };
+  },
+  computed: {
+    ...mapState({
+      messageSettings: state => state.queue.message,
+    }),
   },
   async created() {
     try {
@@ -120,16 +131,24 @@ export default {
         const match = this.matchKey(routingKey);
 
         if (match) {
-          // Just testing. Later change this to after animation
-          const enc = new TextDecoder('utf-8');
-          this.$socket.emit('publish_message', {
+          console.log(routingKey);
+          const len = this.messages.length;
+          const newId = (len === 0) ? 1 : this.messages[len - 1].id + 1;
+          const newMessage = {
+            id: newId,
             publisher: message.properties.appId,
             key: message.fields.routingKey,
-            content: enc.decode(message.content),
-          });
+            content: message.content,
+          };
+
+          this.messages.push(newMessage);
+
+          if (this.messageSettings === 'CONTINUOUS') {
+            setTimeout(this.publishMessage, 3000);
+          }
+          // Just testing. Later change this to after animation
         }
       };
-      this.messages.push({ id: 1 });
     } catch (e) {
       this.$message({
         message: 'Error retrieving queue!',
@@ -138,6 +157,15 @@ export default {
     }
   },
   methods: {
+    publishMessage() {
+      const enc = new TextDecoder('utf-8');
+      const message = this.messages.shift();
+      this.$socket.emit('publish_message', {
+        publisher: message.properties.appId,
+        key: message.fields.routingKey,
+        content: enc.decode(message.content),
+      });
+    },
     matchKey(routingKey) {
       return (this.queue.bindings).some((x) => {
         let pattern = x.routing_key.replace(/\*/i, '\\w*');
@@ -231,11 +259,11 @@ export default {
 }
 
 #wrapper {
-	width: 600px;
-	height: 350px;
-	margin: 0 auto;
-	position: relative;
-	border: 2px solid black;
+  width: 600px;
+  height: 350px;
+  margin: 0 auto;
+  position: relative;
+  border: 2px solid black;
 }
 
 .dashboard-table {
