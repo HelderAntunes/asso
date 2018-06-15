@@ -10,7 +10,7 @@ const publishToSource = (msg) => {
     return conn.createChannel();
   }).then(function (ch) {
     ch.assertExchange('source', 'topic', {
-      durable: false
+      durable: true
     });
     ch.publish('source', msg.key, new Buffer(msg.content), {
       'appId': msg.publisher
@@ -64,13 +64,13 @@ const consumeThroughProxy = () => {
     ch.bindQueue(q.queue, 'proxy', '#');
 
     ch.consume(q.queue, function (msg) {
-      io.obj().emit(`routing_key_message`, msg)
+      io.obj().emit(`routing_key_message`, msg);
     }, {
       noAck: true
     });
   }).catch(e => {
     throw new Error(e)
-  }); 
+  });
 }
 
 const consumeMessage = (routingKey, identifier) => {
@@ -82,14 +82,16 @@ const consumeMessage = (routingKey, identifier) => {
       durable: true
     });
     let q = '';
-    ch.assertQueue(q, { 
+    ch.assertQueue(q, {
       exclusive: false
     });
     ch.bindQueue(q.queue, 'source', routingKey);
 
     ch.consume(q.queue, function (msg) {
+      console.log(msg);
       const device = msg.properties.appId.replace(/[^A-Z0-9]/ig, "_");
       io.obj().emit(`message_${identifier}`, msg);
+      io.obj().emit(`routing_key_message`, msg);
     }, {
       noAck: true
     });

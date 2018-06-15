@@ -63,12 +63,11 @@
           </h3>
           <div id="wrapper">
             <band />
-            <div 
+            <div
               v-for="(msg, index) in messages"
               :key="msg.id"
-              v-bind:style="{ top: (272 - index * 21) + 'px' }"
-              class="package">
-            </div>
+              :style="{ top: (272 - index * 21) + 'px' }"
+              class="package"/>
           </div>
         </div>
         <div>
@@ -130,7 +129,7 @@ export default {
           });
         }
       };
-      this.messages.push({id: 1});
+      this.messages.push({ id: 1 });
     } catch (e) {
       this.$message({
         message: 'Error retrieving queue!',
