@@ -17,6 +17,7 @@ amqp.consumeThroughProxy();
 
 /**
 * Exports express
-* @public
+* @public 
 */
 module.exports = app;
+ 
