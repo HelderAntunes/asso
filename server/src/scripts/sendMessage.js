@@ -26,10 +26,10 @@ const open = amqp.connect(amqpAddress);
 open.then(function (conn) {
   return conn.createChannel();
 }).then(function (ch) {
-  var ex = 'source';
+  var ex = 'proxy';
 
   ch.assertExchange(ex, 'topic', {
-    durable: false
+    durable: true
   });
 
   setInterval(function(){ sendRandomTemperature(ex, ch)}, 1000);

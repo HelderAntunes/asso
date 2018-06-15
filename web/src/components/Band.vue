@@ -12,7 +12,8 @@
     <div
       id="stand4"
       class="stand"/>
-    <div id="band">
+    <div
+      id="band">
       <div
         id="wheel1"
         class="wheel"/>
