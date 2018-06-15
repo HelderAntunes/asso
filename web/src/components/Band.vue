@@ -1,18 +1,38 @@
 <template>
-<div class="mx-auto">
-    		<div id="stand1" class="stand"></div>
-    		<div id="stand2" class="stand"></div>
-        <div id="stand3" class="stand"></div>
-    		<div id="stand4" class="stand"></div>
-    		<div id="band">
-    			<div id="wheel1" class="wheel"></div>
-    			<div id="wheel2" class="wheel"></div>
-    			<div id="wheel3" class="wheel"></div>
-    			<div id="wheel4" class="wheel"></div>
-    			<div id="wheel5" class="wheel"></div>
-    			<div id="wheel6" class="wheel"></div>
-    		</div>
-</div>
+  <div class="mx-auto">
+    <div
+      id="stand1"
+      class="stand"/>
+    <div
+      id="stand2"
+      class="stand"/>
+    <div
+      id="stand3"
+      class="stand"/>
+    <div
+      id="stand4"
+      class="stand"/>
+    <div id="band">
+      <div
+        id="wheel1"
+        class="wheel"/>
+      <div
+        id="wheel2"
+        class="wheel"/>
+      <div
+        id="wheel3"
+        class="wheel"/>
+      <div
+        id="wheel4"
+        class="wheel"/>
+      <div
+        id="wheel5"
+        class="wheel"/>
+      <div
+        id="wheel6"
+        class="wheel"/>
+    </div>
+  </div>
 </template>
 
 <script>

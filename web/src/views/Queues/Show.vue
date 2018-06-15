@@ -63,12 +63,11 @@
           </h3>
           <div id="wrapper">
             <band />
-            <div 
+            <div
               v-for="(msg, index) in messages"
               :key="msg.id"
-              v-bind:style="{ top: (272 - index * 21) + 'px' }"
-              class="package">
-            </div>
+              :style="{ top: (272 - index * 21) + 'px' }"
+              class="package"/>
           </div>
         </div>
         <div>
@@ -130,7 +129,7 @@ export default {
           });
         }
       };
-      this.messages.push({id: 1});
+      this.messages.push({ id: 1 });
     } catch (e) {
       this.$message({
         message: 'Error retrieving queue!',
@@ -140,7 +139,7 @@ export default {
   },
   methods: {
     matchKey(routingKey) {
-      return (this.queue.bindings).some((x) => {
+      return this.queue.bindings.some((x) => {
         let pattern = x.routing_key.replace(/\*/i, '\\w*');
         pattern = pattern.replace(/#/i, '\\S*');
         pattern = new RegExp(`^${pattern}$`, 'g');
@@ -152,7 +151,9 @@ export default {
       try {
         const response = await new Proxy().submit(
           'delete',
-          `api/queues/${this.queue.name}/bindings/${encodeURIComponent(binding.routing_key)}`,
+          `api/queues/${this.queue.name}/bindings/${encodeURIComponent(
+            binding.routing_key,
+          )}`,
         );
         if (response.code === '200') {
           this.queue.bindings.splice(this.queue.bindings.indexOf(binding), 1);
@@ -232,11 +233,11 @@ export default {
 }
 
 #wrapper {
-	width: 600px;
-	height: 350px;
-	margin: 0 auto;
-	position: relative;
-	border: 2px solid black;
+  width: 600px;
+  height: 350px;
+  margin: 0 auto;
+  position: relative;
+  border: 2px solid black;
 }
 
 .dashboard-table {
