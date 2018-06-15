@@ -115,18 +115,19 @@ export default {
 
       this.$options.sockets.routing_key_message = (message) => {
         const routingKey = message.fields.routingKey;
-        const keySplitted = routingKey.split('.');
-        let match = false;
-        (this.queue.bindings).forEach((x) => {
-          match = match || this.matchKey(routingKey, x.routing_key);
-        });
-        // Just testing. Later change this to after animation
-        const enc = new TextDecoder('utf-8');
-        this.$socket.emit('publish_message', {
-          publisher: message.properties.appId,
-          key: message.fields.routingKey,
-          content: enc.decode(message.content),
-        });
+
+        // See if message's routing key corresponds to one of the bindings
+        const match = this.matchKey(routingKey);
+
+        if (match) {
+          // Just testing. Later change this to after animation
+          const enc = new TextDecoder('utf-8');
+          this.$socket.emit('publish_message', {
+            publisher: message.properties.appId,
+            key: message.fields.routingKey,
+            content: enc.decode(message.content),
+          });
+        }
       };
     } catch (e) {
       this.$message({
@@ -136,8 +137,14 @@ export default {
     }
   },
   methods: {
-    matchKey(routingKey, keySplitted) {
-      return true;
+    matchKey(routingKey) {
+      return (this.queue.bindings).some((x) => {
+        let pattern = x.routing_key.replace(/\*/i, '\\w*');
+        pattern = pattern.replace(/#/i, '\\S*');
+        pattern = new RegExp(`^${pattern}$`, 'g');
+
+        return pattern.test(routingKey);
+      });
     },
     async removeBinding(binding) {
       try {
