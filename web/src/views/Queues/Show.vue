@@ -61,6 +61,11 @@
           <h3>
             Messages
           </h3>
+          <el-button
+            v-if="messageSettings === 'MANUAL'"
+            class="button-new-tag ml2 mt2"
+            primary
+            @click="publishMessage">Send Message</el-button>
           <div id="wrapper">
             <band />
             <div
@@ -91,6 +96,7 @@
 import Sidebar from '@/components/Sidebar';
 import Band from '@/components/Band';
 import Proxy from '@/proxies/Proxy';
+import { mapState } from 'vuex';
 import store from '@/store';
 import MessageModal from './MessageModal';
 
@@ -111,6 +117,11 @@ export default {
       message: null,
     };
   },
+  computed: {
+    ...mapState({
+      messageSettings: state => state.queue.message,
+    }),
+  },
   async created() {
     try {
       let response = await new Proxy('api/queues').find(this.$route.params.id);
@@ -128,13 +139,22 @@ export default {
         const match = this.matchKey(routingKey);
 
         if (match) {
-          // Just testing. Later change this to after animation
-          const enc = new TextDecoder('utf-8');
-          this.$socket.emit('publish_message', {
+          console.log(routingKey);
+          const len = this.messages.length;
+          const newId = (len === 0) ? 1 : this.messages[len - 1].id + 1;
+          const newMessage = {
+            id: newId,
             publisher: message.properties.appId,
             key: message.fields.routingKey,
-            content: enc.decode(message.content),
-          });
+            content: message.content,
+          };
+
+          this.messages.push(newMessage);
+
+          if (this.messageSettings === 'CONTINUOUS') {
+            setTimeout(this.publishMessage, 3000);
+          }
+          // Just testing. Later change this to after animation
         }
       };
       this.messages.push({ id: 1, content: 'hello', topic: 'papagaios', publisher: 'radio' });
@@ -146,6 +166,15 @@ export default {
     }
   },
   methods: {
+    publishMessage() {
+      const enc = new TextDecoder('utf-8');
+      const message = this.messages.shift();
+      this.$socket.emit('publish_message', {
+        publisher: message.properties.appId,
+        key: message.fields.routingKey,
+        content: enc.decode(message.content),
+      });
+    },
     handleMessageClick(msg) {
       this.message = msg;
       store.dispatch('queue/show', { modal: 'MessageModal' });
