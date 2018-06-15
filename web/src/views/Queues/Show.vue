@@ -57,14 +57,23 @@
             primary
             @click="showInput">+ New Binding</el-button>
         </div>
-        <div id="messages">
+        <div>
           <h3>
             Messages
           </h3>
-          <factory />
-          <truck />
-          <band />
-          <div id="cube" />
+          <el-button
+            v-if="messageSettings === 'MANUAL'"
+            class="button-new-tag ml2 mt2"
+            primary
+            @click="publishMessage">Send Message</el-button>
+          <div id="wrapper">
+            <band />
+            <div
+              v-for="(msg, index) in messages"
+              :key="msg.id"
+              :style="{ top: (272 - index * 21) + 'px' }"
+              class="package"/>
+          </div>
         </div>
         <div>
           <h3>
@@ -81,16 +90,13 @@
 
 <script>
 import Sidebar from '@/components/Sidebar';
-import Factory from '@/components/Factory';
-import Truck from '@/components/Truck';
 import Band from '@/components/Band';
 import Proxy from '@/proxies/Proxy';
+import { mapState } from 'vuex';
 
 export default {
   components: {
     Sidebar,
-    Factory,
-    Truck,
     Band,
   },
   data() {
@@ -102,6 +108,11 @@ export default {
       inputVisible: false,
       newBinding: '',
     };
+  },
+  computed: {
+    ...mapState({
+      messageSettings: state => state.queue.message,
+    }),
   },
   async created() {
     try {
@@ -115,16 +126,28 @@ export default {
 
       this.$options.sockets.routing_key_message = (message) => {
         const routingKey = message.fields.routingKey;
-        this.queue.bindings.forEach((x) => {
-          console.log(x);
-        });
-        // Just testing. Later change this to after animation
-        const enc = new TextDecoder('utf-8');
-        this.$socket.emit('publish_message', {
-          publisher: message.properties.appId,
-          key: message.fields.routingKey,
-          content: enc.decode(message.content),
-        });
+
+        // See if message's routing key corresponds to one of the bindings
+        const match = this.matchKey(routingKey);
+
+        if (match) {
+          console.log(routingKey);
+          const len = this.messages.length;
+          const newId = (len === 0) ? 1 : this.messages[len - 1].id + 1;
+          const newMessage = {
+            id: newId,
+            publisher: message.properties.appId,
+            key: message.fields.routingKey,
+            content: message.content,
+          };
+
+          this.messages.push(newMessage);
+
+          if (this.messageSettings === 'CONTINUOUS') {
+            setTimeout(this.publishMessage, 3000);
+          }
+          // Just testing. Later change this to after animation
+        }
       };
     } catch (e) {
       this.$message({
@@ -134,11 +157,29 @@ export default {
     }
   },
   methods: {
+    publishMessage() {
+      const enc = new TextDecoder('utf-8');
+      const message = this.messages.shift();
+      this.$socket.emit('publish_message', {
+        publisher: message.properties.appId,
+        key: message.fields.routingKey,
+        content: enc.decode(message.content),
+      });
+    },
+    matchKey(routingKey) {
+      return (this.queue.bindings).some((x) => {
+        let pattern = x.routing_key.replace(/\*/i, '\\w*');
+        pattern = pattern.replace(/#/i, '\\S*');
+        pattern = new RegExp(`^${pattern}$`, 'g');
+
+        return pattern.test(routingKey);
+      });
+    },
     async removeBinding(binding) {
       try {
         const response = await new Proxy().submit(
           'delete',
-          `api/queues/${this.queue.name}/bindings/${binding.routing_key}`,
+          `api/queues/${this.queue.name}/bindings/${encodeURIComponent(binding.routing_key)}`,
         );
         if (response.code === '200') {
           this.queue.bindings.splice(this.queue.bindings.indexOf(binding), 1);
@@ -155,9 +196,10 @@ export default {
     async addBinding() {
       if (this.newBinding) {
         try {
+          const bind = encodeURIComponent(this.newBinding);
           const response = await new Proxy().submit(
             'post',
-            `api/queues/${this.queue.name}/bindings/${this.newBinding}`,
+            `api/queues/${this.queue.name}/bindings/${bind}`,
           );
           if (response.code === '200') {
             const index = this.queue.bindings.findIndex(
@@ -179,10 +221,49 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 #side-bar {
   border-right: solid 1px #e6e6e6;
   height: 100vh;
+}
+
+.moveToQueueAnimation {
+  -webkit-animation: moveToQueue 1s 0.3s linear 1 normal;
+}
+
+.movePackage {
+  -webkit-animation: goPackage 4s 0.3s linear 1 normal;
+}
+
+@-webkit-keyframes moveToQueue {
+  50% {
+    -webkit-transform: translateX(25px);
+  }
+  75% {
+    -webkit-transform: translateX(30px) translateY(-25px);
+  }
+  100% {
+    -webkit-transform: translateX(50px) translateY(-25px);
+  }
+}
+
+@-webkit-keyframes goPackage {
+  83% {
+    -webkit-transform: translateX(250px);
+  }
+  95% {
+    -webkit-transform: translateX(260px) translateY(25px) rotate(90deg);
+  }
+  100% {
+    -webkit-transform: translateX(270px) translateY(25px) rotate(90deg);
+  }
+}
+
+#wrapper {
+  width: 600px;
+  height: 350px;
+  margin: 0 auto;
+  position: relative;
+  border: 2px solid black;
 }
 
 .dashboard-table {
@@ -192,16 +273,11 @@ export default {
   min-height: 60%;
 }
 
-#cube {
-  width: 50px;
-  height: 26px;
+.package {
+  width: 20px;
+  height: 20px;
   position: absolute;
-  background-color: brown;
-  left: 858px ;
-  top: 740px;
-}
-
-#messages {
-  height: 400px;
+  background-color: #403f63;
+  left: 130px;
 }
 </style>

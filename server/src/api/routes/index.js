@@ -55,7 +55,7 @@ router
       res.internalServerError(err);
     } else {
       tree.nodes = JSON.parse(response).map(queue => { return {id: queue.name}; });
-      tree.nodes.shift()
+      //tree.nodes.shift()
       tree.nodes.unshift({id:'source','name':'source'})
 
       rabbitAPI.getBindingsForSource({

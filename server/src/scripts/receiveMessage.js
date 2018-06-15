@@ -18,7 +18,7 @@ open.then(function (conn) {
   args.shift();
 
   ch.assertExchange(ex, 'topic', {
-    durable: (ex === 'proxy')
+    durable: true
   });
 
   let q = '';

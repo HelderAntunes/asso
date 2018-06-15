@@ -96,7 +96,7 @@ export default {
             type: 'success',
           });
           this.$emit('updateMessages', response.data);
-          this.clearForm();
+          // this.clearForm();
         }
       } catch (e) {
         this.$message({

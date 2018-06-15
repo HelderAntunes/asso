@@ -104,7 +104,7 @@
                 <div
                   slot="header"
                   class="clearfix">
-                  <span>Routing Key: {{ message.key }}</span>
+                  <span>Routing Key: {{ message.fields.routingKey }}</span>
                 </div>
                 <div>
                   <span>
@@ -112,7 +112,7 @@
                   </span>
                   <div class="mt2 right-align">
                     <span style="color: grey">
-                      Sent by {{ message.publisher }}
+                      Sent by {{ message.properties.appId }}
                     </span>
                   </div>
                 </div>

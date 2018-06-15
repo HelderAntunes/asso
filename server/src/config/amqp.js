@@ -10,7 +10,7 @@ const publishToSource = (msg) => {
     return conn.createChannel();
   }).then(function (ch) {
     ch.assertExchange('source', 'topic', {
-      durable: false
+      durable: true
     });
     ch.publish('source', msg.key, new Buffer(msg.content), {
       'appId': msg.publisher
@@ -49,7 +49,7 @@ const publishToProxy = (params) => {
   });
 };
 
-const consumeThroughProxy = (io) => {
+const consumeThroughProxy = () => {
   const open = amqp.connect(amqpAddress);
   open.then(function (conn) {
     return conn.createChannel();
@@ -64,7 +64,7 @@ const consumeThroughProxy = (io) => {
     ch.bindQueue(q.queue, 'proxy', '#');
 
     ch.consume(q.queue, function (msg) {
-      io.emit(`routing_key_message`, msg)
+      io.obj().emit(`routing_key_message`, msg);
     }, {
       noAck: true
     });
@@ -79,7 +79,7 @@ const consumeMessage = (routingKey, identifier) => {
     return conn.createChannel();
   }).then(function (ch) {
     ch.assertExchange('source', 'topic', {
-      durable: false
+      durable: true
     });
     let q = '';
     ch.assertQueue(q, {
@@ -88,9 +88,10 @@ const consumeMessage = (routingKey, identifier) => {
     ch.bindQueue(q.queue, 'source', routingKey);
 
     ch.consume(q.queue, function (msg) {
+      console.log(msg);
       const device = msg.properties.appId.replace(/[^A-Z0-9]/ig, "_");
-      //DEBUG Trying to figure out why message just won't be received!!!!
-      io.emit(`message_${identifier}`, msg);
+      io.obj().emit(`message_${identifier}`, msg);
+      io.obj().emit(`routing_key_message`, msg);
     }, {
       noAck: true
     });

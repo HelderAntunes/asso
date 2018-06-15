@@ -5,6 +5,7 @@ const Message = require('../models/message.model');
 const getQueueBindings = (queue, callback) => {
     rabbitAPI.getQueueBindings({
         vhost: 'vhost',
+        exchange: 'source',
         queue: queue
     }, function (err, response) {
         if (err) {
@@ -22,10 +23,10 @@ const createQueueBinding = async (queue, binding) => {
             headers: {
                 'content-type': 'application/json'
             },
-            url: 'http://guest:guest@rabbitmq:15672/api/bindings/vhost/e/proxy/q/' + queue,
+            url: 'http://guest:guest@rabbitmq:15672/api/bindings/vhost/e/source/q/' + queue,
             json: {
                 "routing_key": binding,
-                "source": 'proxy',
+                "source": 'source',
             }
         })
     } catch(e) {
@@ -147,12 +148,12 @@ const addBinding = async (req, res) => {
 
 const removeBinding = async (req, res) => {
     const queue = req.params.queueId;
-    const binding = req.params.bindingId;
+    const binding = encodeURIComponent(req.params.bindingId);
     request.delete({
         headers: {
             'content-type': 'application/json'
         },
-        url: 'http://guest:guest@rabbitmq:15672/api/bindings/vhost/e/proxy/q/' + queue + '/' + binding,
+        url: `http://guest:guest@rabbitmq:15672/api/bindings/vhost/e/source/q/${queue}/${binding}`,
     }, function (error, response, body) {
         if (error) return res.internalServerError(error);
         else res.ok(response);
