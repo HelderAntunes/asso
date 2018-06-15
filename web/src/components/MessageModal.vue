@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     :visible.sync="showModal"
-    title="Update Message">
+    :title="`${action} Message`">
     <el-form :model="message">
       <el-form-item label="Content">
         <el-input v-model="message.content"/>
@@ -28,7 +28,7 @@
       <el-button @click="closeModal">Cancel</el-button>
       <el-button
         type="primary"
-        @click="submitAction">Update Message</el-button>
+        @click="submitAction">{{ action }} Message</el-button>
     </span>
   </el-dialog>
 </template>
@@ -45,6 +45,10 @@ export default {
       type: Object,
       default: null,
     },
+    modalAction: {
+      type: String,
+      default: 'CREATE',
+    },
   },
   data() {
     return {
@@ -58,10 +62,11 @@ export default {
     };
   },
   computed: {
-    ...mapState('queue', ['visible', 'modal']),
+    ...mapState('queue', ['visible', 'modal', 'action']),
     showModal() {
       if (
         this.$options.name === this.modal &&
+        this.action === 'UPDATE' &&
         this.visible &&
         this.componentMounted
       ) {
@@ -76,7 +81,7 @@ export default {
       const response = await new Proxy('api/devices').all();
       this.devices = response.data;
     } catch (e) {
-      throw (e);
+      throw e;
     }
     this.componentMounted = true;
   },
@@ -84,12 +89,37 @@ export default {
     closeModal() {
       store.dispatch('queue/hide');
     },
-    submitAction() {
-      this.$emit('updateMessage', this.message);
+    async submitAction() {
+      if (this.action === 'UPDATE') {
+        this.$emit('updateMessage', this.message);
+      } else {
+        try {
+          const response = await new Proxy('api/messages').create(this.message);
+          if (response.status.code === '200') {
+            this.$message({
+              message: 'Message sent with success!',
+              type: 'success',
+            });
+          }
+        } catch (e) {
+          this.$message({
+            message: 'Error sending message!',
+            type: 'error',
+          });
+        }
+      }
       this.closeModal();
     },
     verifyAction() {
-      this.message = { ...this.data };
+      if (this.action === 'UPDATE') {
+        this.message = { ...this.data };
+      } else {
+        this.message = {
+          publisher: '',
+          content: '',
+          key: '',
+        };
+      }
     },
   },
 };

@@ -77,6 +77,7 @@
           </div>
           <message-modal
             :data="message"
+            modal-action="UPDATE"
             @updateMessage="updateMessage"/>
         </div>
         <div>
@@ -98,7 +99,7 @@ import Band from '@/components/Band';
 import Proxy from '@/proxies/Proxy';
 import { mapState } from 'vuex';
 import store from '@/store';
-import MessageModal from './MessageModal';
+import MessageModal from '@/components/MessageModal';
 
 export default {
   components: {
@@ -177,7 +178,7 @@ export default {
     },
     handleMessageClick(msg) {
       this.message = msg;
-      store.dispatch('queue/show', { modal: 'MessageModal' });
+      store.dispatch('queue/show', { modal: 'MessageModal', action: 'UPDATE' });
     },
     updateMessage(message) {
       const index = this.messages.findIndex(x => x.id === message.id);
