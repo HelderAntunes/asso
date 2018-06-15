@@ -115,8 +115,10 @@ export default {
 
       this.$options.sockets.routing_key_message = (message) => {
         const routingKey = message.fields.routingKey;
-        this.queue.bindings.forEach((x) => {
-          console.log(x);
+        const keySplitted = routingKey.split('.');
+        let match = false;
+        (this.queue.bindings).forEach((x) => {
+          match = match || this.matchKey(routingKey, x.routing_key);
         });
         // Just testing. Later change this to after animation
         const enc = new TextDecoder('utf-8');
@@ -134,11 +136,14 @@ export default {
     }
   },
   methods: {
+    matchKey(routingKey, keySplitted) {
+      return true;
+    },
     async removeBinding(binding) {
       try {
         const response = await new Proxy().submit(
           'delete',
-          `api/queues/${this.queue.name}/bindings/${binding.routing_key}`,
+          `api/queues/${this.queue.name}/bindings/${encodeURIComponent(binding.routing_key)}`,
         );
         if (response.code === '200') {
           this.queue.bindings.splice(this.queue.bindings.indexOf(binding), 1);
@@ -155,9 +160,10 @@ export default {
     async addBinding() {
       if (this.newBinding) {
         try {
+          const bind = encodeURIComponent(this.newBinding);
           const response = await new Proxy().submit(
             'post',
-            `api/queues/${this.queue.name}/bindings/${this.newBinding}`,
+            `api/queues/${this.queue.name}/bindings/${bind}`,
           );
           if (response.code === '200') {
             const index = this.queue.bindings.findIndex(
