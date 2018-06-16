@@ -16,7 +16,7 @@ exports.connect = (server) => {
       console.log('User disconnected!');
     });
 
-    socket.on('publish_message', function(msg){
+    socket.on('publish_message', function(msg){      
       amqp.publishToSource(msg);
     });
   });

@@ -28,17 +28,7 @@ export default {
   sockets: {
     routing_key_message(data) {
       const deviceName = data.properties.appId;
-      const msg = "HELLO";
-      const receivers = ['Wearable', 'Air monitor'];
-
-      const linksToReceiversIXs = [];
-      for (let i = 0; i < this.devices.length; i += 1) {
-        for (let j = 0; j < receivers.length; j += 1) {
-          if (receivers[j] === this.devices[i].name) {
-            linksToReceiversIXs.push(2 * i + 1);
-          }
-        }
-      }
+      const msg = new TextDecoder('utf-8').decode(data.content);
 
       for (let i = 0; i < this.devices.length; i += 1) {
         const device = this.devices[i];
@@ -47,9 +37,23 @@ export default {
         }
 
         const indexLinkFromPublisher = 2 * i;
-        this.transition(indexLinkFromPublisher, msg, linksToReceiversIXs);
+        this.transition(indexLinkFromPublisher, msg);
       }
-    }
+    },
+    receiver_message(data) {
+      const msg = new TextDecoder('utf-8').decode(data.content);
+      const consumerName = data.fields.consumerTag.replace(/_/g, ' ');
+
+      for (let i = 0; i < this.devices.length; i += 1) {
+        const device = this.devices[i];
+        if (device.name !== consumerName) {
+          continue;
+        }
+
+        const indexLinkToConsumer = 2 * i + 1;
+        this.transition(indexLinkToConsumer, msg);
+      }
+    },
   },
   components: {
     Sidebar,
@@ -225,7 +229,7 @@ export default {
         if (!d3.event.active) this.simulation.alphaTarget(0);
         d.fx = null, d.fy = null;
     },
-    transition(node_index, msg, linksToReceiversIXs) {
+    transition(node_index, msg) {
       const transition_ = this.transition;
       const node_count = this.svg.selectAll('path').nodes().length;
 
@@ -245,12 +249,7 @@ export default {
           .attr('opacity', 1)
           .attrTween('transform', this.translateAlong(this.svg.selectAll('path').nodes()[node_index]))
           .on('end', function() {
-              // todo: set transictions to others
               walkingCircle.remove();
-              for (let i = 0; i < linksToReceiversIXs.length; i += 1) {
-                transition_(linksToReceiversIXs[i], msg, []);
-              }
-
           });
     },
     translateAlong(path) {

@@ -95,7 +95,7 @@ const consumeMessage = (subscription, identifier, callback) => {
     ch.consume(q.queue, function (msg) {
       const device = msg.properties.appId.replace(/[^A-Z0-9]/ig, "_");
       io.obj().emit(`message_${identifier}`, msg);
-      io.obj().emit(`routing_key_message`, msg);
+      io.obj().emit(`receiver_message`, msg);
     }, {
       noAck: true,
       consumerTag: identifier
@@ -113,7 +113,7 @@ const createExchange = () => {
     ch.assertExchange('source', 'topic', {
       durable: true
     });
-  }).catch(e => { 
+  }).catch(e => {
     throw new Error(e)
   });
 }
