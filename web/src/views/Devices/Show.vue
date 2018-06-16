@@ -33,7 +33,7 @@
               </span>
               <el-tag
                 v-for="subscription in device.subscriptions"
-                :key="subscription"
+                :key="subscription.queue + ' - ' + subscription.topic"
                 :disable-transitions="false"
                 closable
                 class="ml2"

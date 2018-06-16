@@ -35,7 +35,7 @@
           <br>
           <el-tag
             v-for="bind in queue.bindings"
-            :key="bind.destination"
+            :key="bind.destination + '-' + bind.routing_key"
             :disable-transitions="false"
             closable
             class="ml2"
@@ -68,12 +68,16 @@
             @click="publishMessage">Send Message</el-button>
           <div id="wrapper">
             <band />
-            <div
-              v-for="(msg, index) in messages"
-              :key="msg.id"
-              :style="{ top: (272 - index * 21) + 'px' }"
-              class="package"
-              @click="handleMessageClick(msg)"/>
+            <transition-group
+              name="message-queue"
+              tag="div">
+              <div
+                v-for="(msg, index) in messages"
+                :key="msg.id"
+                :style="{ top: (272 - index * 21) + 'px' }"
+                class="message-item package"
+                @click="handleMessageClick(msg)"/>
+            </transition-group>
           </div>
           <message-modal
             :data="message"
@@ -140,14 +144,14 @@ export default {
         const match = this.matchKey(routingKey);
 
         if (match) {
-          console.log(routingKey);
           const len = this.messages.length;
-          const newId = (len === 0) ? 1 : this.messages[len - 1].id + 1;
+          const enc = new TextDecoder('utf-8');
+          const newId = len === 0 ? 1 : this.messages[len - 1].id + 1;
           const newMessage = {
             id: newId,
             publisher: message.properties.appId,
             key: message.fields.routingKey,
-            content: message.content,
+            content: enc.decode(message.content),
           };
 
           this.messages.push(newMessage);
@@ -158,7 +162,12 @@ export default {
           // Just testing. Later change this to after animation
         }
       };
-      this.messages.push({ id: 1, content: 'hello', topic: 'papagaios', publisher: 'radio' });
+      this.messages.push({
+        id: 1,
+        content: 'hello',
+        topic: 'papagaios',
+        publisher: 'radio',
+      });
     } catch (e) {
       this.$message({
         message: 'Error retrieving queue!',
@@ -168,13 +177,8 @@ export default {
   },
   methods: {
     publishMessage() {
-      const enc = new TextDecoder('utf-8');
       const message = this.messages.shift();
-      this.$socket.emit('publish_message', {
-        publisher: message.properties.appId,
-        key: message.fields.routingKey,
-        content: enc.decode(message.content),
-      });
+      this.$socket.emit('publish_message', message);
     },
     handleMessageClick(msg) {
       this.message = msg;
@@ -240,40 +244,51 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.message-item {
+  transition: all 1s;
+  display: inline-block;
+  margin-right: 10px;
+}
+// .message-queue-enter
+// /* .list-complete-leave-active below version 2.1.8 */ {
+//   opacity: 0;
+//   transform: translateY(-50px);
+// }
+// .message-queue-leave-to {
+//   opacity: 0;
+//   transform: translateX(-50px);
+// }
+// .message-queue-leave-active {
+//   position: absolute;
+// }
+
 #side-bar {
   border-right: solid 1px #e6e6e6;
   height: 100vh;
 }
 
 .moveToQueueAnimation {
-  -webkit-animation: moveToQueue 1s 0.3s linear 1 normal;
+  -webkit-animation: movePackage 6s 0.3s linear 1 forwards;
 }
 
-.movePackage {
-  -webkit-animation: goPackage 4s 0.3s linear 1 normal;
-}
-
-@-webkit-keyframes moveToQueue {
-  50% {
+@-webkit-keyframes movePackage {
+  6% {
     -webkit-transform: translateX(25px);
   }
-  75% {
+  16% {
     -webkit-transform: translateX(30px) translateY(-25px);
   }
-  100% {
+  25% {
     -webkit-transform: translateX(50px) translateY(-25px);
   }
-}
-
-@-webkit-keyframes goPackage {
   83% {
-    -webkit-transform: translateX(250px);
+    -webkit-transform: translateX(290px) translateY(-25px);
   }
   95% {
-    -webkit-transform: translateX(260px) translateY(25px) rotate(90deg);
+    -webkit-transform: translateX(300px) translateY(25px) rotate(90deg);
   }
   100% {
-    -webkit-transform: translateX(270px) translateY(25px) rotate(90deg);
+    -webkit-transform: translateX(310px) translateY(25px) rotate(90deg);
   }
 }
 
