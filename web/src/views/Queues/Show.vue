@@ -83,12 +83,12 @@
                 type="primary"
                 class="ml2 mt2"
                 plain
-                @click="publishMessage(messages[0])">Deliver Message</el-button>
+                @click="publishMessage(findFirstOnQueue())">Deliver Message</el-button>
               <el-button
                 type="danger"
                 class="ml2 mt2"
                 plain
-                @click="deleteMessage(messages[0])">Delete from Queue</el-button>
+                @click="deleteMessage(findFirstOnQueue())">Delete from Queue</el-button>
             </div>
             <message-modal
               :data="message"
@@ -195,7 +195,7 @@ export default {
       const newObj = Object.assign({}, this.messages[index], {
         state,
       });
-      if (state === 'OnHold') {
+      if (state === 'OnHold' && this.messageSettings === 'AUTOMATIC') {
         clearInterval(newObj.publishTime);
       }
       this.$set(this.messages, index, newObj);
@@ -208,6 +208,10 @@ export default {
     },
     getPackageOnHold(message) {
       return message.state === 'OnHold' ? '110px' : '130px';
+    },
+    findFirstOnQueue() {
+      const messagesOnQueue = this.messages.filter(x => x.state === 'OnQueue');
+      return (messagesOnQueue.length !== 0) ? messagesOnQueue[0] : { id: -1 };
     },
     publishMessage(message) {
       this.changeMessageState(message, 'Delivering');
@@ -223,7 +227,9 @@ export default {
     handleMessageClick(msg) {
       this.message = msg;
       if (msg.state === 'OnQueue') {
-        this.changeMessageState(msg, 'OnHold');
+        if (this.messageSettings === 'AUTOMATIC') {
+          this.changeMessageState(msg, 'OnHold');
+        }
         store.dispatch('queue/show', {
           modal: 'MessageModal',
           action: 'UPDATE',
@@ -233,7 +239,7 @@ export default {
     updateMessage(message) {
       const index = this.messages.findIndex(x => x.id === message.id);
       const newObj = Object.assign({}, this.messages[index], { ...message });
-      if (message.state === 'OnQueue') {
+      if (message.state === 'OnQueue' && this.messageSettings === 'AUTOMATIC') {
         newObj.publishTime = setTimeout(() => {
           this.publishMessage(newObj);
         }, this.speedSettings);
