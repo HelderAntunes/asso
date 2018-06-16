@@ -7,13 +7,16 @@
         <Sidebar />
       </div>
     </div>
-    <svg width="960" height="600"/></svg>
+    <div class="flex flex-column p3">
+      <h2>Network</h2>
+      <svg width="960" height="350"/></svg>
+    </div>
     <el-dialog
       :visible.sync="showMessageModal"
       title="Create Message"
       width="50%">
       <message-modal
-        :topics="topics"
+        :devices="devices"
         @closeModal="closeModal"/>
     </el-dialog>
   </div>
@@ -25,35 +28,6 @@ import Sidebar from '@/components/Sidebar';
 import Proxy from '@/proxies/Proxy';
 import MessageModal from './MessageModal';
 import * as d3 from 'd3';
-
-const treeData = {};
-Object.assign(treeData, {
-  type: 'tree',
-  layoutType: 'euclidean',
-  duration: 750,
-  radius: 5,
-  marginX: 0,
-  marginY: 0,
-  nodeText: 'text',
-  currentNode: null,
-  isLoading: false,
-  events: [],
-  data: {
-    Graph: {
-      tree: {
-        children: [
-          { children: [], id: 1, text: 'Home1' },
-          { children: [], id: 2, text: 'Home2' },
-          { children: [], id: 3, text: 'Home3' },
-        ],
-        id: 0,
-        text: 'Home',
-      },
-      links: [],
-      text: 'TREEDATA',
-    },
-  },
-});
 
 export default {
   components: {
@@ -68,184 +42,197 @@ export default {
         received: '',
       },
       showMessageModal: false,
-      topics: [],
-      treeData,
+      devices: [],
       events: [],
+      graph: null,
+      svgD3: null,
+      simulationD3: null,
+      widthSVG: 960,
+      heightSVG: 350,
+      radiusLink: 150,
     };
   },
-  mounted() {
-    console.log('hello');
-    console.log(Math.PI);
-    console.log(Math.sin(Math.PI));
-    var svg = d3.select("svg");
-    var width = 960; //+svg.attr("width");
-    var height = 600; //+svg.attr("height");
-
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
-
-    var simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().distance(10).strength(0.5))
-        .force("charge", d3.forceManyBody())
-        .force("center", d3.forceCenter(width / 2, height / 2));
-
-    var radius = 100,
-        centerX = 450,
-        centerY = 300;
-    var graph = {
-      "nodes": [
-        {"id": "1", name: "no1", "fx": centerX, "fy": centerY, "group": 1},
-        {"id": "2", name: "no2", "fx": radius * Math.cos(0) + centerX, "fy": radius * Math.sin(0) + centerY, "group": 1},
-        {"id": "3", name: "no3", "fx": radius * Math.cos(2*Math.PI/3) + centerX, "fy": radius * Math.sin(2*Math.PI/3) + centerY, "group": 2},
-        {"id": "4", name: "no4", "fx": radius * Math.cos(2*2*Math.PI/3) + centerX, "fy": radius * Math.sin(2*2*Math.PI/3) + centerY, "group": 2}
-      ],
-      "links": [
-        {"source": "1", "target": "2", "value": 1},
-        {"source": "1", "target": "3", "value": 1},
-        {"source": "1", "target": "4", "value": 1},
-      ]
-    };
-
-    var nodes = graph.nodes,
-        nodeById = d3.map(nodes, function(d) {
-            return d.id;
-        }),
-        links = graph.links,
-        bilinks = [];
-
-    links.forEach(function(link) {
-        var s = link.source = nodeById.get(link.source),
-            t = link.target = nodeById.get(link.target),
-            i = {}; // intermediate node
-        nodes.push(i);
-        links.push({
-            source: s,
-            target: i
-        }, {
-            source: i,
-            target: t
-        });
-        bilinks.push([s, t]);
-    });
-
-    console.log(bilinks);
-
-    var link = svg.selectAll(".link")
-        .data(bilinks)
-        .enter().append("path")
-        .attr("class", "link");
-
-    svg.append("circle")
-        .attr("class", "walking circle")
-        .attr("r", 5);
-
-    var node = svg.selectAll(".node")
-        .data(nodes.filter(function(d) {
-            return d.id;
-        }))
-        .enter().append('g');
-    var circles = node.append("circle")
-        .attr("class", "node")
-        .attr("r", 5)
-        .attr("fill", function(d) {
-            return color(d.group);
-        });
-
-    var lables = node.append("text")
-        .text(function(d) {
-          return d.name;
-        })
-        .attr("fill", 'red')
-        .attr('class', 'text')
-        .attr('x', 6)
-        .attr('y', 3);
-
-    node.append("title")
-      .text(function(d) { return d.name; });
-
-    simulation
-        .nodes(nodes)
-        .on("tick", ticked);
-
-    simulation.force("link")
-        .links(links);
-
-    transition(0);
-  //  transition(1);
-    function ticked() {
-        link.attr("d", positionLink);
-        node.attr("transform", positionNode);
-    }
-
-    /////////////////////////////////////////////////////////////////////////
-
-    function positionLink(d) {
-        return "M" + d[0].x + "," + d[0].y +
-            "S" + d[1].x + "," + d[1].y +
-            " " + d[1].x + "," + d[1].y;
-    }
-
-    function positionNode(d) {
-        return "translate(" + d.x + "," + d.y + ")";
-    }
-
-    function dragstarted(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.1).restart();
-        d.fx = d.x, d.fy = d.y;
-    }
-    function dragged(d) {
-        d.fx = d3.event.x, d.fy = d3.event.y;
-    }
-    function dragended(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null, d.fy = null;
-    }
-
-    function transition(node_index = 0) {
-      // console.log(svg.selectAll('path').nodes());
-        var node_count = svg.selectAll('path').nodes().length
-        if (node_index == node_count) {
-            node_index = 0;
-        }
-        svg.selectAll('.walking.circle').transition()
-            .duration(500)
-            .attr("opacity", 1)
-            .attrTween("transform", translateAlong(svg.selectAll('path').nodes()[node_index]))
-            .on("end", function() {
-                transition(node_index + 1);
-            });
-    }
-
-    // Returns an attrTween for translating along the specified path element.
-    function translateAlong(path) {
-      //console.log(path);
-        var l = path.getTotalLength();
-        return function(d, i, a) {
-            return function(t) {
-                var p = path.getPointAtLength(t * l);
-                return "translate(" + p.x + "," + p.y + ")";
-            };
-        };
-    }
-    console.log('sdfsdf');
-  },
-  async created() {
+  async mounted() {
     try {
-      //const response = await new Proxy('api/topics').all();
-      //this.topics = response.data;
-
+      const response = await new Proxy('api/devices').all();
+      this.devices = response.data;
+      this.setTree();
+      this.presentTree();
     } catch (e) {
       console.log(e);
-      /*this.$message({
-        message: 'Error retrieving topics!',
+      this.$message({
+        message: 'Error retrieving devices!',
         type: 'error',
-      });*/
+      });
     }
-
-    // Example -> this.animateMessage('Home', 'Home1');
+  },
+  async created() {
+    // other calls
   },
   methods: {
     closeModal() {
       this.showMessageModal = false;
+    },
+    presentTree() {
+      this.svg = d3.select('svg');
+      const width = this.svg.attr('width');
+      const height = this.svg.attr('height');
+
+      const color = d3.scaleOrdinal(d3.schemeCategory20);
+
+      this.simulation = d3.forceSimulation()
+        .force('link', d3.forceLink().distance(10).strength(0.5))
+        .force('charge', d3.forceManyBody())
+        .force('center', d3.forceCenter(width / 2, height / 2));
+
+      const nodes = this.graph.nodes,
+        nodeById = d3.map(nodes, function(d) { return d.id; }),
+        links = this.graph.links,
+        bilinks = [];
+
+      links.forEach(function(link) {
+        const s = link.source = nodeById.get(link.source),
+          t = link.target = nodeById.get(link.target),
+          i = {}; // intermediate node
+        nodes.push(i);
+        links.push({ source: s, target: i }, { source: i, target: t });
+        bilinks.push([s, t]);
+      });
+
+      const link = this.svg.selectAll('.link')
+        .data(bilinks)
+        .enter().append('path')
+        .attr('class', 'link');
+
+      this.svg.append('circle')
+        .attr('class', 'walking circle')
+        .attr('r', 5);
+
+      const node = this.svg.selectAll('.node')
+        .data(nodes.filter(function(d) {
+            return d.id;
+        }))
+        .enter().append('g');
+      const circles = node.append('circle')
+        .attr('class', 'node')
+        .attr('r', 5)
+        .attr('fill', function(d) {
+            return color(d.group);
+        });
+      const lables = node.append('text')
+        .text(function(d) {
+          return d.name;
+        })
+        .attr('fill', 'red')
+        .attr('class', 'text')
+        .attr('x', 6)
+        .attr('y', -3);
+
+      node.append('title')
+        .text(function(d) { return d.name; });
+
+      const positionLink_ = this.positionLink;
+      const positionNode_ = this.positionNode;
+      this.simulation
+        .nodes(nodes)
+        .on('tick', function ticked() {
+            link.attr('d', positionLink_);
+            node.attr('transform', positionNode_);
+        });
+
+      this.simulation.force('link')
+        .links(links);
+
+      this.transition(0);
+    },
+    setTree() {
+      const centerX = this.widthSVG / 2,
+        centerY = this.heightSVG / 2,
+        radius = this.radiusLink,
+        teta = 2*Math.PI/this.devices.length,
+        graph = {
+          'nodes': [],
+          'links': []
+        };
+
+      for (let i = 0; i < this.devices.length; i += 1) {
+        const device = this.devices[i];
+        const node = {
+          'id': (i+1).toString(),
+          name: device.name,
+          'fx': radius * Math.cos(teta*i) + centerX,
+          'fy': radius * Math.sin(teta*i) + centerY,
+          'group': 1
+        };
+        graph['nodes'].push(node);
+      }
+      const exchangeNode = {
+        'id': (this.devices.length+1).toString(),
+        name: 'Exchange',
+        'fx': centerX,
+        'fy': centerY,
+        'group': 2
+      };
+      graph['nodes'].push(exchangeNode);
+
+      for (let i = 0; i < this.devices.length; i += 1) {
+        const linkTo = {
+          'source': (i+1).toString(),
+          'target': (this.devices.length+1).toString(),
+          'value': 1
+        }
+        const linkFrom = {
+          'source': linkTo['target'],
+          'target': linkTo['source'],
+          'value': 1
+        }
+        graph['links'].push(linkTo);
+        graph['links'].push(linkFrom);
+      }
+
+      this.graph = graph;
+    },
+    positionLink(d) {
+      return 'M' + d[0].x + ',' + d[0].y +
+          'S' + d[1].x + ',' + d[1].y +
+          ' ' + d[1].x + ',' + d[1].y;
+    },
+    positionNode(d) {
+      return 'translate(' + d.x + ',' + d.y + ')';
+    },
+    dragstarted(d) {
+        if (!d3.event.active) this.simulation.alphaTarget(0.1).restart();
+        d.fx = d.x, d.fy = d.y;
+    },
+    dragged(d) {
+        d.fx = d3.event.x, d.fy = d3.event.y;
+    },
+    dragended(d) {
+        if (!d3.event.active) this.simulation.alphaTarget(0);
+        d.fx = null, d.fy = null;
+    },
+    transition(node_index = 0) {
+      const transition_ = this.transition;
+      const node_count = this.svg.selectAll('path').nodes().length
+      if (node_index == node_count) {
+          node_index = 0;
+      }
+      this.svg.selectAll('.walking.circle').transition()
+          .duration(500)
+          .attr('opacity', 1)
+          .attrTween('transform', this.translateAlong(this.svg.selectAll('path').nodes()[node_index]))
+          .on('end', function() {
+              transition_(node_index + 1);
+          });
+    },
+    translateAlong(path) {
+      const l = path.getTotalLength();
+      return function(d, i, a) {
+        return function(t) {
+          const p = path.getPointAtLength(t * l);
+          return 'translate(' + p.x + ',' + p.y + ')';
+        };
+      };
     }
   },
 };
@@ -260,7 +247,6 @@ export default {
   color: #2c3e50;
   margin-top: 20px;
 }
-
 .node {
   stroke: #A9A9A9;
   stroke-width: 1.5px;
