@@ -41,6 +41,20 @@ router
 });
 
 router
+.route('/consumers')
+.get((req, res) => {
+  rabbitAPI.listConsumers({
+    vhost: 'vhost'
+  }, function (err, response) {
+    if (err) {
+      res.internalServerError(err);
+    } else {
+      res.ok(JSON.parse(response));
+    }
+  });
+});
+
+router
 .route('/tree')
 .get((req, res) => {
   let tree = {

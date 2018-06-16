@@ -32,7 +32,7 @@ const createQueueBinding = async (queue, binding) => {
     } catch(e) {
         throw(e);
     }
-} 
+}
 
 const index = (req, res) => {
     rabbitAPI.listQueues({
@@ -132,7 +132,18 @@ const queueMessages = (req, res) => {
 };
 
 const queueConsumers = (req, res) => {
-    res.ok([]);
+  let queue = req.params.id;
+
+  rabbitAPI.getQueue({
+      vhost: 'vhost',
+      queue: queue
+  }, function (err, response) {
+      if (err) return res.internalServerError(err);
+      else{
+        let queueDetails = JSON.parse(response);
+        res.ok(queueDetails.consumer_details.map(c => c.consumer_tag));
+      }
+  });
 };
 
 const addBinding = async (req, res) => {

@@ -94,7 +94,8 @@ const consumeMessage = (subscription, identifier, callback) => {
       io.obj().emit(`message_${identifier}`, msg);
       io.obj().emit(`routing_key_message`, msg);
     }, {
-      noAck: true
+      noAck: true,
+      consumerTag: identifier
     });
   }).catch(e => {
     throw new Error(e)
