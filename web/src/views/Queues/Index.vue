@@ -129,8 +129,8 @@
                 <el-option
                   v-for="bind in bindings"
                   :key="bind.destination"
-                  :label="bind.destination"
-                  :value="bind.destination"/>
+                  :label="bind.routing_key"
+                  :value="bind.routing_key"/>
               </el-select>
             </el-form-item>
           </el-form>
@@ -187,7 +187,7 @@ export default {
       let response = await new Proxy('api/queues').all();
       this.queues = response.data.filter(x => x.name !== 'proxy');
       response = await new Proxy('api/bindings').all();
-      this.bindings = response.data;
+      this.bindings = (response.data).filter(x => x.source === 'source');
       this.settings = this.messageSettings;
       this.speed = this.speedSettings;
     } catch (e) {
@@ -216,7 +216,7 @@ export default {
         });
 
         if (response.code === '200') {
-          this.queues.push(response.data);
+          this.queues.push({ ...response.data, messages: 0 });
           this.dialog.visible = false;
 
           this.$message({

@@ -17,4 +17,8 @@ router
   .route('/')
   .post(controller.create);
 
+router
+  .route('/:id')
+  .delete(controller.destroy);
+
 module.exports = router;

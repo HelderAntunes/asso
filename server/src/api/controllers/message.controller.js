@@ -31,6 +31,14 @@ const create = async (req, res) => {
     })
 };
 
+const destroy = (req, res) => {
+    const id = req.params.id;
+    Message.remove({ _id: id }, function(err) {
+        if (err) res.internalServerError(err);
+        res.ok(id);
+    })
+};
+
 const seed = async (req, res) => {
     let options = {
         method: 'POST',
@@ -64,5 +72,6 @@ module.exports = {
     index,
     show,
     create,
-    seed
+    seed,
+    destroy
 }

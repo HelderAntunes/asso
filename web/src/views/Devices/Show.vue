@@ -83,6 +83,13 @@
                   slot="header"
                   class="clearfix">
                   <span>Routing Key: {{ message.key }}</span>
+                  <el-button
+                    class="right"
+                    type="danger"
+                    size="small"
+                    icon="el-icon-delete"
+                    circle
+                    @click="deleteMessage(message)"/>
                 </div>
                 <div>
                   <span>
@@ -105,6 +112,13 @@
                   slot="header"
                   class="clearfix">
                   <span>Routing Key: {{ message.fields.routingKey }}</span>
+                  <el-button
+                    class="right"
+                    type="danger"
+                    size="small"
+                    icon="el-icon-delete"
+                    circle
+                    @click="deleteMessage(message)"/>
                 </div>
                 <div>
                   <span>
@@ -174,6 +188,23 @@ export default {
     }
   },
   methods: {
+    async deleteMessage(message) {
+      let index = this.consumedMessages.findIndex(x => x._id === message._id);
+      if (index === -1) {
+        index = this.sentMessages.findIndex(x => x._id === message._id);
+        this.sentMessages.splice(index, 1);
+      } else {
+        this.consumedMessages.splice(index, 1);
+      }
+      try {
+        await new Proxy().submit(
+          'delete',
+          `api/messages/${message._id}`,
+        );
+      } catch (e) {
+        throw (e);
+      }
+    },
     updateMessages(message) {
       this.sentMessages.push(message);
     },

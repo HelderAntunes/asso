@@ -26,7 +26,7 @@ const publishToProxy = (params) => {
     if (params.periodic.isPeriodic) {
       setTimeout(function () {
         conn.close();
-      }, params.periodic.duration);
+      }, params.periodic.duration + 1000);
     }
     return conn.createChannel();
   }).then(function (ch) {
@@ -34,11 +34,14 @@ const publishToProxy = (params) => {
       durable: true
     });
     if (params.periodic.isPeriodic) {
-      setInterval(function () {
+      const timerFunction = setInterval(function () {
         ch.publish('proxy', params.key, new Buffer(params.content), {
           'appId': params.publisher
         });
       }, params.periodic.interval);
+      setTimeout(function () {
+        clearInterval(timerFunction);
+      }, params.periodic.duration);
     } else {
       ch.publish('proxy', params.key, new Buffer(params.content), {
         'appId': params.publisher
@@ -110,7 +113,7 @@ const createExchange = () => {
     ch.assertExchange('source', 'topic', {
       durable: true
     });
-  }).catch(e => {
+  }).catch(e => { 
     throw new Error(e)
   });
 }
