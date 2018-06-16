@@ -68,9 +68,9 @@
                 name="message-queue"
                 tag="div">
                 <div
-                  v-for="(msg, index) in messages"
+                  v-for="(msg) in messages"
                   :key="msg.id"
-                  :style="{ top: (272 - index * 21) + 'px' }"
+                  :style="{ top: getPackagePosition(msg), left: getPackageOnHold(msg) }"
                   :class="{'moveToQueueAnimation': msg.state === 'Delivering'}"
                   class="message-item package"
                   @click="handleMessageClick(msg)"/>
@@ -83,12 +83,12 @@
                 type="primary"
                 class="ml2 mt2"
                 plain
-                @click="publishMessage">Deliver Message</el-button>
+                @click="publishMessage(findFirstOnQueue())">Deliver Message</el-button>
               <el-button
                 type="danger"
                 class="ml2 mt2"
                 plain
-                @click="deleteMessage(messages[0])">Delete from Queue</el-button>
+                @click="deleteMessage(findFirstOnQueue())">Delete from Queue</el-button>
             </div>
             <message-modal
               :data="message"
@@ -188,22 +188,14 @@ export default {
             state: 'OnQueue',
           };
 
-          this.messages.push(newMessage);
-
           if (this.messageSettings === 'AUTOMATIC') {
-            setTimeout(this.publishMessage(newMessage), this.speedSettings);
+            newMessage.publishTime = setTimeout(() => {
+              this.publishMessage(newMessage);
+            }, this.speedSettings);
           }
+          this.messages.push(newMessage);
         }
       };
-      this.messages.push({
-        id: 1,
-        content: 'hello',
-        topic: 'papagaios',
-        publisher: 'radio',
-      });
-      setTimeout(() => {
-        this.publishMessage(this.messages[0]);
-      }, this.speedSettings);
     } catch (e) {
       this.$message({
         message: 'Error retrieving queue!',
@@ -212,18 +204,31 @@ export default {
     }
   },
   methods: {
-    publishMessage(message) {
-      const index = this.messages.findIndex((x) => {
-        if (typeof message.id !== 'undefined') {
-          return x.id === message.id;
-        }
-        return x.state === 'OnQueue';
-      });
-      console.log(index);
+    changeMessageState(message, state) {
+      const index = this.messages.findIndex(x => x.id === message.id);
       const newObj = Object.assign({}, this.messages[index], {
-        state: 'Delivering',
+        state,
       });
+      if (state === 'OnHold' && this.messageSettings === 'AUTOMATIC') {
+        clearInterval(newObj.publishTime);
+      }
       this.$set(this.messages, index, newObj);
+    },
+    getPackagePosition(message) {
+      const list = this.messages.filter(x => x.state === 'OnQueue');
+      let index = list.findIndex(x => x.id === message.id);
+      index = index === -1 ? 0 : index;
+      return `${272 - index * 21}px`;
+    },
+    getPackageOnHold(message) {
+      return message.state === 'OnHold' ? '110px' : '130px';
+    },
+    findFirstOnQueue() {
+      const messagesOnQueue = this.messages.filter(x => x.state === 'OnQueue');
+      return (messagesOnQueue.length !== 0) ? messagesOnQueue[0] : { id: -1 };
+    },
+    publishMessage(message) {
+      this.changeMessageState(message, 'Delivering');
       setTimeout(() => {
         this.deleteMessage(message);
       }, this.speedSettings + this.speedSettings + 750);
@@ -235,11 +240,24 @@ export default {
     },
     handleMessageClick(msg) {
       this.message = msg;
-      store.dispatch('queue/show', { modal: 'MessageModal', action: 'UPDATE' });
+      if (msg.state === 'OnQueue') {
+        if (this.messageSettings === 'AUTOMATIC') {
+          this.changeMessageState(msg, 'OnHold');
+        }
+        store.dispatch('queue/show', {
+          modal: 'MessageModal',
+          action: 'UPDATE',
+        });
+      }
     },
     updateMessage(message) {
       const index = this.messages.findIndex(x => x.id === message.id);
       const newObj = Object.assign({}, this.messages[index], { ...message });
+      if (message.state === 'OnQueue' && this.messageSettings === 'AUTOMATIC') {
+        newObj.publishTime = setTimeout(() => {
+          this.publishMessage(newObj);
+        }, this.speedSettings);
+      }
       this.$set(this.messages, index, newObj);
     },
     matchKey(routingKey) {
