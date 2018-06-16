@@ -7,15 +7,19 @@
         <Sidebar />
       </div>
     </div>
-    <svg
-      width="960"
-      height="600" />
+    <div class="flex flex-column p3">
+      <h2>Network</h2>
+      <svg
+        width="960"
+        height="600" />
+    </div>
     <message-modal modal-action="CREATE"/>
   </div>
 </template>
 
 <script>
 /* eslint-disable */
+import Proxy from '@/proxies/Proxy';
 import Sidebar from '@/components/Sidebar';
 import MessageModal from '@/components/MessageModal';
 import * as d3 from 'd3';
