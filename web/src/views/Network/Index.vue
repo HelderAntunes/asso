@@ -29,7 +29,16 @@ export default {
     routing_key_message(data) {
       const deviceName = data.properties.appId;
       const msg = "HELLO";
-      console.log(data);
+      const receivers = ['Wearable', 'Air monitor'];
+
+      const linksToReceiversIXs = [];
+      for (let i = 0; i < this.devices.length; i += 1) {
+        for (let j = 0; j < receivers.length; j += 1) {
+          if (receivers[j] === this.devices[i].name) {
+            linksToReceiversIXs.push(2 * i + 1);
+          }
+        }
+      }
 
       for (let i = 0; i < this.devices.length; i += 1) {
         const device = this.devices[i];
@@ -37,21 +46,8 @@ export default {
           continue;
         }
 
-        const indexLinkTo = 2 * i;
-        const indexLinkFrom = 2 * i + 1;
-
-        const walkingCircle = this.svg.append('g').attr('class', 'walking circle text');
-        walkingCircle.append('circle')
-          .attr('class', 'walking circle')
-          .attr('r', 5);
-        walkingCircle.append('text')
-          .text(msg)
-          .attr('fill', 'red')
-          .attr('class', 'text')
-          .attr('x', 6)
-          .attr('y', -3);
-
-        this.transition(indexLinkTo, walkingCircle);
+        const indexLinkFromPublisher = 2 * i;
+        this.transition(indexLinkFromPublisher, msg, linksToReceiversIXs);
       }
     }
   },
@@ -229,12 +225,21 @@ export default {
         if (!d3.event.active) this.simulation.alphaTarget(0);
         d.fx = null, d.fy = null;
     },
-    transition(node_index = 0, walkingCircle) {
+    transition(node_index, msg, linksToReceiversIXs) {
       const transition_ = this.transition;
-      const node_count = this.svg.selectAll('path').nodes().length
-      if (node_index == node_count) {
-          node_index = 0;
-      }
+      const node_count = this.svg.selectAll('path').nodes().length;
+
+      const walkingCircle = this.svg.append('g').attr('class', 'walking circle text');
+      walkingCircle.append('circle')
+        .attr('class', 'walking circle')
+        .attr('r', 5);
+      walkingCircle.append('text')
+        .text(msg)
+        .attr('fill', 'red')
+        .attr('class', 'text')
+        .attr('x', 6)
+        .attr('y', -3);
+
       walkingCircle.transition()
           .duration(500)
           .attr('opacity', 1)
@@ -242,6 +247,10 @@ export default {
           .on('end', function() {
               // todo: set transictions to others
               walkingCircle.remove();
+              for (let i = 0; i < linksToReceiversIXs.length; i += 1) {
+                transition_(linksToReceiversIXs[i], msg, []);
+              }
+
           });
     },
     translateAlong(path) {
