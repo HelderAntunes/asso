@@ -45,6 +45,9 @@
         <el-table
           :data="queues"
           class="dashboard-table">
+          <template slot="empty">
+            <span>There are no queus to be listed</span>
+          </template> 
           <el-table-column
             label="Queue">
             <template slot-scope="scope">

@@ -16,6 +16,9 @@
         <el-table
           :data="devices"
           class="dashboard-table">
+          <template slot="empty">
+            <span>There are no devices to be listed</span>
+          </template> 
           <el-table-column
             label="Name">
             <template slot-scope="scope">
