@@ -13,6 +13,7 @@ mongoose.connect();
 const server = app.listen(port, () => console.info(`Server initialized on port ${port} (${env})`));
 io.connect(server);
 
+amqp.createExchange();
 amqp.consumeThroughProxy();
 
 /**

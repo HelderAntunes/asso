@@ -57,43 +57,50 @@
             primary
             @click="showInput">+ New Binding</el-button>
         </div>
-        <div class="py2">
-          <h3>
-            Messages
-          </h3>
-          <div id="wrapper">
-            <band />
-            <transition-group
-              name="message-queue"
-              tag="div">
-              <div
-                v-for="(msg, index) in messages"
-                :key="msg.id"
-                :style="{ top: (272 - index * 21) + 'px' }"
-                :class="{'moveToQueueAnimation': msg.state === 'Delivering'}"
-                class="message-item package"
-                @click="handleMessageClick(msg)"/>
-            </transition-group>
+        <div class="clearfix">
+          <div class="sm-col sm-col-12 md-col-12 lg-col-6 py2">
+            <h3>
+              Messages
+            </h3>
+            <div id="wrapper">
+              <band />
+              <transition-group
+                name="message-queue"
+                tag="div">
+                <div
+                  v-for="(msg, index) in messages"
+                  :key="msg.id"
+                  :style="{ top: (272 - index * 21) + 'px' }"
+                  :class="{'moveToQueueAnimation': msg.state === 'Delivering'}"
+                  class="message-item package"
+                  @click="handleMessageClick(msg)"/>
+              </transition-group>
+            </div>
+            <div
+              v-if="messageSettings === 'MANUAL' && messages.length !== 0"
+              class="pt2 center">
+              <el-button
+                type="primary"
+                class="ml2 mt2"
+                plain
+                @click="publishMessage">Deliver Message</el-button>
+              <el-button
+                type="danger"
+                class="ml2 mt2"
+                plain
+                @click="deleteMessage(messages[0])">Delete from Queue</el-button>
+            </div>
+            <message-modal
+              :data="message"
+              modal-action="UPDATE"
+              @deleteMessage="deleteMessage"
+              @updateMessage="updateMessage"/>
           </div>
-          <div 
-            v-if="messageSettings === 'MANUAL' && messages.length !== 0"
-            class="pt2 center">
-            <el-button
-              type="primary"
-              class="ml2 mt2"
-              plain
-              @click="publishMessage">Deliver Message</el-button>
-            <el-button
-              type="danger"
-              class="ml2 mt2"
-              plain
-              @click="deleteMessage(messages[0])">Delete from Queue</el-button>
+          <div class="sm-col sm-col-12 md-col-12 lg-col-6">
+            <h3>
+              Consumers
+            </h3>
           </div>
-          <message-modal
-            :data="message"
-            modal-action="UPDATE"
-            @deleteMessage="deleteMessage"
-            @updateMessage="updateMessage"/>
         </div>
         <div>
           <h3>
@@ -170,7 +177,7 @@ export default {
           this.messages.push(newMessage);
 
           if (this.messageSettings === 'AUTOMATIC') {
-            setTimeout(this.publishMessage, this.speedSettings);
+            setTimeout(this.publishMessage(newMessage), this.speedSettings);
           }
         }
       };
@@ -180,6 +187,9 @@ export default {
         topic: 'papagaios',
         publisher: 'radio',
       });
+      setTimeout(() => {
+        this.publishMessage(this.messages[0]);
+      }, this.speedSettings);
     } catch (e) {
       this.$message({
         message: 'Error retrieving queue!',
@@ -188,8 +198,15 @@ export default {
     }
   },
   methods: {
-    publishMessage() {
-      const message = this.messages.shift();
+    publishMessage(message) {
+      const index = this.messages.findIndex(x => x.id === message.id);
+      const newObj = Object.assign({}, this.messages[index], {
+        state: 'Delivering',
+      });
+      this.$set(this.messages, index, newObj);
+      setTimeout(() => {
+        this.deleteMessage(message);
+      }, this.speedSettings + this.speedSettings + 750);
       this.$socket.emit('publish_message', message);
     },
     deleteMessage(message) {

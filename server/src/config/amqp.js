@@ -100,9 +100,23 @@ const consumeMessage = (subscription, identifier, callback) => {
   });
 }
 
+const createExchange = () => {
+  const open = amqp.connect(amqpAddress);
+  open.then(function (conn) {
+    return conn.createChannel();
+  }).then(function (ch) {
+    ch.assertExchange('source', 'topic', {
+      durable: true
+    });
+  }).catch(e => {
+    throw new Error(e)
+  });
+}
+
 module.exports = {
   consumeThroughProxy,
   publishToProxy,
   publishToSource,
-  consumeMessage
+  consumeMessage,
+  createExchange
 }
