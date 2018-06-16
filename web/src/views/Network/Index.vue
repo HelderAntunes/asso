@@ -7,11 +7,21 @@
         <Sidebar />
       </div>
     </div>
+
     <div class="flex flex-column p3">
-      <h2>Network</h2>
-      <svg
-        width="960"
-        height="600" />
+      <div class="col md-col-12">
+        <div class="col md-col-6">
+          <h2>Network</h2>
+          <svg
+            width="500"
+            height="350" />
+        </div>
+
+        <div class="col md-col-6">
+          <h2>Publish</h2>
+          <publish-form />
+        </div>
+      </div>
     </div>
     <message-modal modal-action="CREATE"/>
   </div>
@@ -22,42 +32,14 @@
 import Proxy from '@/proxies/Proxy';
 import Sidebar from '@/components/Sidebar';
 import MessageModal from '@/components/MessageModal';
+import PublishForm from './PublishForm';
 import * as d3 from 'd3';
 
 export default {
-  sockets: {
-    message(data) {
-      const deviceName = data.properties.appId;
-      const msg = new TextDecoder('utf-8').decode(data.content);
-
-      for (let i = 0; i < this.devices.length; i += 1) {
-        const device = this.devices[i];
-        if (device.name !== deviceName) {
-          continue;
-        }
-
-        const indexLinkFromPublisher = 2 * i;
-        this.transition(indexLinkFromPublisher, msg);
-      }
-    },
-    receiver_message(data) {
-      const msg = new TextDecoder('utf-8').decode(data.content);
-      const consumerName = data.fields.consumerTag.replace(/_/g, ' ');
-
-      for (let i = 0; i < this.devices.length; i += 1) {
-        const device = this.devices[i];
-        if (device.name !== consumerName) {
-          continue;
-        }
-
-        const indexLinkToConsumer = 2 * i + 1;
-        this.transition(indexLinkToConsumer, msg);
-      }
-    },
-  },
   components: {
     Sidebar,
     MessageModal,
+    PublishForm,
   },
   data() {
     return {
@@ -71,9 +53,10 @@ export default {
       graph: null,
       svgD3: null,
       simulationD3: null,
-      widthSVG: 960,
+      widthSVG: 500,
       heightSVG: 350,
       radiusLink: 150,
+      durationTransiction: 500
     };
   },
   async mounted() {
@@ -92,6 +75,42 @@ export default {
   },
   async created() {
     // other calls
+  },
+  sockets: {
+    message(data) {
+      const deviceName = data.properties.appId;
+      const msg = new TextDecoder('utf-8').decode(data.content);
+
+      for (let i = 0; i < this.devices.length; i += 1) {
+        const device = this.devices[i];
+        if (device.name !== deviceName) {
+          continue;
+        }
+
+        const indexLinkFromPublisher = 2 * i;
+        this.transition(indexLinkFromPublisher, msg);
+      }
+    },
+    receiver_message(data) {
+      const msg = new TextDecoder('utf-8').decode(data.content);
+      const consumerName = data.fields.consumerTag.replace(/_/g, ' ');
+      let indexLinkToConsumer = null;
+
+      for (let i = 0; i < this.devices.length; i += 1) {
+        const device = this.devices[i];
+        if (device.name !== consumerName) {
+          continue;
+        }
+
+        indexLinkToConsumer = 2 * i + 1;
+        break;
+      }
+      console.log(indexLinkToConsumer);
+      const transition = this.transition;
+      setTimeout(function() {
+        transition(indexLinkToConsumer, msg);
+      }, this.durationTransiction);
+    },
   },
   methods: {
     closeModal() {
@@ -135,7 +154,7 @@ export default {
         .enter().append('g');
       const circles = node.append('circle')
         .attr('class', 'node')
-        .attr('r', 5)
+        .attr('r', 10)
         .attr('fill', function(d) {
             return color(d.group);
         });
@@ -230,6 +249,9 @@ export default {
         d.fx = null, d.fy = null;
     },
     transition(node_index, msg) {
+      if (node_index === null) {
+        return;
+      }
       const transition_ = this.transition;
       const node_count = this.svg.selectAll('path').nodes().length;
 
@@ -245,7 +267,7 @@ export default {
         .attr('y', -3);
 
       walkingCircle.transition()
-          .duration(500)
+          .duration(this.durationTransiction)
           .attr('opacity', 1)
           .attrTween('transform', this.translateAlong(this.svg.selectAll('path').nodes()[node_index]))
           .on('end', function() {
@@ -267,18 +289,18 @@ export default {
 
 <style lang="scss">
 .node {
-  stroke: #a9a9a9;
+  stroke: #6DA1FF;
   stroke-width: 1.5px;
   fill: #2f4f4f;
-  opacity: 0.6;
+  opacity: 1;
 }
 .link {
   stroke: #999;
-  stroke-width: 2px;
+  stroke-width: 4px;
   stroke-opacity: 0.6;
 }
 .walking.circle {
-  fill: #ffa500;
+  fill: #6DA1FF;
 }
 .text {
   font-family: sans-serif;
