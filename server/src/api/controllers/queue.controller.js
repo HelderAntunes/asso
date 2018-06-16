@@ -140,8 +140,9 @@ const queueConsumers = (req, res) => {
   }, function (err, response) {
       if (err) return res.internalServerError(err);
       else{
-        let queueDetails = JSON.parse(response);
-        res.ok(queueDetails.consumer_details.map(c => c.consumer_tag));
+        let consumers = JSON.parse(response).consumer_details.map(c => c.consumer_tag);
+
+        res.ok([...new Set(consumers)]);
       }
   });
 };

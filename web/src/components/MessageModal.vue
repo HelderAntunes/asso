@@ -7,7 +7,7 @@
         <el-input v-model="message.content"/>
       </el-form-item>
       <el-form-item label="Topic">
-        <el-input v-model="message.topic"/>
+        <el-input v-model="message.key"/>
       </el-form-item>
       <el-form-item label="Publisher">
         <el-select

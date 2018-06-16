@@ -58,7 +58,7 @@
             @click="showInput">+ New Binding</el-button>
         </div>
         <div class="clearfix">
-          <div class="sm-col sm-col-12 md-col-12 lg-col-6 py2">
+          <div class="sm-col sm-col-12 md-col-12 lg-col-8 py2">
             <h3>
               Messages
             </h3>
@@ -96,10 +96,17 @@
               @deleteMessage="deleteMessage"
               @updateMessage="updateMessage"/>
           </div>
-          <div class="sm-col sm-col-12 md-col-12 lg-col-6">
+          <div class="sm-col sm-col-12 md-col-12 lg-col-4 py2">
             <h3>
               Consumers
             </h3>
+            <el-tag
+              v-for="consumer in consumers"
+              :key="consumer"
+              :disable-transitions="false"
+              class="ml2">
+              {{ consumer }}
+            </el-tag>
           </div>
         </div>
         <div>
@@ -134,6 +141,7 @@ export default {
       queue: {
         bindings: [],
       },
+      consumers: [],
       messages: [],
       inputVisible: false,
       newBinding: '',
@@ -155,6 +163,12 @@ export default {
         `api/queues/${this.queue.name}/messages`,
       );
       this.messages = response.data;
+
+      response = await new Proxy().submit(
+        'get',
+        `api/queues/${this.queue.name}/consumers`,
+      );
+      this.consumers = response.data;
 
       this.$options.sockets.routing_key_message = (message) => {
         const routingKey = message.fields.routingKey;
@@ -199,7 +213,13 @@ export default {
   },
   methods: {
     publishMessage(message) {
-      const index = this.messages.findIndex(x => x.id === message.id);
+      const index = this.messages.findIndex((x) => {
+        if (typeof message.id !== 'undefined') {
+          return x.id === message.id;
+        }
+        return x.state === 'OnQueue';
+      });
+      console.log(index);
       const newObj = Object.assign({}, this.messages[index], {
         state: 'Delivering',
       });
