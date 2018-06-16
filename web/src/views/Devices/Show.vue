@@ -56,7 +56,7 @@
                   v-for="item in bindings"
                   :key="item.destination + '-' + item.routing_key"
                   :label="item.destination + ' - ' + item.routing_key"
-                  :value="item.destination + '-' + item.routing_key"/>
+                  :value="item.destination + ' - ' + item.routing_key"/>
               </el-select>
               <el-button
                 v-else
@@ -166,7 +166,7 @@ export default {
       let response = await new Proxy('api/devices').find(this.$route.params.id);
       this.device = { ...this.device, ...response.data };
       response = await new Proxy('api/bindings').all();
-      this.bindings = (response.data).filter(x => x.source === 'source');
+      this.bindings = (response.data).filter(x => x.source === 'source' && !(x.destination).includes('amq'));
       const deviceName = encodeURIComponent(this.device.name.trim());
       response = await new Proxy().submit(
         'get',
@@ -232,7 +232,7 @@ export default {
 
     async addSubscription() {
       if (this.newSubscription) {
-        const values = this.newSubscription.split('-');
+        const values = this.newSubscription.split(' - ');
         let queue = 'Custom';
         let topic = '';
         if (values.length === 2) {

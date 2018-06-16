@@ -26,7 +26,7 @@ import * as d3 from 'd3';
 
 export default {
   sockets: {
-    routing_key_message(data) {
+    message(data) {
       const deviceName = data.properties.appId;
       const msg = "HELLO";
       const receivers = ['Wearable', 'Air monitor'];

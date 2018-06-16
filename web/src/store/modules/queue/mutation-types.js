@@ -9,7 +9,8 @@
 export const SHOW = 'SHOW';
 export const HIDE = 'HIDE';
 export const UPDATE = 'UPDATE';
+export const ADDMESSAGE = 'ADDMESSAGE';
 
 export default {
-  SHOW, HIDE, UPDATE,
+  SHOW, HIDE, UPDATE, ADDMESSAGE,
 };

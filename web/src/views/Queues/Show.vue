@@ -170,7 +170,7 @@ export default {
       );
       this.consumers = response.data;
 
-      this.$options.sockets.routing_key_message = (message) => {
+      this.$options.sockets.message = (message) => {
         const routingKey = message.fields.routingKey;
 
         // See if message's routing key corresponds to one of the bindings

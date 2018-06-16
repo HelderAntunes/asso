@@ -8,6 +8,7 @@
   </div>
 </template>
 <script>
+import store from '@/store';
 /* ============
    * Entry Point
    * ============
@@ -17,8 +18,18 @@
 
 export default {
   /**
-     * The name of the application.
-     */
+   * The name of the application.
+   */
   name: 'ASSO',
+  sockets: {
+    message(data) {
+      const routePath = this.$route.path;
+      if (!routePath.includes('/queues/')) {
+        this.$socket.emit('publish_message', data);
+      } else {
+        store.dispatch('queue/addMessage', data);
+      }
+    },
+  },
 };
 </script>

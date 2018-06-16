@@ -20,8 +20,13 @@ export const update = ({ commit }, payload) => {
   commit(types.UPDATE, payload);
 };
 
+export const addMessage = ({ commit }, payload) => {
+  commit(types.ADDMESSAGE, payload);
+};
+
 export default {
   show,
   hide,
   update,
+  addMessage,
 };

@@ -26,7 +26,7 @@ const create = async (req, res) => {
         if (err) res.internalServerError(err);
         else {
             res.ok(message);
-            amqp.publishToProxy({ ...req.body });
+            amqp.publishToProxy(message);
         }
     })
 };

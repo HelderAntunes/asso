@@ -48,7 +48,7 @@ const publishToProxy = (params) => {
       });
     }
   }).catch(e => {
-    throw new Error(e)
+    throw new Error(e) 
   });
 };
 
@@ -67,8 +67,7 @@ const consumeThroughProxy = () => {
     ch.bindQueue(q.queue, 'proxy', '#');
 
     ch.consume(q.queue, function (msg) {
-      // todo: get devices that subscribe the queues that are binding to the routing_key
-      io.obj().emit(`routing_key_message`, msg);
+      io.obj().emit('message', msg);
     }, {
       noAck: true
     });
@@ -93,15 +92,13 @@ const consumeMessage = (subscription, identifier, callback) => {
     })
     ch.bindQueue(q.queue, 'source', subscription.topic);
     ch.consume(q.queue, function (msg) {
-      const device = msg.properties.appId.replace(/[^A-Z0-9]/ig, "_");
       io.obj().emit(`message_${identifier}`, msg);
-      io.obj().emit(`routing_key_message`, msg);
     }, {
       noAck: true,
       consumerTag: identifier
     });
   }).catch(e => {
-    throw new Error(e)
+    throw new Error(e) 
   });
 }
 
