@@ -25,6 +25,22 @@ import MessageModal from '@/components/MessageModal';
 import * as d3 from 'd3';
 
 export default {
+  sockets: {
+    routing_key_message(data) {
+      const deviceName = data.properties.appId;
+
+      for (let i = 0; i < this.devices.length; i += 1) {
+        const device = this.devices[i];
+        if (device.name !== deviceName) {
+          continue;
+        }
+
+        const indexLinkTo = 2 * i;
+        const indexLinkFrom = 2 * i + 1;
+        this.transition(indexLinkTo);
+      }
+    }
+  },
   components: {
     Sidebar,
     MessageModal,
@@ -136,8 +152,6 @@ export default {
 
       this.simulation.force('link')
         .links(links);
-
-      this.transition(0);
     },
     setTree() {
       const centerX = this.widthSVG / 2,
@@ -216,7 +230,7 @@ export default {
           .attr('opacity', 1)
           .attrTween('transform', this.translateAlong(this.svg.selectAll('path').nodes()[node_index]))
           .on('end', function() {
-              transition_(node_index + 1);
+              // todo: set transictions to receivers
           });
     },
     translateAlong(path) {

@@ -64,6 +64,7 @@ const consumeThroughProxy = () => {
     ch.bindQueue(q.queue, 'proxy', '#');
 
     ch.consume(q.queue, function (msg) {
+      // todo: get devices that subscribe the queues that are binding to the routing_key
       io.obj().emit(`routing_key_message`, msg);
     }, {
       noAck: true
@@ -82,7 +83,7 @@ const consumeMessage = (subscription, identifier, callback) => {
       durable: true
     });
     let q = subscription.queue !== 'Custom' ? subscription.queue : '';
-    ch.assertQueue(q, { 
+    ch.assertQueue(q, {
       exclusive: false
     }).then(function(ok){
       callback(ok.queue);
