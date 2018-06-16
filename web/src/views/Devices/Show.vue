@@ -33,12 +33,12 @@
               </span>
               <el-tag
                 v-for="subscription in device.subscriptions"
-                :key="subscription"
+                :key="subscription.queue + ' - ' + subscription.topic"
                 :disable-transitions="false"
                 closable
                 class="ml2"
                 @close="removeSubscription(subscription)">
-                {{ subscription }}
+                {{ subscription.queue + ' - ' + subscription.topic }}
               </el-tag>
               <br>
               <el-select
@@ -54,9 +54,9 @@
                 @blur="addSubscription">
                 <el-option
                   v-for="item in bindings"
-                  :key="item.destination"
-                  :label="item.destination"
-                  :value="item.destination"/>
+                  :key="item.destination + '-' + item.routing_key"
+                  :label="item.destination + ' - ' + item.routing_key"
+                  :value="item.destination + '-' + item.routing_key"/>
               </el-select>
               <el-button
                 v-else
@@ -152,7 +152,7 @@ export default {
       let response = await new Proxy('api/devices').find(this.$route.params.id);
       this.device = { ...this.device, ...response.data };
       response = await new Proxy('api/bindings').all();
-      this.bindings = response.data;
+      this.bindings = (response.data).filter(x => x.source === 'source');
       const deviceName = encodeURIComponent(this.device.name.trim());
       response = await new Proxy().submit(
         'get',
@@ -180,8 +180,9 @@ export default {
     async removeSubscription(subscription) {
       try {
         const response = await new Proxy().submit(
-          'delete',
-          `api/devices/${this.device.name}/subscriptions/${subscription}`,
+          'post',
+          `api/devices/${this.device.name}/subscriptions/delete`,
+          subscription,
         );
         if (response.code === '200') {
           this.device.subscriptions.splice(
@@ -200,14 +201,24 @@ export default {
 
     async addSubscription() {
       if (this.newSubscription) {
+        const values = this.newSubscription.split('-');
+        let queue = 'Custom';
+        let topic = '';
+        if (values.length === 2) {
+          queue = values[0];
+          topic = values[1];
+        } else {
+          topic = this.newSubscription;
+        }
         try {
           const response = await new Proxy().submit(
             'post',
-            `api/devices/${this.device.name}/subscriptions/${this.newSubscription}`,
+            `api/devices/${this.device.name}/subscriptions`,
+            { queue, topic },
           );
           if (response.code === '200') {
             const index = this.device.subscriptions.findIndex(x => x === this.newSubscription);
-            if (index === -1) { this.device.subscriptions.push(this.newSubscription); }
+            if (index === -1) { this.device.subscriptions.push(response.data); }
             this.inputVisible = false;
             this.newSubscription = '';
           }

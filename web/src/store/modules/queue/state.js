@@ -1,5 +1,6 @@
 export default {
-  message: 'CONTINUOUS',
+  message: 'AUTOMATIC',
+  speed: 2500,
   visible: false,
   action: '',
   modal: '',

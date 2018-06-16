@@ -48,7 +48,7 @@ const seed = (req, res) => {
 
 const addSubscription = async (req, res) => {
     const device = req.params.deviceId;
-    const subscription = req.params.subscriptionId;
+    const subscription = { queue: req.body.queue, topic: req.body.topic }
     try {
         var conditions = {
             name: device,
@@ -60,19 +60,20 @@ const addSubscription = async (req, res) => {
         }
 
         Device.findOneAndUpdate(conditions, update, function(err, doc) {
-            res.ok(doc)
-            amqp.consumeMessage(subscription, device.replace(/[^A-Z0-9]/ig, '_'));
+            amqp.consumeMessage(subscription, device.replace(/[^A-Z0-9]/ig, '_'), function(queue) {
+                res.ok({ queue, topic: subscription.topic })
+            });
         });
     } catch(e) {
         res.internalServerError(e);
     }
 };
-
+ 
 const removeSubscription = async (req, res) => {
     const device = req.params.deviceId;
-    const subscription = req.params.subscriptionId;
+    const subscription = { queue: req.body.queue, topic: req.body.topic }
     try {
-        Device.update( {name: device}, { $pullAll: {subscriptions: [subscription] } },  function(err) {
+        Device.update( {name: device}, { $pull: {subscriptions: {queue: subscription.queue, topic: subscription.topic} } },  function(err) {
             res.ok([]);
         });
     } catch(e) {

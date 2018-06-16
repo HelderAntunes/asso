@@ -35,7 +35,7 @@
           <br>
           <el-tag
             v-for="bind in queue.bindings"
-            :key="bind.destination"
+            :key="bind.destination + '-' + bind.routing_key"
             :disable-transitions="false"
             closable
             class="ml2"
@@ -57,23 +57,43 @@
             primary
             @click="showInput">+ New Binding</el-button>
         </div>
-        <div>
+        <div class="py2">
           <h3>
             Messages
           </h3>
-          <el-button
-            v-if="messageSettings === 'MANUAL'"
-            class="button-new-tag ml2 mt2"
-            primary
-            @click="publishMessage">Send Message</el-button>
           <div id="wrapper">
             <band />
-            <div
-              v-for="(msg, index) in messages"
-              :key="msg.id"
-              :style="{ top: (272 - index * 21) + 'px' }"
-              class="package"/>
+            <transition-group
+              name="message-queue"
+              tag="div">
+              <div
+                v-for="(msg, index) in messages"
+                :key="msg.id"
+                :style="{ top: (272 - index * 21) + 'px' }"
+                :class="{'moveToQueueAnimation': msg.state === 'Delivering'}"
+                class="message-item package"
+                @click="handleMessageClick(msg)"/>
+            </transition-group>
           </div>
+          <div 
+            v-if="messageSettings === 'MANUAL' && messages.length !== 0"
+            class="pt2 center">
+            <el-button
+              type="primary"
+              class="ml2 mt2"
+              plain
+              @click="publishMessage">Deliver Message</el-button>
+            <el-button
+              type="danger"
+              class="ml2 mt2"
+              plain
+              @click="deleteMessage(messages[0])">Delete from Queue</el-button>
+          </div>
+          <message-modal
+            :data="message"
+            modal-action="UPDATE"
+            @deleteMessage="deleteMessage"
+            @updateMessage="updateMessage"/>
         </div>
         <div>
           <h3>
@@ -93,11 +113,14 @@ import Sidebar from '@/components/Sidebar';
 import Band from '@/components/Band';
 import Proxy from '@/proxies/Proxy';
 import { mapState } from 'vuex';
+import store from '@/store';
+import MessageModal from '@/components/MessageModal';
 
 export default {
   components: {
     Sidebar,
     Band,
+    MessageModal,
   },
   data() {
     return {
@@ -107,11 +130,13 @@ export default {
       messages: [],
       inputVisible: false,
       newBinding: '',
+      message: null,
     };
   },
   computed: {
     ...mapState({
       messageSettings: state => state.queue.message,
+      speedSettings: state => state.queue.speed,
     }),
   },
   async created() {
@@ -131,24 +156,30 @@ export default {
         const match = this.matchKey(routingKey);
 
         if (match) {
-          console.log(routingKey);
           const len = this.messages.length;
-          const newId = (len === 0) ? 1 : this.messages[len - 1].id + 1;
+          const enc = new TextDecoder('utf-8');
+          const newId = len === 0 ? 1 : this.messages[len - 1].id + 1;
           const newMessage = {
             id: newId,
             publisher: message.properties.appId,
             key: message.fields.routingKey,
-            content: message.content,
+            content: enc.decode(message.content),
+            state: 'OnQueue',
           };
 
           this.messages.push(newMessage);
 
-          if (this.messageSettings === 'CONTINUOUS') {
-            setTimeout(this.publishMessage, 3000);
+          if (this.messageSettings === 'AUTOMATIC') {
+            setTimeout(this.publishMessage, this.speedSettings);
           }
-          // Just testing. Later change this to after animation
         }
       };
+      this.messages.push({
+        id: 1,
+        content: 'hello',
+        topic: 'papagaios',
+        publisher: 'radio',
+      });
     } catch (e) {
       this.$message({
         message: 'Error retrieving queue!',
@@ -158,16 +189,24 @@ export default {
   },
   methods: {
     publishMessage() {
-      const enc = new TextDecoder('utf-8');
       const message = this.messages.shift();
-      this.$socket.emit('publish_message', {
-        publisher: message.properties.appId,
-        key: message.fields.routingKey,
-        content: enc.decode(message.content),
-      });
+      this.$socket.emit('publish_message', message);
+    },
+    deleteMessage(message) {
+      const index = this.messages.findIndex(x => x.id === message.id);
+      this.messages.splice(index, 1);
+    },
+    handleMessageClick(msg) {
+      this.message = msg;
+      store.dispatch('queue/show', { modal: 'MessageModal', action: 'UPDATE' });
+    },
+    updateMessage(message) {
+      const index = this.messages.findIndex(x => x.id === message.id);
+      const newObj = Object.assign({}, this.messages[index], { ...message });
+      this.$set(this.messages, index, newObj);
     },
     matchKey(routingKey) {
-      return (this.queue.bindings).some((x) => {
+      return this.queue.bindings.some((x) => {
         let pattern = x.routing_key.replace(/\*/i, '\\w*');
         pattern = pattern.replace(/#/i, '\\S*');
         pattern = new RegExp(`^${pattern}$`, 'g');
@@ -179,7 +218,9 @@ export default {
       try {
         const response = await new Proxy().submit(
           'delete',
-          `api/queues/${this.queue.name}/bindings/${encodeURIComponent(binding.routing_key)}`,
+          `api/queues/${this.queue.name}/bindings/${encodeURIComponent(
+            binding.routing_key,
+          )}`,
         );
         if (response.code === '200') {
           this.queue.bindings.splice(this.queue.bindings.indexOf(binding), 1);
@@ -188,11 +229,9 @@ export default {
         throw e;
       }
     },
-
     showInput() {
       this.inputVisible = true;
     },
-
     async addBinding() {
       if (this.newBinding) {
         try {
@@ -221,40 +260,51 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.message-item {
+  transition: all 1s;
+  display: inline-block;
+  margin-right: 10px;
+}
+.message-queue-enter
+/* .list-complete-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(-50px);
+}
+.message-queue-leave-to {
+  opacity: 0;
+  transform: translateX(-50px);
+}
+.message-queue-leave-active {
+  position: absolute;
+}
+
 #side-bar {
   border-right: solid 1px #e6e6e6;
   height: 100vh;
 }
 
 .moveToQueueAnimation {
-  -webkit-animation: moveToQueue 1s 0.3s linear 1 normal;
+  -webkit-animation: movePackage 6s 0.3s linear 1 forwards;
 }
 
-.movePackage {
-  -webkit-animation: goPackage 4s 0.3s linear 1 normal;
-}
-
-@-webkit-keyframes moveToQueue {
-  50% {
+@-webkit-keyframes movePackage {
+  6% {
     -webkit-transform: translateX(25px);
   }
-  75% {
+  16% {
     -webkit-transform: translateX(30px) translateY(-25px);
   }
-  100% {
+  25% {
     -webkit-transform: translateX(50px) translateY(-25px);
   }
-}
-
-@-webkit-keyframes goPackage {
   83% {
-    -webkit-transform: translateX(250px);
+    -webkit-transform: translateX(290px) translateY(-25px);
   }
   95% {
-    -webkit-transform: translateX(260px) translateY(25px) rotate(90deg);
+    -webkit-transform: translateX(300px) translateY(25px) rotate(90deg);
   }
   100% {
-    -webkit-transform: translateX(270px) translateY(25px) rotate(90deg);
+    -webkit-transform: translateX(310px) translateY(25px) rotate(90deg);
   }
 }
 

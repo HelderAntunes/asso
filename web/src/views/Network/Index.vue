@@ -7,31 +7,21 @@
         <Sidebar />
       </div>
     </div>
-    <div class="flex flex-column p3">
-      <h2>Network</h2>
-      <svg width="960" height="350"/></svg>
-    </div>
-    <el-dialog
-      :visible.sync="showMessageModal"
-      title="Create Message"
-      width="50%">
-      <message-modal
-        :devices="devices"
-        @closeModal="closeModal"/>
-    </el-dialog>
+    <svg
+      width="960"
+      height="600" />
+    <message-modal modal-action="CREATE"/>
   </div>
 </template>
 
 <script>
-import tree from '@/components/WayBetterTree/Tree';
+/* eslint-disable */
 import Sidebar from '@/components/Sidebar';
-import Proxy from '@/proxies/Proxy';
-import MessageModal from './MessageModal';
+import MessageModal from '@/components/MessageModal';
 import * as d3 from 'd3';
 
 export default {
   components: {
-    tree,
     Sidebar,
     MessageModal,
   },
@@ -239,18 +229,10 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 20px;
-}
 .node {
-  stroke: #A9A9A9;
+  stroke: #a9a9a9;
   stroke-width: 1.5px;
-  fill: #2F4F4F;
+  fill: #2f4f4f;
   opacity: 0.6;
 }
 .link {
@@ -259,12 +241,12 @@ export default {
   stroke-opacity: 0.6;
 }
 .walking.circle {
-  fill: #FFA500;
+  fill: #ffa500;
 }
 .text {
   font-family: sans-serif;
   font-size: 11px;
-  fill: black;   /* <== Set the fill */
+  fill: black; /* <== Set the fill */
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
   cursor: move;
 }

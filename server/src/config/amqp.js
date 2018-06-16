@@ -73,7 +73,7 @@ const consumeThroughProxy = () => {
   });
 }
 
-const consumeMessage = (routingKey, identifier) => {
+const consumeMessage = (subscription, identifier, callback) => {
   const open = amqp.connect(amqpAddress);
   open.then(function (conn) {
     return conn.createChannel();
@@ -81,14 +81,14 @@ const consumeMessage = (routingKey, identifier) => {
     ch.assertExchange('source', 'topic', {
       durable: true
     });
-    let q = '';
-    ch.assertQueue(q, {
+    let q = subscription.queue !== 'Custom' ? subscription.queue : '';
+    ch.assertQueue(q, { 
       exclusive: false
-    });
-    ch.bindQueue(q.queue, 'source', routingKey);
-
+    }).then(function(ok){
+      callback(ok.queue);
+    })
+    ch.bindQueue(q.queue, 'source', subscription.topic);
     ch.consume(q.queue, function (msg) {
-      console.log(msg);
       const device = msg.properties.appId.replace(/[^A-Z0-9]/ig, "_");
       io.obj().emit(`message_${identifier}`, msg);
       io.obj().emit(`routing_key_message`, msg);

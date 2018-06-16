@@ -14,12 +14,12 @@ router
   .get(controller.seed);
 
 router
-  .route('/:deviceId/subscriptions/:subscriptionId')
+  .route('/:deviceId/subscriptions')
   .post(controller.addSubscription);
 
 router
-  .route('/:deviceId/subscriptions/:subscriptionId')
-  .delete(controller.removeSubscription);
+  .route('/:deviceId/subscriptions/delete')
+  .post(controller.removeSubscription);
 
 router
   .route('/:id')

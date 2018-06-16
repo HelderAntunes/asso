@@ -26,6 +26,7 @@ export default{
   },
 
   [UPDATE](state, obj) {
-    state.message = obj;
+    state.message = obj.settings;
+    state.speed = obj.speed;
   },
 };
