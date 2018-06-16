@@ -62,6 +62,7 @@ export default {
         content: '',
         publisher: '',
         topic: '',
+        state: '',
       },
       devices: [],
     };
@@ -92,6 +93,8 @@ export default {
   },
   methods: {
     closeModal() {
+      this.message.state = 'OnQueue';
+      this.$emit('updateMessage', this.message);
       store.dispatch('queue/hide');
     },
     deleteMessage() {
@@ -99,24 +102,21 @@ export default {
       this.closeModal();
     },
     async submitAction() {
-      if (this.action === 'UPDATE') {
-        this.$emit('updateMessage', this.message);
-      } else {
-        try {
-          const response = await new Proxy('api/messages').create(this.message);
-          if (response.status.code === '200') {
-            this.$message({
-              message: 'Message sent with success!',
-              type: 'success',
-            });
-          }
-        } catch (e) {
+      try {
+        const response = await new Proxy('api/messages').create(this.message);
+        if (response.status.code === '200') {
           this.$message({
-            message: 'Error sending message!',
-            type: 'error',
+            message: 'Message sent with success!',
+            type: 'success',
           });
         }
+      } catch (e) {
+        this.$message({
+          message: 'Error sending message!',
+          type: 'error',
+        });
       }
+
       this.closeModal();
     },
     verifyAction() {
