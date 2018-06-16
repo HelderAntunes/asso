@@ -249,18 +249,18 @@ export default {
   display: inline-block;
   margin-right: 10px;
 }
-// .message-queue-enter
-// /* .list-complete-leave-active below version 2.1.8 */ {
-//   opacity: 0;
-//   transform: translateY(-50px);
-// }
-// .message-queue-leave-to {
-//   opacity: 0;
-//   transform: translateX(-50px);
-// }
-// .message-queue-leave-active {
-//   position: absolute;
-// }
+.message-queue-enter
+/* .list-complete-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(-50px);
+}
+.message-queue-leave-to {
+  opacity: 0;
+  transform: translateX(-50px);
+}
+.message-queue-leave-active {
+  position: absolute;
+}
 
 #side-bar {
   border-right: solid 1px #e6e6e6;
