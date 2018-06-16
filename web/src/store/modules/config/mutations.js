@@ -1,16 +1,15 @@
 /* ============
- * Mutations for the queue module
+ * Mutations for the config module
  * ============
  *
  * The mutations that are available on the
- * queue module.
+ * config module.
  */
 
 import {
   SHOW,
   HIDE,
   UPDATE,
-  ADDMESSAGE,
 } from './mutation-types';
 
 export default{
@@ -29,9 +28,5 @@ export default{
   [UPDATE](state, obj) {
     state.message = obj.settings;
     state.speed = obj.speed;
-  },
-
-  [ADDMESSAGE](state, msg) {
-    state.messages.push(msg);
   },
 };

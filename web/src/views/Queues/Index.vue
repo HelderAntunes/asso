@@ -181,8 +181,8 @@ export default {
   },
   computed: {
     ...mapState({
-      messageSettings: state => state.queue.message,
-      speedSettings: state => state.queue.speed,
+      messageSettings: state => state.config.message,
+      speedSettings: state => state.config.speed,
     }),
   },
   async created() {
@@ -199,7 +199,7 @@ export default {
   },
   methods: {
     changeMessageSettings() {
-      store.dispatch('queue/update', { settings: this.settings, speed: this.speed });
+      store.dispatch('config/update', { settings: this.settings, speed: this.speed });
     },
     showBindings(bindings) {
       return bindings.map(x => x.routing_key).join(', ');

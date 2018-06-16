@@ -150,9 +150,15 @@ export default {
   },
   computed: {
     ...mapState({
-      messageSettings: state => state.queue.message,
-      speedSettings: state => state.queue.speed,
+      messageSettings: state => state.config.message,
+      speedSettings: state => state.config.speed,
     }),
+  },
+  beforeDestroy() {
+    const messagesToDeliver = this.messages.filter(x => x.state === 'OnQueue');
+    messagesToDeliver.forEach((x) => {
+      this.$socket.emit('publish_message', x);
+    });
   },
   async created() {
     try {
@@ -244,7 +250,7 @@ export default {
         if (this.messageSettings === 'AUTOMATIC') {
           this.changeMessageState(msg, 'OnHold');
         }
-        store.dispatch('queue/show', {
+        store.dispatch('config/show', {
           modal: 'MessageModal',
           action: 'UPDATE',
         });
