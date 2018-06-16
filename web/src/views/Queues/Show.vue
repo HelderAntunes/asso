@@ -57,15 +57,10 @@
             primary
             @click="showInput">+ New Binding</el-button>
         </div>
-        <div>
+        <div class="py2">
           <h3>
             Messages
           </h3>
-          <el-button
-            v-if="messageSettings === 'MANUAL'"
-            class="button-new-tag ml2 mt2"
-            primary
-            @click="publishMessage">Send Message</el-button>
           <div id="wrapper">
             <band />
             <transition-group
@@ -75,13 +70,29 @@
                 v-for="(msg, index) in messages"
                 :key="msg.id"
                 :style="{ top: (272 - index * 21) + 'px' }"
+                :class="{'moveToQueueAnimation': msg.state === 'Delivering'}"
                 class="message-item package"
                 @click="handleMessageClick(msg)"/>
             </transition-group>
           </div>
+          <div 
+            v-if="messageSettings === 'MANUAL' && messages.length !== 0"
+            class="pt2 center">
+            <el-button
+              type="primary"
+              class="ml2 mt2"
+              plain
+              @click="publishMessage">Deliver Message</el-button>
+            <el-button
+              type="danger"
+              class="ml2 mt2"
+              plain
+              @click="deleteMessage(messages[0])">Delete from Queue</el-button>
+          </div>
           <message-modal
             :data="message"
             modal-action="UPDATE"
+            @deleteMessage="deleteMessage"
             @updateMessage="updateMessage"/>
         </div>
         <div>
@@ -125,6 +136,7 @@ export default {
   computed: {
     ...mapState({
       messageSettings: state => state.queue.message,
+      speedSettings: state => state.queue.speed,
     }),
   },
   async created() {
@@ -152,14 +164,14 @@ export default {
             publisher: message.properties.appId,
             key: message.fields.routingKey,
             content: enc.decode(message.content),
+            state: 'OnQueue',
           };
 
           this.messages.push(newMessage);
 
-          if (this.messageSettings === 'CONTINUOUS') {
-            setTimeout(this.publishMessage, 3000);
+          if (this.messageSettings === 'AUTOMATIC') {
+            setTimeout(this.publishMessage, this.speedSettings);
           }
-          // Just testing. Later change this to after animation
         }
       };
       this.messages.push({
@@ -179,6 +191,10 @@ export default {
     publishMessage() {
       const message = this.messages.shift();
       this.$socket.emit('publish_message', message);
+    },
+    deleteMessage(message) {
+      const index = this.messages.findIndex(x => x.id === message.id);
+      this.messages.splice(index, 1);
     },
     handleMessageClick(msg) {
       this.message = msg;

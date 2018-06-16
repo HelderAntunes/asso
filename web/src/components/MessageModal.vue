@@ -27,7 +27,12 @@
       class="dialog-footer">
       <el-button @click="closeModal">Cancel</el-button>
       <el-button
+        type="danger"
+        plain
+        @click="deleteMessage">Delete Message</el-button>
+      <el-button
         type="primary"
+        plain
         @click="submitAction">{{ action }} Message</el-button>
     </span>
   </el-dialog>
@@ -88,6 +93,10 @@ export default {
   methods: {
     closeModal() {
       store.dispatch('queue/hide');
+    },
+    deleteMessage() {
+      this.$emit('deleteMessage', this.message);
+      this.closeModal();
     },
     async submitAction() {
       if (this.action === 'UPDATE') {

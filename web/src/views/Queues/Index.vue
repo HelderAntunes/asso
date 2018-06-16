@@ -17,13 +17,30 @@
           <h4>
             Message Settings
           </h4>
+          <h5>
+            Mode
+          </h5>
           <el-radio-group
             v-model="settings"
             @change="changeMessageSettings">
-            <el-radio label="CONTINUOUS">Continuous delivery</el-radio>
+            <el-radio label="AUTOMATIC">Automatic delivery</el-radio>
             <el-radio label="MANUAL">Manual delivery</el-radio>
-            <el-radio label="NOTIFICATION">Notification of new messages</el-radio>
           </el-radio-group>
+          <div v-if="settings === 'AUTOMATIC'">
+            <h5>
+              Deliver speed
+            </h5>
+            <el-select
+              v-model="speed"
+              placeholder="Select the message's deliver speed"
+              @change="changeMessageSettings">
+              <el-option
+                v-for="interval in [1000, 2500, 5000, 7500, 10000]"
+                :key="interval"
+                :label="interval"
+                :value="interval"/>
+            </el-select>
+          </div>
         </div>
         <el-table
           :data="queues"
@@ -156,27 +173,30 @@ export default {
       queues: [],
       bindings: [],
       settings: '',
+      speed: 2500,
     };
   },
   computed: {
     ...mapState({
       messageSettings: state => state.queue.message,
+      speedSettings: state => state.queue.speed,
     }),
   },
   async created() {
     try {
       let response = await new Proxy('api/queues').all();
-      this.queues = (response.data).filter(x => x.name !== 'proxy');
+      this.queues = response.data.filter(x => x.name !== 'proxy');
       response = await new Proxy('api/bindings').all();
       this.bindings = response.data;
       this.settings = this.messageSettings;
+      this.speed = this.speedSettings;
     } catch (e) {
       throw e;
     }
   },
   methods: {
     changeMessageSettings() {
-      store.dispatch('queue/update', this.settings);
+      store.dispatch('queue/update', { settings: this.settings, speed: this.speed });
     },
     showBindings(bindings) {
       return bindings.map(x => x.routing_key).join(', ');
@@ -190,7 +210,10 @@ export default {
       try {
         const name = this.form.name;
         const bindings = this.form.bindings;
-        const response = await new Proxy('api/queues').create({ name, bindings });
+        const response = await new Proxy('api/queues').create({
+          name,
+          bindings,
+        });
 
         if (response.code === '200') {
           this.queues.push(response.data);
