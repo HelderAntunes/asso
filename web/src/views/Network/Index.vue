@@ -28,6 +28,8 @@ export default {
   sockets: {
     routing_key_message(data) {
       const deviceName = data.properties.appId;
+      const msg = "HELLO";
+      console.log(data);
 
       for (let i = 0; i < this.devices.length; i += 1) {
         const device = this.devices[i];
@@ -37,7 +39,19 @@ export default {
 
         const indexLinkTo = 2 * i;
         const indexLinkFrom = 2 * i + 1;
-        this.transition(indexLinkTo);
+
+        const walkingCircle = this.svg.append('g').attr('class', 'walking circle text');
+        walkingCircle.append('circle')
+          .attr('class', 'walking circle')
+          .attr('r', 5);
+        walkingCircle.append('text')
+          .text(msg)
+          .attr('fill', 'red')
+          .attr('class', 'text')
+          .attr('x', 6)
+          .attr('y', -3);
+
+        this.transition(indexLinkTo, walkingCircle);
       }
     }
   },
@@ -113,10 +127,6 @@ export default {
         .data(bilinks)
         .enter().append('path')
         .attr('class', 'link');
-
-      this.svg.append('circle')
-        .attr('class', 'walking circle')
-        .attr('r', 5);
 
       const node = this.svg.selectAll('.node')
         .data(nodes.filter(function(d) {
@@ -219,18 +229,19 @@ export default {
         if (!d3.event.active) this.simulation.alphaTarget(0);
         d.fx = null, d.fy = null;
     },
-    transition(node_index = 0) {
+    transition(node_index = 0, walkingCircle) {
       const transition_ = this.transition;
       const node_count = this.svg.selectAll('path').nodes().length
       if (node_index == node_count) {
           node_index = 0;
       }
-      this.svg.selectAll('.walking.circle').transition()
+      walkingCircle.transition()
           .duration(500)
           .attr('opacity', 1)
           .attrTween('transform', this.translateAlong(this.svg.selectAll('path').nodes()[node_index]))
           .on('end', function() {
-              // todo: set transictions to receivers
+              // todo: set transictions to others
+              walkingCircle.remove();
           });
     },
     translateAlong(path) {
