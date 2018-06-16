@@ -1,16 +1,15 @@
 /* ============
- * Mutation types for the queue module
+ * Mutation types for the config module
  * ============
  *
  * The mutation types that are available
- * on the queue module.
+ * on the config module.
  */
 
 export const SHOW = 'SHOW';
 export const HIDE = 'HIDE';
 export const UPDATE = 'UPDATE';
-export const ADDMESSAGE = 'ADDMESSAGE';
 
 export default {
-  SHOW, HIDE, UPDATE, ADDMESSAGE,
+  SHOW, HIDE, UPDATE,
 };

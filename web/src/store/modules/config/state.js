@@ -4,5 +4,4 @@ export default {
   visible: false,
   action: '',
   modal: '',
-  messages: [],
 };

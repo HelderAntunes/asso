@@ -68,7 +68,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('queue', ['visible', 'modal', 'action']),
+    ...mapState('config', ['visible', 'modal', 'action']),
     showModal() {
       if (
         this.$options.name === this.modal &&
@@ -95,7 +95,7 @@ export default {
     closeModal() {
       this.message.state = 'OnQueue';
       this.$emit('updateMessage', this.message);
-      store.dispatch('queue/hide');
+      store.dispatch('config/hide');
     },
     deleteMessage() {
       this.$emit('deleteMessage', this.message);

@@ -8,7 +8,6 @@
   </div>
 </template>
 <script>
-import store from '@/store';
 /* ============
    * Entry Point
    * ============
@@ -26,8 +25,6 @@ export default {
       const routePath = this.$route.path;
       if (!routePath.includes('/queues/')) {
         this.$socket.emit('publish_message', data);
-      } else {
-        store.dispatch('queue/addMessage', data);
       }
     },
   },
