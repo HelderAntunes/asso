@@ -14,12 +14,15 @@ import Vue from 'vue';
  * Import and bootstrap the plugins.
  */
 
+import socketio from 'socket.io-client';
+import VueSocketIO from 'vue-socket.io';
+import TreeView from 'vue-json-tree-view';
 import './plugins/vuex';
 import './plugins/axios';
 import { router } from './plugins/vue-router';
 import './plugins/vuex-router-sync';
 import './plugins/element-ui';
-// import './plugins/font-awesome';
+import './plugins/basscss';
 
 /* ============
  * Main App
@@ -27,9 +30,13 @@ import './plugins/element-ui';
  *
  * Last but not least, we import the main application.
  */
-
 import App from './App';
 import store from './store';
+
+Vue.use(TreeView);
+
+const SocketInstance = socketio('http://localhost:8080');
+Vue.use(VueSocketIO, SocketInstance);
 
 Vue.config.productionTip = false;
 

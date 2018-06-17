@@ -4,16 +4,34 @@
   "description": "MQTT live monitor",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon --legacy-watch src/server.js"
+    "start": "nodemon --legacy-watch ./src/index.js",
+    "lint": "eslint **/*.js",
+    "lint:fix": "yarn lint -- --fix",
+    "lint:watch": "yarn lint -- --watch"
   },
   "dependencies": {
     "amqplib": "^0.5.2",
+    "bluebird": "^3.5.0",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
+    "dotenv-safe": "^5.0.1",
     "express": "^4.16.1",
+    "helmet": "^3.5.0",
+    "http": "0.0.0",
     "http-rabbitmq-manager": "0.0.2",
-    "mongoose": "^5.0.14",
-    "request": "^2.85.0"
+    "lodash": "^4.17.4",
+    "method-override": "^2.3.10",
+    "mongoose": "^5.1.4",
+    "morgan": "^1.8.1",
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2",
+    "socket.io": "^2.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.2.0",
+    "eslint-config-airbnb-base": "^12.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "nodemon": "^1.11.0"
   },
   "repository": {
     "type": "git",

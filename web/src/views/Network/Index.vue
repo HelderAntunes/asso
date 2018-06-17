@@ -1,214 +1,312 @@
 <template>
-  <div id="app" class="container-fluid">
-    <div class="col-md-3">
-
-      <div class="panel panel-default">
-        <div class="panel-heading">Props</div>
-
-        <div class="panel-body">
-            <div class="form-horizontal">
-
-            <div class="form-group">
-              <label for="type" class="control-label col-sm-3">type</label>
-                <div  class="col-sm-9">
-                  <select id="type" class="form-control" v-model="type">
-                    <option>tree</option>
-                    <option>cluster</option>
-                  </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-              <label for="layout-type" class="control-label col-sm-3">layoutType</label>
-                <div  class="col-sm-9">
-                  <select id="layout-type" class="form-control" v-model="layoutType">
-                    <option>euclidean</option>
-                    <option>circular</option>
-                  </select>       
-              </div>
-            </div> 
-
-            <div class="form-group">
-              <label for="margin-x" class="control-label col-sm-3">marginx</label>
-              <div class="col-sm-7">
-                <input id="margin-x" class="form-control" type="range" min="-200" max="200" v-model.number="Marginx">
-              </div> 
-                <div class="col-sm-2">
-                  <p>{{Marginx}}px</p>       
-              </div> 
-            </div>        
-
-            <div class="form-group">
-              <label for="margin-y" class="control-label col-sm-3">marginy</label>
-              <div class="col-sm-7">
-                <input id="margin-y" class="form-control" type="range" min="-200" max="200" v-model.number="Marginy">
-              </div>
-              <div class="col-sm-2">
-                <p>{{Marginy}}px</p>       
-              </div> 
-            </div>   
-
-             <div class="form-group">
-              <label for="margin-y" class="control-label col-sm-3">radius</label>
-              <div class="col-sm-7">
-                <input id="margin-y" class="form-control" type="range" min="1" max="10" v-model.number="radius">
-              </div>
-              <div class="col-sm-2">
-                <p>{{radius}}px</p>       
-              </div> 
-            </div>        
-
-            <div class="form-group">
-              <label for="velocity" class="control-label col-sm-3">Duration</label>
-              <div class="col-sm-7">
-                <input id="velocity" class="form-control" type="range" min="0" max="3000" v-model.number="duration">
-              </div>
-              <div class="col-sm-2">
-                <p>{{duration}}ms</p>       
-              </div>
-            </div>  
-
-            <div class="form-group">
-              <span v-if="currentNode">Current Node: {{currentNode.data.text}}</span>
-              <span v-else>No Node selected.</span>
-               <i v-if="isLoading" class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
-            </div>  
-
-            <button type="button" :disabled="!currentNode" class="btn btn-primary" @click="expandAll" data-toggle="tooltip" data-placement="top" title="Expand All from current">
-            <i class="fa fa-expand" aria-hidden="true"></i>          
-            </button>
-
-            <button type="button" :disabled="!currentNode" class="btn btn-secondary" @click="collapseAll" data-toggle="tooltip" data-placement="top" title="Collapse All from current">
-            <i class="fa fa-compress" aria-hidden="true"></i>            
-            </button>
-
-            <button type="button" :disabled="!currentNode" class="btn btn-success" @click="showOnly" data-toggle="tooltip" data-placement="top" title="Show Only from current">
-            <i class="fa fa-search-plus" aria-hidden="true"></i>       
-            </button>
-
-            <button type="button" :disabled="!currentNode" class="btn btn-warning" @click="show" data-toggle="tooltip" data-placement="top" title="Show current">
-            <i class="fa fa-binoculars" aria-hidden="true"></i>           
-            </button>
-
-            <button v-if="zoomable" type="button" class="btn btn-warning" @click="resetZoom" data-toggle="tooltip" data-placement="top" title="Reset Zoom">
-            <i class="fa fa-arrows-alt" aria-hidden="true"></i>                             
-            </button>
-
-        </div>
+  <div class="container-fluid container">
+    <div class="">
+      <div
+        id="side-bar"
+        class="sm-col sm-col-12 lg-col-2">
+        <Sidebar />
       </div>
     </div>
 
-
-    <div class="panel panel-default">
-        <div class="panel-heading">Events</div>
-
-        <div class="panel-body log">
-          <div v-for="(event,index) in events" :key="index">
-            <p><b>Name:</b> {{event.eventName}} <b>Data:</b>{{event.data.text}}</p>
-          </div>
+    <div class="flex flex-column p3">
+      <div class="col md-col-12">
+        <div class="col md-col-6">
+          <h2>Network</h2>
+          <svg
+            width="500"
+            height="350" />
         </div>
+
+        <div class="col md-col-6">
+          <h2>Publish</h2>
+          <publish-form />
+        </div>
+      </div>
     </div>
-
-  </div>
-
-  <div class="col-md-9 panel panel-default">
-    <tree ref="tree" :identifier="getId" :zoomable="zoomable" :data="Graph.tree" :node-text="nodeText"  :margin-x="Marginx" :margin-y="Marginy" :radius="radius" :type="type" :layout-type="layoutType" :duration="duration" class="tree" @clicked="onClick" @expand="onExpand" @retract="onRetract"/>
-  </div>
-  
+    <message-modal modal-action="CREATE"/>
   </div>
 </template>
 
 <script>
-import { tree } from 'vued3tree';
-import treeData from './data.json';
+/* eslint-disable */
+import Proxy from '@/proxies/Proxy';
+import Sidebar from '@/components/Sidebar';
+import MessageModal from '@/components/MessageModal';
+import PublishForm from './PublishForm';
+import * as d3 from 'd3';
 
-Object.assign(treeData, {
-  type: 'tree',
-  layoutType: 'euclidean',
-  duration: 750,
-  Marginx: 30,
-  Marginy: 30,
-  radius: 5,
-  nodeText: 'text',
-  currentNode: null,
-  zoomable: true,
-  isLoading: false,
-  events: [],
-});
 export default {
-  name: 'app',
-  data() {
-    return treeData;
-  },
   components: {
-    tree,
+    Sidebar,
+    MessageModal,
+    PublishForm,
   },
-  methods: {
-    do(action) {
-      if (this.currentNode) {
-        this.isLoading = true;
-        this.$refs.tree[action](this.currentNode).then(() => { this.isLoading = false; });
+  data() {
+    return {
+      message: {
+        sent: '',
+        received: '',
+      },
+      showMessageModal: false,
+      devices: [],
+      events: [],
+      graph: null,
+      svgD3: null,
+      simulationD3: null,
+      widthSVG: 500,
+      heightSVG: 350,
+      radiusLink: 150,
+      durationTransiction: 500
+    };
+  },
+  async mounted() {
+    try {
+      const response = await new Proxy('api/devices').all();
+      this.devices = response.data;
+      this.setTree();
+      this.presentTree();
+    } catch (e) {
+      console.log(e);
+      this.$message({
+        message: 'Error retrieving devices!',
+        type: 'error',
+      });
+    }
+  },
+  async created() {
+    // other calls
+  },
+  sockets: {
+    message(data) {
+      const deviceName = data.properties.appId;
+      const msg = new TextDecoder('utf-8').decode(data.content);
+
+      for (let i = 0; i < this.devices.length; i += 1) {
+        const device = this.devices[i];
+        if (device.name !== deviceName) {
+          continue;
+        }
+
+        const indexLinkFromPublisher = 2 * i;
+        this.transition(indexLinkFromPublisher, msg);
       }
     },
-    getId(node) {
-      return node.id;
+    receiver_message(data) {
+      const msg = new TextDecoder('utf-8').decode(data.content);
+      const consumerName = data.fields.consumerTag.replace(/_/g, ' ');
+      let indexLinkToConsumer = null;
+
+      for (let i = 0; i < this.devices.length; i += 1) {
+        const device = this.devices[i];
+        if (device.name !== consumerName) {
+          continue;
+        }
+
+        indexLinkToConsumer = 2 * i + 1;
+        break;
+      }
+      console.log(indexLinkToConsumer);
+      const transition = this.transition;
+      setTimeout(function() {
+        transition(indexLinkToConsumer, msg);
+      }, this.durationTransiction);
     },
-    expandAll() {
-      this.do('expandAll');
+  },
+  methods: {
+    closeModal() {
+      this.showMessageModal = false;
     },
-    collapseAll() {
-      this.do('collapseAll');
+    presentTree() {
+      this.svg = d3.select('svg');
+      const width = this.svg.attr('width');
+      const height = this.svg.attr('height');
+
+      const color = d3.scaleOrdinal(d3.schemeCategory20);
+
+      this.simulation = d3.forceSimulation()
+        .force('link', d3.forceLink().distance(10).strength(0.5))
+        .force('charge', d3.forceManyBody())
+        .force('center', d3.forceCenter(width / 2, height / 2));
+
+      const nodes = this.graph.nodes,
+        nodeById = d3.map(nodes, function(d) { return d.id; }),
+        links = this.graph.links,
+        bilinks = [];
+
+      links.forEach(function(link) {
+        const s = link.source = nodeById.get(link.source),
+          t = link.target = nodeById.get(link.target),
+          i = {}; // intermediate node
+        nodes.push(i);
+        links.push({ source: s, target: i }, { source: i, target: t });
+        bilinks.push([s, t]);
+      });
+
+      const link = this.svg.selectAll('.link')
+        .data(bilinks)
+        .enter().append('path')
+        .attr('class', 'link');
+
+      const node = this.svg.selectAll('.node')
+        .data(nodes.filter(function(d) {
+            return d.id;
+        }))
+        .enter().append('g');
+      const circles = node.append('circle')
+        .attr('class', 'node')
+        .attr('r', 10)
+        .attr('fill', function(d) {
+            return color(d.group);
+        });
+      const lables = node.append('text')
+        .text(function(d) {
+          return d.name;
+        })
+        .attr('fill', 'red')
+        .attr('class', 'text')
+        .attr('x', 7)
+        .attr('y', -7);
+
+      node.append('title')
+        .text(function(d) { return d.name; });
+
+      const positionLink_ = this.positionLink;
+      const positionNode_ = this.positionNode;
+      this.simulation
+        .nodes(nodes)
+        .on('tick', function ticked() {
+            link.attr('d', positionLink_);
+            node.attr('transform', positionNode_);
+        });
+
+      this.simulation.force('link')
+        .links(links);
     },
-    showOnly() {
-      this.do('showOnly');
+    setTree() {
+      const centerX = this.widthSVG / 2,
+        centerY = this.heightSVG / 2,
+        radius = this.radiusLink,
+        teta = 2*Math.PI/this.devices.length,
+        graph = {
+          'nodes': [],
+          'links': []
+        };
+
+      for (let i = 0; i < this.devices.length; i += 1) {
+        const device = this.devices[i];
+        const node = {
+          'id': (i+1).toString(),
+          name: device.name,
+          'fx': radius * Math.cos(teta*i) + centerX,
+          'fy': radius * Math.sin(teta*i) + centerY,
+          'group': 1
+        };
+        graph['nodes'].push(node);
+      }
+      const exchangeNode = {
+        'id': (this.devices.length+1).toString(),
+        name: 'Exchange',
+        'fx': centerX,
+        'fy': centerY,
+        'group': 2
+      };
+      graph['nodes'].push(exchangeNode);
+
+      for (let i = 0; i < this.devices.length; i += 1) {
+        const linkTo = {
+          'source': (i+1).toString(),
+          'target': (this.devices.length+1).toString(),
+          'value': 1
+        }
+        const linkFrom = {
+          'source': linkTo['target'],
+          'target': linkTo['source'],
+          'value': 1
+        }
+        graph['links'].push(linkTo);
+        graph['links'].push(linkFrom);
+      }
+
+      this.graph = graph;
     },
-    show() {
-      this.do('show');
+    positionLink(d) {
+      return 'M' + d[0].x + ',' + d[0].y +
+          'S' + d[1].x + ',' + d[1].y +
+          ' ' + d[1].x + ',' + d[1].y;
     },
-    onClick(evt) {
-      this.currentNode = evt.element;
-      this.onEvent('onClick', evt);
+    positionNode(d) {
+      return 'translate(' + d.x + ',' + d.y + ')';
     },
-    onExpand(evt) {
-      this.onEvent('onExpand', evt);
+    dragstarted(d) {
+        if (!d3.event.active) this.simulation.alphaTarget(0.1).restart();
+        d.fx = d.x, d.fy = d.y;
     },
-    onRetract(evt) {
-      this.onEvent('onRetract', evt);
+    dragged(d) {
+        d.fx = d3.event.x, d.fy = d3.event.y;
     },
-    onEvent(eventName, data) {
-      this.events.push({ eventName, data: data.data });
-      console.log({ eventName, data });
+    dragended(d) {
+        if (!d3.event.active) this.simulation.alphaTarget(0);
+        d.fx = null, d.fy = null;
     },
-    resetZoom() {
-      this.isLoading = true;
-      this.$refs.tree.resetZoom().then(() => { this.isLoading = false; });
+    transition(node_index, msg) {
+      if (node_index === null) {
+        return;
+      }
+      const transition_ = this.transition;
+      const node_count = this.svg.selectAll('path').nodes().length;
+
+      const walkingCircle = this.svg.append('g').attr('class', 'walking circle text');
+      walkingCircle.append('circle')
+        .attr('class', 'walking circle')
+        .attr('r', 5);
+      walkingCircle.append('text')
+        .text(msg)
+        .attr('fill', 'red')
+        .attr('class', 'text')
+        .attr('x', 6)
+        .attr('y', -3);
+
+      walkingCircle.transition()
+          .duration(this.durationTransiction)
+          .attr('opacity', 1)
+          .attrTween('transform', this.translateAlong(this.svg.selectAll('path').nodes()[node_index]))
+          .on('end', function() {
+              walkingCircle.remove();
+          });
     },
+    translateAlong(path) {
+      const l = path.getTotalLength();
+      return function(d, i, a) {
+        return function(t) {
+          const p = path.getPointAtLength(t * l);
+          return 'translate(' + p.x + ',' + p.y + ')';
+        };
+      };
+    }
   },
 };
 </script>
 
-<style <style lang="scss" scoped>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 20px;
+<style lang="scss">
+.node {
+  stroke: #6DA1FF;
+  stroke-width: 1.5px;
+  fill: #2f4f4f;
+  opacity: 1;
 }
-.tree {
-  height: 600px;
-  width: 100%;
+.link {
+  stroke: #999;
+  stroke-width: 4px;
+  stroke-opacity: 0.6;
 }
-.graph-root {
-  height: 800px;
-  width: 100%;
+.walking.circle {
+  fill: #6DA1FF;
 }
-.log  {
-  height: 500px;
-  overflow-x: auto;
-  overflow-y: auto;
-  overflow: auto;
-  text-align: left;
+.text {
+  font-family: sans-serif;
+  font-size: 11px;
+  fill: black; /* <== Set the fill */
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+  cursor: move;
 }
 </style>
