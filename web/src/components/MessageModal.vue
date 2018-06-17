@@ -99,22 +99,24 @@ export default {
     },
     deleteMessage() {
       this.$emit('deleteMessage', this.message);
-      this.closeModal();
+      store.dispatch('config/hide');
     },
     async submitAction() {
-      try {
-        const response = await new Proxy('api/messages').create(this.message);
-        if (response.status.code === '200') {
+      if (this.action !== 'UPDATE') {
+        try {
+          const response = await new Proxy('api/messages').create(this.message);
+          if (response.status.code === '200') {
+            this.$message({
+              message: 'Message sent with success!',
+              type: 'success',
+            });
+          }
+        } catch (e) {
           this.$message({
-            message: 'Message sent with success!',
-            type: 'success',
+            message: 'Error sending message!',
+            type: 'error',
           });
         }
-      } catch (e) {
-        this.$message({
-          message: 'Error sending message!',
-          type: 'error',
-        });
       }
 
       this.closeModal();

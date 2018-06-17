@@ -181,6 +181,7 @@ export default {
       const identifier = (this.$route.params.id).replace(/[^A-Z0-9]/ig, '_');
 
       this.$options.sockets[`message_${identifier}`] = (message) => {
+        console.log(message);
         this.consumedMessages.push(message);
       };
     } catch (e) {
