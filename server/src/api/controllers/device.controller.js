@@ -52,7 +52,7 @@ const seed = (req, res) => {
 const addSubscription = async (req, res) => {
     const device = req.params.deviceId;
     let subscription = { queue: req.body.queue, topic: req.body.topic }
-    amqp.consumeMessage(subscription, device.replace(/[^A-Z0-9]/ig, '_'), function(queue) {
+    amqp.consumeMessage(subscription, device, function(queue) {
         subscription.queue = queue;
         try {
             var conditions = {

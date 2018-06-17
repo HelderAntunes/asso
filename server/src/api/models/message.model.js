@@ -32,6 +32,10 @@ const messageSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  receivers: {
+    type: Array,
+    default: [],
+  }
 });
 
 /**

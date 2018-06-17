@@ -107,18 +107,11 @@
               <el-card
                 v-for="message in consumedMessages"
                 :key="message._id"
-                class="box-card">
+                class="box-card mb2">
                 <div
                   slot="header"
                   class="clearfix">
-                  <span>Routing Key: {{ message.fields.routingKey }}</span>
-                  <el-button
-                    class="right"
-                    type="danger"
-                    size="small"
-                    icon="el-icon-delete"
-                    circle
-                    @click="deleteMessage(message)"/>
+                  <span>Routing Key: {{ message.key }}</span>
                 </div>
                 <div>
                   <span>
@@ -126,7 +119,7 @@
                   </span>
                   <div class="mt2 right-align">
                     <span style="color: grey">
-                      Sent by {{ message.properties.appId }}
+                      Sent by {{ message.publisher }}
                     </span>
                   </div>
                 </div>
@@ -166,7 +159,9 @@ export default {
       let response = await new Proxy('api/devices').find(this.$route.params.id);
       this.device = { ...this.device, ...response.data };
       response = await new Proxy('api/bindings').all();
-      this.bindings = (response.data).filter(x => x.source === 'source' && !(x.destination).includes('amq'));
+      this.bindings = response.data.filter(
+        x => x.source === 'source' && !x.destination.includes('amq'),
+      );
       const deviceName = encodeURIComponent(this.device.name.trim());
       response = await new Proxy().submit(
         'get',
@@ -175,14 +170,20 @@ export default {
       this.sentMessages = response.data;
       response = await new Proxy().submit(
         'get',
-        `api/messages?destination.receiver=${deviceName}`,
+        `api/messages?receivers=${deviceName}`,
       );
       this.consumedMessages = response.data;
-      const identifier = (this.$route.params.id).replace(/[^A-Z0-9]/ig, '_');
+      const identifier = this.$route.params.id.replace(/[^A-Z0-9]/gi, '_');
 
       this.$options.sockets[`message_${identifier}`] = (message) => {
-        console.log(message);
-        this.consumedMessages.push(message);
+        const enc = new TextDecoder('utf-8');
+        const _id = this.consumedMessages.length + 1;
+        this.consumedMessages.push({
+          _id,
+          key: message.fields.routingKey,
+          publisher: message.properties.appId,
+          content: enc.decode(message.content),
+        });
       };
     } catch (e) {
       throw e;
@@ -190,20 +191,13 @@ export default {
   },
   methods: {
     async deleteMessage(message) {
-      let index = this.consumedMessages.findIndex(x => x._id === message._id);
-      if (index === -1) {
-        index = this.sentMessages.findIndex(x => x._id === message._id);
-        this.sentMessages.splice(index, 1);
-      } else {
-        this.consumedMessages.splice(index, 1);
-      }
+      const index = this.sentMessages.findIndex(x => x._id === message._id);
+      this.sentMessages.splice(index, 1);
+
       try {
-        await new Proxy().submit(
-          'delete',
-          `api/messages/${message._id}`,
-        );
+        await new Proxy().submit('delete', `api/messages/${message._id}`);
       } catch (e) {
-        throw (e);
+        throw e;
       }
     },
     updateMessages(message) {
@@ -249,8 +243,12 @@ export default {
             { queue, topic },
           );
           if (response.code === '200') {
-            const index = this.device.subscriptions.findIndex(x => x === this.newSubscription);
-            if (index === -1) { this.device.subscriptions.push(response.data); }
+            const index = this.device.subscriptions.findIndex(
+              x => x === this.newSubscription,
+            );
+            if (index === -1) {
+              this.device.subscriptions.push(response.data);
+            }
             this.inputVisible = false;
             this.newSubscription = '';
           }
@@ -264,7 +262,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 #side-bar {
   border-right: solid 1px #e6e6e6;
   height: 100vh;

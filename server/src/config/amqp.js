@@ -3,6 +3,7 @@ var all = require('bluebird').all;
 const {
   amqpAddress
 } = require('./vars');
+const Message = require('../api/models/message.model');
 
 const publishToSource = (msg) => {
   const open = amqp.connect(amqpAddress);
@@ -76,8 +77,9 @@ const consumeThroughProxy = () => {
   });
 }
 
-const consumeMessage = (subscription, identifier, callback) => {
+const consumeMessage = (subscription, device, callback) => {
   const open = amqp.connect(amqpAddress);
+  const identifier = device.replace(/[^A-Z0-9]/ig, '_');
   open.then(function (conn) {
     return conn.createChannel();
   }).then(function (ch) {
@@ -92,11 +94,26 @@ const consumeMessage = (subscription, identifier, callback) => {
     })
     ch.bindQueue(q.queue, 'source', subscription.topic);
     ch.consume(q.queue, function (msg) {
+      try {
+        var conditions = {
+            key: msg.fields.routingKey,
+            publisher: msg.properties.appId
+        };
+
+        var update = {
+            $addToSet: { receivers: device }
+        }
+        Message.findOneAndUpdate(conditions, update, function(err, doc) {
+          console.log(doc);
+        });
+      } catch(e) {
+        res.internalServerError(e);
+      }
       io.obj().emit(`message_${identifier}`, msg);
       io.obj().emit(`receiver_message`, msg);
     }, {
       noAck: true,
-      consumerTag: identifier
+      consumerTag: device
     });
   }).catch(e => {
     throw new Error(e)
