@@ -1,18 +1,16 @@
-# asso
-MQTT live monitor :poop:
+# :computer: :movie_camera: :mag_right: IoT live monitor
 
-#### Useful docker commands
+Repository to host ASSO (Software Systems Architecture - FEUP 2018) project.
 
-- `docker-compose build [--no-cache]` to build the containers
-- `docker-compose up` to run the containers
-- `docker ps` to get containers info
-- `docker exec -it <container_id> /bin/bash` to run bash of a container
-- `docker stop $(docker ps -a -q)` to stop all the containers
-- `docker rm $(docker ps -a -q)` to remove all the containers
+## Overview
 
-#### Other materials
+This project provides a manager of an IoT devices network. Beyond an analysis of the devices and the communication that is happening between them, a client can manage the network by adding new devices. Regarding each device, it’s possible to control the topics that each one is subscribing, publish a message, and update the messages consumed.
 
-* [RabbitMQ HTTP API Client for Node
-](https://www.npmjs.com/package/http-rabbitmq-manager)
-* [AMQP 0-9-1 Protocol explained to noobs
-](https://www.npmjs.com/package/http-rabbitmq-manager)
+## Final result
+<img src="doc/network.gif" width="300" height="200" /> <img src="doc/queue-animation.gif" width="200" height="200" />
+
+## Authors
+* [Hélder Antunes](https://github.com/HelderAntunes)
+* [Inês Proença](https://github.com/inesfproenca)
+* [Marcelo Ferreira](https://github.com/mferreira96)
+* [Renato Abreu](https://github.com/renatoabreu11)

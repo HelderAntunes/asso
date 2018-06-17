@@ -164,8 +164,8 @@ export default {
         })
         .attr('fill', 'red')
         .attr('class', 'text')
-        .attr('x', 6)
-        .attr('y', -3);
+        .attr('x', 7)
+        .attr('y', -7);
 
       node.append('title')
         .text(function(d) { return d.name; });
